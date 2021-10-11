@@ -5,14 +5,11 @@
   "main": "lib/index.js",
   "scripts": {
     "start": "nodemon",
-    "start:prod": "node lib/index.js",
-    "demo": "nodemon --demo",
-    "ganache": "npx ganache-cli",
-    "test": "npx jest test/*/* --verbose --coverage --runInBand",
-    "test:ci": "npx jest test/*/* --coverage --ci --runInBand",
-    "test:watch": "npx jest test/*/* --verbose --coverage --watch --runInBand",
+    "start:prod": "npm run build && node lib/index.js",
+    "test": "npx jest --coverage",
+    "test:watch": "npx jest --coverage --watch",
+    "test:ci": "npx jest --coverage --ci",
     "build": "rimraf ./lib && npx tsc",
-    "build:prod": "rimraf ./lib && tsc -p tsconfig.json",
     "lint": "npx eslint ./src ./test --ext .json,.js,.ts",
     "lint:fix": "npx eslint ./src ./test --ext .json,.js,.ts --fix"
   },
@@ -33,6 +30,9 @@
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
     "eslint": "^7.24.0",
     "eslint-config-standard": "^16.0.2",
     "eslint-plugin-import": "^2.22.1",
@@ -45,6 +45,7 @@
     "jest-junit": "^12.0.0",
     "nodemon": "^2.0.7",
     "rimraf": "^3.0.2",
+    "ts-jest": "^27.0.5",
     "ts-node": "^10.2.1",
     "tsc": "^2.0.3",
     "typescript": "^4.4.3"
