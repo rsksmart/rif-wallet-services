@@ -1,0 +1,25 @@
+{
+    "env": {
+        "browser": true,
+        "es2020": true,
+        "node": true,
+        "jest/globals": true
+    },
+    "extends": [
+        "standard",
+        "plugin:json/recommended"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "parserOptions": {
+        "ecmaVersion": 11,
+        "sourceType": "module"
+    },
+    "plugins": [
+        "@typescript-eslint",
+        "jest"
+    ],
+    "rules": {
+        "@typescript-eslint/no-unused-vars": "error",
+        "max-len": ["warn", { "code": 120 }]
+    }
+}

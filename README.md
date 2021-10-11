@@ -20,4 +20,74 @@
   </a>
 </p>
 
+RIF Wallet Services provide a basic account querying API to bootstrap your app.
+
+## Usage
+
+The API is as follows. Fin the response types in `src/types.ts`
+
+> Use addresses in lower case
+
+### Tokens
+
+Get the list of all the tokens in the RSK network
+
+```
+GET /tokens -> IToken[]
+```
+
+### Addresses
+
+Get the tokens of an address:
+
+
+```
+GET /address/:address/tokens -> ITokenWithBalance[]
+```
+
+Get the events related to a given address
+
+```
+GET /address/:address/events -> IEvent[]
+```
+
+Get the incoming and outgoing transactions of a given address
+
+```
+GET /address/:address/transactions -> IApiTransactions[]
+```
+
 ## Run for development
+
+Install dependencies:
+
+```
+npm i
+```
+
+Run tests:
+
+```
+npm test
+npm test:watch
+```
+
+Lint the code:
+
+```
+npm run lint
+npm run lint:fix
+```
+
+Start the service:
+
+```
+npm run start
+npm run start:prod
+```
+
+### Branching model
+
+- `main` has latest release. PRs need to pass `ci`. Merge into `main` will deploy to npm. Do merge commits.
+- Use branches pointing to `main` to add new PRs.
+- Do external PRs against latest commit in `main`.
