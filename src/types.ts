@@ -1,7 +1,3 @@
-export interface TokensServerResponse {
-    data: IApiTokens[]
-}
-
 export interface IApiTokens{
     address: string
     balance: string
@@ -17,6 +13,10 @@ export interface IApiTokens{
     decimals: string
 }
 
+export interface TokensServerResponse {
+    data: IApiTokens[]
+}
+
 export interface IToken {
     name: string
     logo: string
@@ -26,7 +26,7 @@ export interface IToken {
 }
 
 export interface ITokenWithBalance extends IToken {
-    balance:  string
+    balance: string
 }
 
 export interface IApiEvents {
@@ -52,7 +52,7 @@ export interface IEvent {
     transactionHash: string
     txStatus: string
 }
-        
+
 export interface EventsServerResponse {
     data: IApiEvents[]
 }
@@ -78,4 +78,3 @@ export interface IApiTransactions {
 export interface TransactionsServerResponse {
     data: IApiTransactions[]
 }
- 
