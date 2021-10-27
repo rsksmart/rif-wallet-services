@@ -9,8 +9,9 @@ RUN npm i
 
 COPY ./src ./src
 COPY ./tsconfig.json ./
+COPY ./.env ./
 
-RUN npm run build:prod
+RUN npm run build
 
 RUN chown -R node: /app
 USER node
