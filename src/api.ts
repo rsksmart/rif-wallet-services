@@ -48,7 +48,12 @@ export class Api {
         .map(t => fromApiToTokenWithBalance(t, this.chainId))
     }
 
-    async getTransactionsByAddress (address:string, limit: string | undefined, prev: string | undefined, next: string | undefined) {
+    async getTransactionsByAddress (
+      address:string,
+      limit: string | undefined,
+      prev: string | undefined,
+      next: string | undefined
+    ) {
       const params = {
         module: 'transactions',
         action: 'getTransactionsByAddress',
