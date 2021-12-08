@@ -133,7 +133,7 @@ export interface IStatus {
 
 export interface ICoinMarketCapResponse<Type> {
   status: IStatus;
-  data?: Record<string, Type>;
+  data?: Type;
 }
 
 export interface IQuoteParams {
@@ -144,4 +144,9 @@ export interface IQuoteParams {
   convert_id?: string;
   aux?: string;
   skip_invalid?: boolean;
+}
+
+export interface IPricesQuery {
+  fiat: string;
+  symbols: string;
 }
