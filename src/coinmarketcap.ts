@@ -19,15 +19,16 @@ export class CoinMarketCap {
 
   async getQuotesLatest(params?: IQuoteParams) {
     try {
-      const { data } = await axios.get<
-        ICoinMarketCapResponse<Record<string, ICryptocurrency>>
-      >(`${this.baseURL}/${this.version}/cryptocurrency/quotes/latest`, {
-        params,
-        headers: {
-          "X-CMC_PRO_API_KEY": this.apiKey,
-        },
-      });
-      return data;
+      const { data } = await axios.get<ICoinMarketCapResponse<ICryptocurrency>>(
+        `${this.baseURL}/${this.version}/cryptocurrency/quotes/latest/`,
+        {
+          params,
+          headers: {
+            "X-CMC_PRO_API_KEY": this.apiKey,
+          },
+        }
+      );
+      return data.data;
     } catch (error) {
       throw error;
     }
