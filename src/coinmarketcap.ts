@@ -28,7 +28,7 @@ export class CoinMarketCap {
           },
         }
       );
-      return data.data;
+      return data;
     } catch (error) {
       throw error;
     }
