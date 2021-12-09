@@ -1,16 +1,21 @@
 import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
+import { CoinMarketCap } from "./coinmarketcap"
 import { isValidAddress } from './utils'
+
+import { IPricesQuery } from "./types"
 
 const environment = { // TODO: remove these defaults
   API_URL: process.env.API_URL as string || 'https://backend.explorer.testnet.rsk.co/api',
   PORT: parseInt(process.env.PORT as string) || 3000,
-  CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31
+  CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
+  COINMARKETCAP_KEY: `${process.env.COINMARKET_KEY}`
 }
 
 const app = express()
 const api = new Api(environment.API_URL, environment.CHAIN_ID)
+const coinMarketCap = new CoinMarketCap(environment.COINMARKETCAP_KEY)
 
 app.listen(environment.PORT, () => {
   console.log(`RIF Wallet services running on port ${environment.PORT}.`)
@@ -53,3 +58,13 @@ app.get('/address/:address/transactions', async (request: Request, response: Res
     response.status(400).send('Invalid address')
   }
 })
+
+app.get('/prices', async (request: Request<{}, {}, {}, IPricesQuery>, response: Response) => {
+  const { fiat, symbols } = request.query;
+  try {
+    const { data } = await coinMarketCap.getQuotesLatest({ symbol: symbols, convert: fiat });
+    response.status(200).send(data);
+  } catch (error) {
+    response.status(500).send('Internal error')
+  }
+});
