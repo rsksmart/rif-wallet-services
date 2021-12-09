@@ -39,3 +39,9 @@ export const fromApiToTEvents = (apiEvent:IApiEvents): IEvent =>
 export const isValidAddress = (address:string):boolean => {
   return address.startsWith('0x') && address.length === 42 // TODO: maybe check better with a regex
 }
+
+export const dateToUTCEpoch = (now: Date): number => {
+  const utcMilllisecondsSinceEpoch = now.getTime() + (now.getTimezoneOffset() * 60 * 1000)  
+  const utcSecondsSinceEpoch = Math.round(utcMilllisecondsSinceEpoch / 1000)  
+  return utcSecondsSinceEpoch
+}
