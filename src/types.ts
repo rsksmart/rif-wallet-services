@@ -103,7 +103,7 @@ export interface IPlatform {
   token_address: string;
 }
 
-export interface ICryptocurrency {
+export interface ICryptocurrencyQuota {
   id: string;
   name: string;
   symbol: string;
@@ -144,6 +144,20 @@ export interface IQuoteParams {
   convert_id?: string;
   aux?: string;
   skip_invalid?: boolean;
+}
+
+export interface IMetadataParams {
+  id?: string;
+  slug?: string;
+  symbol?: string;
+  address?: string;
+  axus?: string
+}
+
+export interface ICryptocurrencyMetadata {
+  id: string,
+  name: string;
+  symbol: string;
 }
 
 export interface IPricesQuery {
