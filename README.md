@@ -89,6 +89,7 @@ npm run start:prod
 
 ### Branching model
 
-- `main` has latest release. PRs need to pass `ci`. Merge into `main` will deploy to npm. Do merge commits.
-- Use branches pointing to `main` to add new PRs.
-- Do external PRs against latest commit in `main`.
+- `main` has latest release. PRs need to pass `ci`. Do merge commits.
+- `develop` has latest approved feature. PRs need to pass `ci`. Do squash&merge.
+- Use branches pointing to `develop` to add new PRs.
+- Do external PRs against latest commit in `develop`.
