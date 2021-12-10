@@ -55,6 +55,7 @@ Get the incoming and outgoing transactions of a given address
 
 ```
 GET /address/:address/transactions -> IApiTransactions[]
+Query params: limit, prev, next
 ```
 
 ## Run for development
