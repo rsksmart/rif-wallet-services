@@ -9,6 +9,7 @@ RUN npm i
 
 COPY ./src ./src
 COPY ./tsconfig.json ./
+COPY ./.env ./
 
 RUN npm run build:prod
 
