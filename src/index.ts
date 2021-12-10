@@ -2,9 +2,7 @@ import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
 import { CoinMarketCap } from './coinmarketcap'
-import { dateToUTCEpoch, isValidAddress } from './utils'
-import loki from 'lokijs';
-
+import { isValidAddress } from './utils'
 
 import { IPricesQuery } from "./types"
 
@@ -18,10 +16,6 @@ const environment = { // TODO: remove these defaults
 const app = express()
 const api = new Api(environment.API_URL, environment.CHAIN_ID)
 const coinMarketCap = new CoinMarketCap(environment.COINMARKETCAP_KEY)
-
-const db = new loki('coinmarketcap');
-const requests = db.addCollection('limit');
-const limit = requests.insert({counter: 0, lastUpdated: dateToUTCEpoch(new Date), data: {} })
 
 app.listen(environment.PORT, () => {
   console.log(`RIF Wallet services running on port ${environment.PORT}.`)
@@ -69,12 +63,6 @@ app.get('/prices', async (request: Request<{}, {}, {}, IPricesQuery>, response: 
   const { fiat, symbols } = request.query;
   try {
     const { data } = await coinMarketCap.getQuotesLatest({ symbol: symbols, convert: fiat });
-
-    limit.counter += 1;
-    limit.lastUpdated = dateToUTCEpoch(new Date)
-    limit.data = data
-    requests.update(limit)
-
     response.status(200).send(data);
   } catch (error) {
     response.status(500).send('Internal error')
