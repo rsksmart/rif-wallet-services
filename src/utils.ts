@@ -1,4 +1,13 @@
-import { IApiEvents, IApiTokens, ICoinMarketCapResponse, ICryptocurrencyMetadata, ICryptocurrencyQuota, IEvent, IToken, ITokenWithBalance } from './types'
+import {
+  IApiEvents,
+  IApiTokens,
+  ICoinMarketCapResponse,
+  ICryptocurrencyMetadata,
+  ICryptocurrencyQuota,
+  IEvent,
+  IToken,
+  ITokenWithBalance
+} from './types'
 import tokens from '@rsksmart/rsk-contract-metadata'
 import { toChecksumAddress } from '@rsksmart/rsk-utils'
 
