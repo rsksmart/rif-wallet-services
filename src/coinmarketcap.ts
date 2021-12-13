@@ -1,6 +1,12 @@
 import axios from "axios";
 
-import { ICoinMarketCapResponse, ICryptocurrency, IQuoteParams } from "./types";
+import {
+  ICoinMarketCapResponse,
+  ICryptocurrencyMetadata,
+  ICryptocurrencyQuota,
+  IMetadataParams,
+  IQuoteParams,
+} from "./types";
 
 export class CoinMarketCap {
   apiKey: string;
@@ -17,20 +23,27 @@ export class CoinMarketCap {
     this.version = version;
   }
 
+  async getMetadata(params: IMetadataParams) {
+    const { data } = await axios.get<
+      ICoinMarketCapResponse<Record<string, ICryptocurrencyQuota>>
+    >(`${this.baseURL}/${this.version}/cryptocurrency/info`, {
+      params,
+      headers: {
+        "X-CMC_PRO_API_KEY": this.apiKey,
+      },
+    });
+    return data;
+  }
+
   async getQuotesLatest(params?: IQuoteParams) {
-    try {
-      const { data } = await axios.get<ICoinMarketCapResponse<ICryptocurrency>>(
-        `${this.baseURL}/${this.version}/cryptocurrency/quotes/latest/`,
-        {
-          params,
-          headers: {
-            "X-CMC_PRO_API_KEY": this.apiKey,
-          },
-        }
-      );
-      return data;
-    } catch (error) {
-      throw error;
-    }
+    const { data } = await axios.get<
+      ICoinMarketCapResponse<ICryptocurrencyQuota>
+    >(`${this.baseURL}/${this.version}/cryptocurrency/quotes/latest/`, {
+      params,
+      headers: {
+        "X-CMC_PRO_API_KEY": this.apiKey,
+      },
+    });
+    return data;
   }
 }
