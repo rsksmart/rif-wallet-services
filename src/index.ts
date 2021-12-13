@@ -2,20 +2,23 @@ import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
 import { CoinMarketCap } from './coinmarketcap'
-import { isValidAddress } from './utils'
+import { isValidAddress, sanitizeMetadataResponse, sanitizeQuotaResponse } from './utils'
 
-import { IPricesQuery } from "./types"
+import { IPricesQuery } from './types'
 
-const environment = { // TODO: remove these defaults
-  API_URL: process.env.API_URL as string || 'https://backend.explorer.testnet.rsk.co/api',
+const environment = {
+  // TODO: remove these defaults
+  API_URL:
+    (process.env.API_URL as string) ||
+    'https://backend.explorer.testnet.rsk.co/api',
   PORT: parseInt(process.env.PORT as string) || 3000,
   CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
-  COINMARKETCAP_KEY: `${process.env.COINMARKET_KEY}`
+  COIN_MARKET_CAP_KEY: `${process.env.COIN_MARKET_CAP_KEY}`
 }
 
 const app = express()
 const api = new Api(environment.API_URL, environment.CHAIN_ID)
-const coinMarketCap = new CoinMarketCap(environment.COINMARKETCAP_KEY)
+const coinMarketCap = new CoinMarketCap(environment.COIN_MARKET_CAP_KEY)
 
 app.listen(environment.PORT, () => {
   console.log(`RIF Wallet services running on port ${environment.PORT}.`)
@@ -59,12 +62,25 @@ app.get('/address/:address/transactions', async (request: Request, response: Res
   }
 })
 
-app.get('/prices', async (request: Request<{}, {}, {}, IPricesQuery>, response: Response) => {
-  const { fiat, symbols } = request.query;
+app.get('/price', async (request: Request<{}, {}, {}, IPricesQuery>, response: Response) => {
+  const fiat = request.query.fiat.toUpperCase()
+  const { tokens } = request.query
+
+  const tokensArray = tokens.split(',')
+  const metadataPromise = tokensArray.map(
+    async (address) => await coinMarketCap.getMetadata({ address: address })
+  )
+
   try {
-    const { data } = await coinMarketCap.getQuotesLatest({ symbol: symbols, convert: fiat });
-    response.status(200).send(data);
+    const coinMarketCapIdsResult = await Promise.all(metadataPromise)
+    const coinMarketCapIds = coinMarketCapIdsResult.map((response) => sanitizeMetadataResponse(response))
+
+    const quotes = await coinMarketCap.getQuotesLatest({ convert: fiat, id: coinMarketCapIds.join(',') })
+    const sanitizedTokenPrices = sanitizeQuotaResponse(quotes, fiat)
+      .map((token, idx) => ({ ...token, address: tokensArray[idx] }))
+
+    response.status(200).send(sanitizedTokenPrices)
   } catch (error) {
     response.status(500).send('Internal error')
   }
-});
+})
