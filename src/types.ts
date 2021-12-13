@@ -154,13 +154,50 @@ export interface IMetadataParams {
   axus?: string
 }
 
+export interface IContractAddress {
+  contract_address: string;
+  platform: {
+    name: string;
+    coin: {
+      id: string;
+      name: string;
+      symbol: string;
+      slug: string;
+    }
+  }
+}
 export interface ICryptocurrencyMetadata {
   id: string,
   name: string;
   symbol: string;
+  category: string;
+  description: string;
+  slug: string,
+  logo: string;
+  subreddit: string;
+  notice: string;
+  tags: Array<string>;
+  'tag-names': Array<string>;
+  'tag-groups': Array<string>;
+  urls: {
+    website: Array<string>;
+    technical_doc: Array<string>;
+    reddit: Array<string>;
+    twitter: Array<string>;
+    message_board: Array<string>;
+    chat: Array<string>;
+    explorer: Array<string>;
+    source_code: Array<string>;
+  }
+  platform: IPlatform | null;
+  date_added: string;
+  twitter_username: string | null;
+  is_hidden: string;
+  date_launched: string;
+  contract_address: Array<IContractAddress>
 }
 
 export interface IPricesQuery {
   fiat: string;
-  symbols: string;
+  tokens: string;
 }
