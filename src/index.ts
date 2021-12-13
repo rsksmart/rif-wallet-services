@@ -2,6 +2,7 @@ import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
 import { CoinMarketCap } from './coinmarketcap'
+import registeredDapps from './registered_dapps'
 import { isValidAddress, sanitizeMetadataResponse, sanitizeQuotaResponse } from './utils'
 
 import { IPricesQuery } from './types'
@@ -54,9 +55,12 @@ app.get('/address/:address/events', async (request: Request, response: Response)
 app.get('/address/:address/transactions', async (request: Request, response: Response) => {
   console.log(request.path)
   const address = request.params.address
+  const { limit, prev, next } = request.query
+
   if (!address) return response.status(404)
   if (isValidAddress(address)) {
-    response.status(200).json(await api.getTransactionsByAddress(address))
+    const result = await api.getTransactionsByAddress(address, limit as string, prev as string, next as string)
+    response.status(200).json(result)
   } else {
     response.status(400).send('Invalid address')
   }
@@ -83,4 +87,8 @@ app.get('/price', async (request: Request<{}, {}, {}, IPricesQuery>, response: R
   } catch (error) {
     response.status(500).send('Internal error')
   }
+})
+
+app.get('/dapps', async (request: Request, response: Response) => {
+  response.status(200).json(registeredDapps)
 })
