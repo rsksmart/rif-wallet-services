@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
+import registeredDapps from './registered_dapps'
 import { isValidAddress } from './utils'
 
 const environment = { // TODO: remove these defaults
@@ -55,4 +56,8 @@ app.get('/address/:address/transactions', async (request: Request, response: Res
   } else {
     response.status(400).send('Invalid address')
   }
+})
+
+app.get('/dapps', async (request: Request, response: Response) => {
+  response.status(200).json(registeredDapps)
 })
