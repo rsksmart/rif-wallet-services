@@ -9,7 +9,7 @@ const pushNewBalances = async (
   const balances = await api.getBalances(address.toLowerCase())
 
   for (const balance of balances.data) {
-    socket.emit('newBalance', balance)
+    socket.emit('something', { type: 'newBalance', payload: balance })
   }
 }
 
