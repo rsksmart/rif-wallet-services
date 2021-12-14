@@ -81,18 +81,18 @@ export interface TransactionsServerResponse {
 
 export interface IFiat {
   price: number;
-  volume_24h: number;
-  volume_change_24h: number;
-  percent_change_1h: number;
-  percent_change_24h: number;
-  percent_change_7d: number;
-  percent_change_30d: number;
-  percent_change_60d: number;
-  percent_change_90d: number;
-  market_cap: number;
-  market_cap_dominance: number;
-  fully_diluted_market_cap: number;
-  last_updated: string;
+  'volume_24h': number;
+  'volume_change_24h': number;
+  'percent_change_1h': number;
+  'percent_change_24h': number;
+  'percent_change_7d': number;
+  'percent_change_30d': number;
+  'percent_change_60d': number;
+  'percent_change_90d': number;
+  'market_cap': number;
+  'market_cap_dominance': number;
+  'fully_diluted_market_cap': number;
+  'last_updated': string;
 }
 
 export interface IPlatform {
@@ -100,7 +100,7 @@ export interface IPlatform {
   name: string;
   symbol: string;
   slug: string;
-  token_address: string;
+  'token_address': string;
 }
 
 export interface ICryptocurrencyQuota {
@@ -108,26 +108,26 @@ export interface ICryptocurrencyQuota {
   name: string;
   symbol: string;
   slug: string;
-  num_market_pairs: string | null;
-  date_added: string;
+  'num_market_pairs': string | null;
+  'date_added': string;
   tags: Array<string>;
-  max_supply: number | null;
-  circulating_supply: number | null;
-  total_supply: number | null;
+  'max_supply': number | null;
+  'circulating_supply': number | null;
+  'total_supply': number | null;
   platform: IPlatform | null;
-  is_active: 0 | 1;
-  cmc_rank: number | null;
-  is_fiat: 0 | 1;
-  last_updated: string;
+  'is_active': 0 | 1;
+  'cmc_rank': number | null;
+  'is_fiat': 0 | 1;
+  'last_updated': string;
   quote: Record<string, IFiat>;
 }
 
 export interface IStatus {
   timestamp: string;
-  error_code: number;
-  error_message: string | null;
+  'error_code': number;
+  'error_message': string | null;
   elapsed: number;
-  credit_count: string;
+  'credit_count': string;
   notice: string | null;
 }
 
@@ -141,9 +141,9 @@ export interface IQuoteParams {
   slug?: string;
   symbol?: string;
   convert?: string;
-  convert_id?: string;
+  'convert_id'?: string;
   aux?: string;
-  skip_invalid?: boolean;
+  'skip_invalid'?: boolean;
 }
 
 export interface IMetadataParams {
@@ -155,7 +155,7 @@ export interface IMetadataParams {
 }
 
 export interface IContractAddress {
-  contract_address: string;
+  'contract_address': string;
   platform: {
     name: string;
     coin: {
@@ -181,20 +181,20 @@ export interface ICryptocurrencyMetadata {
   'tag-groups': Array<string>;
   urls: {
     website: Array<string>;
-    technical_doc: Array<string>;
+    'technical_doc': Array<string>;
     reddit: Array<string>;
     twitter: Array<string>;
-    message_board: Array<string>;
+    'message_board': Array<string>;
     chat: Array<string>;
     explorer: Array<string>;
-    source_code: Array<string>;
+    'source_code': Array<string>;
   }
   platform: IPlatform | null;
-  date_added: string;
-  twitter_username: string | null;
-  is_hidden: string;
-  date_launched: string;
-  contract_address: Array<IContractAddress>
+  'date_added': string;
+  'twitter_username': string | null;
+  'is_hidden': string;
+  'date_launched': string;
+  'contract_address': Array<IContractAddress>
 }
 
 export interface IPricesQuery {
