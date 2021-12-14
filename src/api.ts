@@ -48,6 +48,17 @@ export class Api {
         .map(t => fromApiToTokenWithBalance(t, this.chainId))
     }
 
+    async getBalances (address:string) {
+      const params = {
+        module: 'balances',
+        action: 'getBalances',
+        address
+      }
+
+      const response = await axios.get<any>(this.apiURL, { params })
+      return response.data
+    }
+
     async getTransactionsByAddress (
       address:string,
       limit: string | undefined,

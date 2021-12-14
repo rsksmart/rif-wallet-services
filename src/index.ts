@@ -3,6 +3,9 @@ import express, { Request, Response } from 'express'
 import { Api } from './api'
 import registeredDapps from './registered_dapps'
 import { isValidAddress } from './utils'
+import { Server } from 'socket.io'
+import http from 'http'
+import pushNewBalances from './subscriptions/pushNewBalances'
 
 const environment = { // TODO: remove these defaults
   API_URL: process.env.API_URL as string || 'https://backend.explorer.testnet.rsk.co/api',
@@ -11,9 +14,27 @@ const environment = { // TODO: remove these defaults
 }
 
 const app = express()
+const server = http.createServer(app)
+const io = new Server(server, {
+  path: '/ws',
+  cors: {
+    origin: 'https://amritb.github.io'
+  } // TODO: remove cors, it's just for testing proposes
+})
+
 const api = new Api(environment.API_URL, environment.CHAIN_ID)
 
-app.listen(environment.PORT, () => {
+io.on('connection', (socket) => {
+  console.log('new user connected')
+
+  socket.on('subscribe', ({ address }: { address: string }) => {
+    console.log('new subscription with address: ', address)
+
+    pushNewBalances(socket, api, address)
+  })
+})
+
+server.listen(environment.PORT, () => {
   console.log(`RIF Wallet services running on port ${environment.PORT}.`)
 })
 
