@@ -1,6 +1,7 @@
 import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
+import registeredDapps from './registered_dapps'
 import { isValidAddress } from './utils'
 
 const environment = { // TODO: remove these defaults
@@ -46,10 +47,17 @@ app.get('/address/:address/events', async (request: Request, response: Response)
 app.get('/address/:address/transactions', async (request: Request, response: Response) => {
   console.log(request.path)
   const address = request.params.address
+  const { limit, prev, next } = request.query
+
   if (!address) return response.status(404)
   if (isValidAddress(address)) {
-    response.status(200).json(await api.getTransactionsByAddress(address))
+    const result = await api.getTransactionsByAddress(address, limit as string, prev as string, next as string)
+    response.status(200).json(result)
   } else {
     response.status(400).send('Invalid address')
   }
+})
+
+app.get('/dapps', async (request: Request, response: Response) => {
+  response.status(200).json(registeredDapps)
 })
