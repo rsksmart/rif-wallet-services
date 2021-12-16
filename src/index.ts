@@ -30,7 +30,11 @@ io.on('connection', (socket) => {
   socket.on('subscribe', ({ address }: { address: string }) => {
     console.log('new subscription with address: ', address)
 
-    pushNewBalances(socket, api, address)
+    const stopPushingNewBalances = pushNewBalances(socket, api, address)
+
+    socket.on('disconnect', () => {
+      stopPushingNewBalances()
+    })
   })
 })
 

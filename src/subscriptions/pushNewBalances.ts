@@ -12,7 +12,7 @@ const EXECUTION_INTERVAL = 60000
 
 const sendedBalances: ISendedBalances = {}
 
-const pushNewBalances = async (
+const pushNewBalances = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
   api: Api,
   address: string
