@@ -1,8 +1,6 @@
 import 'dotenv/config'
 import express, { NextFunction, Request, Response } from 'express'
 
-import { PricesQueryParams } from './api/types'
-
 import { CoinMarketCap } from './coinmatketcap'
 import { Api } from './rskExplorerApi'
 import registeredDapps from './registered_dapps'

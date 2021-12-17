@@ -26,13 +26,16 @@ const validateAndConvertRequestParams = (params: PricesQueryParams): ICoinMarket
   convert: validateConvert(params.convert)
 })
 
-const fromQuotesResponseToPrices = (convert: string) => (response: AxiosResponse<ICoinMarketCapQuoteResponse>) => Object.keys(response.data.data).reduce<Prices>((p, c) => ({
-  ...p,
-  [coinmarketcapIdToAddress[c]]: {
-    price: response.data.data[c].quote[convert].price,
-    lastUpdated: response.data.data[c].last_updated
-  }
-}), {})
+const fromQuotesResponseToPrices =
+  (convert: string) =>
+    (response: AxiosResponse<ICoinMarketCapQuoteResponse>) =>
+      Object.keys(response.data.data).reduce<Prices>((p, c) => ({
+        ...p,
+        [coinmarketcapIdToAddress[c]]: {
+          price: response.data.data[c].quote[convert].price,
+          lastUpdated: response.data.data[c].last_updated
+        }
+      }), {})
 
 export class CoinMarketCap {
   headers: { 'X-CMC_PRO_API_KEY': string }
