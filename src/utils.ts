@@ -1,9 +1,6 @@
 import {
   IApiEvents,
   IApiTokens,
-  ICoinMarketCapResponse,
-  ICryptocurrencyMetadata,
-  ICryptocurrencyQuota,
   IEvent,
   IToken,
   ITokenWithBalance
@@ -47,15 +44,4 @@ export const fromApiToTEvents = (apiEvent:IApiEvents): IEvent =>
 
 export const isValidAddress = (address:string):boolean => {
   return address.startsWith('0x') && address.length === 42 // TODO: maybe check better with a regex
-}
-
-export const sanitizeMetadataResponse = (response: ICoinMarketCapResponse<Record<string, ICryptocurrencyMetadata>>) => {
-  const [key] = Object.keys(response.data as Record<string, ICryptocurrencyMetadata>)
-  return key
-}
-
-export const sanitizeQuotaResponse = (response: ICoinMarketCapResponse<Record<string, ICryptocurrencyQuota>>, fiat: string) => {
-  const data = response.data as Record<string, ICryptocurrencyQuota>
-  const keys = Object.keys(data)
-  return keys.map((id) => ({ name: data[id].name, symbol: data[id].symbol, price: data[id].quote[fiat].price }))
 }

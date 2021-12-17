@@ -1,11 +1,9 @@
 import 'dotenv/config'
 import express, { Request, Response } from 'express'
 import { Api } from './api'
-import { CoinMarketCap } from './coinmarketcap'
+import { CoinMarketCap, QueryParams } from './coinmarketcap'
 import registeredDapps from './registered_dapps'
-import { isValidAddress, sanitizeMetadataResponse, sanitizeQuotaResponse } from './utils'
-
-import { IPricesQuery } from './types'
+import { isValidAddress } from './utils'
 
 const environment = {
   // TODO: remove these defaults
@@ -66,26 +64,13 @@ app.get('/address/:address/transactions', async (request: Request, response: Res
   }
 })
 
-app.get('/price', async (request: Request<{}, {}, {}, IPricesQuery>, response: Response) => {
-  const fiat = request.query.fiat.toUpperCase()
-  const { tokens } = request.query
-
-  const tokensArray = tokens.split(',')
-  const metadataPromise = tokensArray.map(
-    async (address) => await coinMarketCap.getMetadata({ address: address })
-  )
-
+app.get('/price', async (request: Request<{}, {}, {}, QueryParams>, response: Response) => {
   try {
-    const coinMarketCapIdsResult = await Promise.all(metadataPromise)
-    const coinMarketCapIds = coinMarketCapIdsResult.map((response) => sanitizeMetadataResponse(response))
-
-    const quotes = await coinMarketCap.getQuotesLatest({ convert: fiat, id: coinMarketCapIds.join(',') })
-    const sanitizedTokenPrices = sanitizeQuotaResponse(quotes, fiat)
-      .map((token, idx) => ({ ...token, address: tokensArray[idx] }))
-
-    response.status(200).send(sanitizedTokenPrices)
-  } catch (error) {
-    response.status(500).send('Internal error')
+    const body = await coinMarketCap.getQuotesLatest(request.query)
+    response.status(200).json(body)
+  } catch (e: any) {
+    console.log(e)
+    response.status(400).send(e.message)
   }
 })
 
