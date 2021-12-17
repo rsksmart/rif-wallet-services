@@ -1,9 +1,11 @@
 import 'dotenv/config'
 import express, { Request, Response } from 'express'
-import { Api } from './api'
-import { CoinMarketCap, QueryParams } from './coinmarketcap'
+
+import { PricesQueryParams } from './api/types'
+
+import { CoinMarketCap } from './coinmatketcap'
+import { Api } from './rskExplorerApi'
 import registeredDapps from './registered_dapps'
-import { isValidAddress } from './utils'
 
 const environment = {
   // TODO: remove these defaults
@@ -32,22 +34,14 @@ app.get('/address/:address/tokens', async (request: Request, response: Response)
   console.log(request.path)
   const address = request.params.address
   if (!address) return response.status(404)
-  if (isValidAddress(address)) {
-    response.status(200).json(await api.getTokensByAddress(address))
-  } else {
-    response.status(400).send('Invalid address')
-  }
+  response.status(200).json(await api.getTokensByAddress(address))
 })
 
 app.get('/address/:address/events', async (request: Request, response: Response) => {
   console.log(request.path)
   const address = request.params.address
   if (!address) return response.status(404)
-  if (isValidAddress(address)) {
-    response.status(200).json(await api.getEventsByAddress(address))
-  } else {
-    response.status(400).send('Invalid address')
-  }
+  response.status(200).json(await api.getEventsByAddress(address))
 })
 
 app.get('/address/:address/transactions', async (request: Request, response: Response) => {
@@ -56,15 +50,11 @@ app.get('/address/:address/transactions', async (request: Request, response: Res
   const { limit, prev, next } = request.query
 
   if (!address) return response.status(404)
-  if (isValidAddress(address)) {
-    const result = await api.getTransactionsByAddress(address, limit as string, prev as string, next as string)
-    response.status(200).json(result)
-  } else {
-    response.status(400).send('Invalid address')
-  }
+  const result = await api.getTransactionsByAddress(address, limit as string, prev as string, next as string)
+  response.status(200).json(result)
 })
 
-app.get('/price', async (request: Request<{}, {}, {}, QueryParams>, response: Response) => {
+app.get('/price', async (request: Request<{}, {}, {}, PricesQueryParams>, response: Response) => {
   try {
     const body = await coinMarketCap.getQuotesLatest(request.query)
     response.status(200).json(body)

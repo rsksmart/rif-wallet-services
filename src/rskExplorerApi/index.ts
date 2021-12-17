@@ -16,7 +16,7 @@ export class Api {
       const params = {
         module: 'events',
         action: 'getAllEventsByAddress',
-        address
+        address: address.toLowerCase()
       }
 
       const response = await axios.get<EventsServerResponse>(this.apiURL, { params })
@@ -39,7 +39,7 @@ export class Api {
       const params = {
         module: 'tokens',
         action: 'getTokensByAddress',
-        address
+        address: address.toLowerCase()
       }
 
       const response = await axios.get<TokensServerResponse>(this.apiURL, { params })

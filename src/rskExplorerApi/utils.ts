@@ -41,7 +41,3 @@ export const fromApiToTEvents = (apiEvent:IApiEvents): IEvent =>
     transactionHash: apiEvent.transactionHash,
     txStatus: apiEvent.txStatus
   })
-
-export const isValidAddress = (address:string):boolean => {
-  return address.startsWith('0x') && address.length === 42 // TODO: maybe check better with a regex
-}
