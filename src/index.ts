@@ -1,11 +1,12 @@
 import 'dotenv/config'
-import express, { Request, Response } from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 
 import { PricesQueryParams } from './api/types'
 
 import { CoinMarketCap } from './coinmatketcap'
 import { Api } from './rskExplorerApi'
 import registeredDapps from './registered_dapps'
+import { setupApi } from './api'
 
 const environment = {
   // TODO: remove these defaults
@@ -18,52 +19,28 @@ const environment = {
 }
 
 const app = express()
+
 const api = new Api(environment.API_URL, environment.CHAIN_ID)
 const coinMarketCap = new CoinMarketCap(environment.COIN_MARKET_CAP_KEY)
 
+const requestMiddleware = (req: Request, res: Response, next: NextFunction) => {
+  try {
+    console.log(req.url)
+    next()
+  } catch (e: any) {
+    console.error(e)
+    res.status(400).send(e.toString())
+  }
+}
+
+app.use(requestMiddleware)
+
+setupApi(app, {
+  rskExplorerApi: api,
+  coinMarketCapApi: coinMarketCap,
+  registeredDapps
+})
+
 app.listen(environment.PORT, () => {
   console.log(`RIF Wallet services running on port ${environment.PORT}.`)
-})
-
-app.get('/tokens', async (request: Request, response: Response) => {
-  console.log(request.path)
-  response.status(200).json(await api.getTokens())
-})
-
-app.get('/address/:address/tokens', async (request: Request, response: Response) => {
-  console.log(request.path)
-  const address = request.params.address
-  if (!address) return response.status(404)
-  response.status(200).json(await api.getTokensByAddress(address))
-})
-
-app.get('/address/:address/events', async (request: Request, response: Response) => {
-  console.log(request.path)
-  const address = request.params.address
-  if (!address) return response.status(404)
-  response.status(200).json(await api.getEventsByAddress(address))
-})
-
-app.get('/address/:address/transactions', async (request: Request, response: Response) => {
-  console.log(request.path)
-  const address = request.params.address
-  const { limit, prev, next } = request.query
-
-  if (!address) return response.status(404)
-  const result = await api.getTransactionsByAddress(address, limit as string, prev as string, next as string)
-  response.status(200).json(result)
-})
-
-app.get('/price', async (request: Request<{}, {}, {}, PricesQueryParams>, response: Response) => {
-  try {
-    const body = await coinMarketCap.getQuotesLatest(request.query)
-    response.status(200).json(body)
-  } catch (e: any) {
-    console.log(e)
-    response.status(400).send(e.message)
-  }
-})
-
-app.get('/dapps', async (request: Request, response: Response) => {
-  response.status(200).json(registeredDapps)
 })
