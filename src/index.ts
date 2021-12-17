@@ -6,6 +6,7 @@ import { isValidAddress } from './utils'
 import { Server } from 'socket.io'
 import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
+import pushNewTransactions from './subscriptions/pushNewTransactions'
 
 const environment = { // TODO: remove these defaults
   API_URL: process.env.API_URL as string || 'https://backend.explorer.testnet.rsk.co/api',
@@ -31,9 +32,11 @@ io.on('connection', (socket) => {
     console.log('new subscription with address: ', address)
 
     const stopPushingNewBalances = pushNewBalances(socket, api, address)
+    const stopPushingNewTransactions = pushNewTransactions(socket, address)
 
     socket.on('disconnect', () => {
       stopPushingNewBalances()
+      stopPushingNewTransactions()
     })
   })
 })
