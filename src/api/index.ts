@@ -4,6 +4,8 @@ import _registeredDapps from '../registered_dapps'
 import { Api } from '../rskExplorerApi'
 import { PricesQueryParams } from './types'
 
+const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
+
 export const setupApi = (app: Application, {
   rskExplorerApi, coinMarketCapApi, registeredDapps
 }: {
@@ -13,16 +15,14 @@ export const setupApi = (app: Application, {
 
   app.get(
     '/address/:address/tokens',
-    ({ params: { address } }: Request, res: Response) => rskExplorerApi.getTokensByAddress(address).then(
-      res.status(200).json.bind(res)
-    )
+    ({ params: { address } }: Request, res: Response) => rskExplorerApi.getTokensByAddress(address)
+      .then(responseJsonOk(res))
   )
 
   app.get(
     '/address/:address/events',
-    ({ params: { address } }: Request, res: Response) => rskExplorerApi.getEventsByAddress(address).then(
-      res.status(200).json.bind(res)
-    )
+    ({ params: { address } }: Request, res: Response) => rskExplorerApi.getEventsByAddress(address)
+      .then(responseJsonOk(res))
   )
 
   app.get(
@@ -30,15 +30,17 @@ export const setupApi = (app: Application, {
     ({ params: { address }, query: { limit, prev, next } }: Request, res: Response) =>
       rskExplorerApi.getTransactionsByAddress(
         address, limit as string, prev as string, next as string
-      ).then(res.status(200).json.bind(res)
       )
+        .then(responseJsonOk(res))
   )
 
-  app.get('/price', (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => coinMarketCapApi.getQuotesLatest(
-    req.query
-  ).then(res.status(200).json.bind(res)))
+  app.get(
+    '/price',
+    (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => coinMarketCapApi.getQuotesLatest(
+      req.query
+    )
+      .then(responseJsonOk(res))
+  )
 
-  app.get('/dapps', (_: Request, response: Response) => {
-    response.status(200).json(registeredDapps)
-  })
+  app.get('/dapps', (_: Request, res: Response) => responseJsonOk(res)(registeredDapps))
 }
