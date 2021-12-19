@@ -1,9 +1,10 @@
 import 'dotenv/config'
-import express, { NextFunction, Request, Response } from 'express'
+import express from 'express'
 
-import { CoinMarketCap } from './coinmatketcap'
-import { Api } from './rskExplorerApi'
-import registeredDapps from './registered_dapps'
+import axios from 'axios'
+import { CoinMarketCapAPI } from './coinmatketcap'
+import { RSKExplorerAPI } from './rskExplorerApi'
+import { registeredDapps } from './registered_dapps'
 import { setupApi } from './api'
 
 const environment = {
@@ -13,30 +14,20 @@ const environment = {
     'https://backend.explorer.testnet.rsk.co/api',
   PORT: parseInt(process.env.PORT as string) || 3000,
   CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
-  COIN_MARKET_CAP_KEY: `${process.env.COIN_MARKET_CAP_KEY}`
+  COIN_MARKET_CAP_URL: process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com',
+  COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
+  COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
 }
 
 const app = express()
 
-const api = new Api(environment.API_URL, environment.CHAIN_ID)
-const coinMarketCap = new CoinMarketCap(environment.COIN_MARKET_CAP_KEY)
-
-const requestMiddleware = (req: Request, res: Response, next: NextFunction) => {
-  try {
-    console.log(req.url)
-    next()
-  } catch (e: any) {
-    console.error(e)
-    res.status(400).send(e.toString())
-  }
-}
-
-app.use(requestMiddleware)
+const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios)
+const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios)
 
 setupApi(app, {
-  rskExplorerApi: api,
-  coinMarketCapApi: coinMarketCap,
-  registeredDapps
+  rskExplorerApi,
+  coinMarketCapApi,
+  registeredDapps,
 })
 
 app.listen(environment.PORT, () => {

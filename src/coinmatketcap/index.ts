@@ -1,4 +1,4 @@
-import axios, { AxiosResponse } from 'axios'
+import _axios, { AxiosResponse } from 'axios'
 import { ICoinMarketCapQuoteParams, ICoinMarketCapQuoteResponse } from './types'
 import { addressToCoinmarketcapId, supportedFiat } from './support'
 import { PricesQueryParams, Prices } from '../api/types'
@@ -37,24 +37,30 @@ const fromQuotesResponseToPrices =
         }
       }), {})
 
-export class CoinMarketCap {
+export class CoinMarketCapAPI {
   headers: { 'X-CMC_PRO_API_KEY': string }
   baseURL: string
+  axios: typeof _axios
 
   constructor (
+    url: string,
+    version: string,
     apiKey: string,
-    url = 'https://pro-api.coinmarketcap.com',
-    version = 'v1'
+    axios: typeof _axios
   ) {
     this.baseURL = `${url}/${version}`
     this.headers = {
       'X-CMC_PRO_API_KEY': apiKey
     }
+    this.axios = axios
   }
 
-  getQuotesLatest = (params: PricesQueryParams): Promise<Prices> => axios.get<ICoinMarketCapQuoteResponse>(
+  getQuotesLatest = (queryParams: PricesQueryParams): Promise<Prices> => {
+    const params = validateAndConvertRequestParams(queryParams)
+    return this.axios.get<ICoinMarketCapQuoteResponse>(
     `${this.baseURL}/cryptocurrency/quotes/latest`, {
       headers: this.headers,
-      params: validateAndConvertRequestParams(params)
-    }).then(fromQuotesResponseToPrices(params.convert))
+      params
+    }).then(fromQuotesResponseToPrices(params.convert!))
+  }
 }

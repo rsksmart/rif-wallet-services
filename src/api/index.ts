@@ -1,7 +1,7 @@
-import { Application, Request, Response } from 'express'
-import { CoinMarketCap } from '../coinmatketcap'
-import _registeredDapps from '../registered_dapps'
-import { Api } from '../rskExplorerApi'
+import { Application, Request, Response, NextFunction, response, query } from 'express'
+import { RSKExplorerAPI } from '../rskExplorerApi'
+import { CoinMarketCapAPI } from '../coinmatketcap'
+import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
@@ -9,7 +9,7 @@ const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 export const setupApi = (app: Application, {
   rskExplorerApi, coinMarketCapApi, registeredDapps
 }: {
-  rskExplorerApi: Api, coinMarketCapApi: CoinMarketCap, registeredDapps: typeof _registeredDapps
+  rskExplorerApi: RSKExplorerAPI, coinMarketCapApi: CoinMarketCapAPI, registeredDapps: typeof _registeredDapps
 }) => {
   app.get('/tokens', (_: Request, res: Response) => rskExplorerApi.getTokens().then(res.status(200).json.bind(res)))
 
@@ -36,10 +36,15 @@ export const setupApi = (app: Application, {
 
   app.get(
     '/price',
-    (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => coinMarketCapApi.getQuotesLatest(
-      req.query
-    )
-      .then(responseJsonOk(res))
+    async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => {
+      try {
+        const result = await coinMarketCapApi.getQuotesLatest(req.query)
+        responseJsonOk(res)(result)
+      } catch (e: any) {
+        console.error('e', e)
+        res.status(500).send(e.message)
+      }
+    }
   )
 
   app.get('/dapps', (_: Request, res: Response) => responseJsonOk(res)(registeredDapps))
