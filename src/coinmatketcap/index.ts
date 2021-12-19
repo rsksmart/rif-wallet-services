@@ -1,29 +1,16 @@
 import _axios, { AxiosResponse } from 'axios'
 import { ICoinMarketCapQuoteParams, ICoinMarketCapQuoteResponse } from './types'
-import { addressToCoinmarketcapId, supportedFiat } from './support'
-import { PricesQueryParams, Prices } from '../api/types'
+import { addressToCoinmarketcapId } from './support'
+import { Prices } from '../api/types'
+
+type PricesQueryParams = { addresses: string[], convert: string }
 
 const coinmarketcapIdToAddress = Object.keys(addressToCoinmarketcapId)
   .reduce((p, c) => ({ ...p, [addressToCoinmarketcapId[c]]: c }), {})
 
-const addressesToCoinmarketcapIdWithValidation = (addresses: string) => addresses
-  .split(',')
-  .map(address => {
-    const id = addressToCoinmarketcapId[address.toLowerCase()]
-    if (!id) throw new Error('Invalid address')
-    return id
-  })
-  .join(',')
-
-const validateConvert = (convert: string) => {
-  const result = convert.toUpperCase()
-  if (!supportedFiat.includes(convert)) throw new Error('Invalid convert')
-  return result
-}
-
-const validateAndConvertRequestParams = (params: PricesQueryParams): ICoinMarketCapQuoteParams => ({
-  id: addressesToCoinmarketcapIdWithValidation(params.addresses),
-  convert: validateConvert(params.convert)
+const fromQueryParamsToRequestParams = (params: PricesQueryParams): ICoinMarketCapQuoteParams => ({
+  id: params.addresses.map(address => addressToCoinmarketcapId[address]).join(','),
+  convert: params.convert
 })
 
 const fromQuotesResponseToPrices =
@@ -55,12 +42,9 @@ export class CoinMarketCapAPI {
     this.axios = axios
   }
 
-  getQuotesLatest = (queryParams: PricesQueryParams): Promise<Prices> => {
-    const params = validateAndConvertRequestParams(queryParams)
-    return this.axios.get<ICoinMarketCapQuoteResponse>(
+  getQuotesLatest = (queryParams: PricesQueryParams): Promise<Prices> => this.axios.get<ICoinMarketCapQuoteResponse>(
     `${this.baseURL}/cryptocurrency/quotes/latest`, {
       headers: this.headers,
-      params
-    }).then(fromQuotesResponseToPrices(params.convert!))
-  }
+      params: fromQueryParamsToRequestParams(queryParams)
+    }).then(fromQuotesResponseToPrices(queryParams.convert!))
 }

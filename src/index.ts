@@ -16,7 +16,7 @@ const environment = {
   CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
   COIN_MARKET_CAP_URL: process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com',
   COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
-  COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
+  COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string
 }
 
 const app = express()
@@ -28,6 +28,7 @@ setupApi(app, {
   rskExplorerApi,
   coinMarketCapApi,
   registeredDapps,
+  logger: console
 })
 
 app.listen(environment.PORT, () => {

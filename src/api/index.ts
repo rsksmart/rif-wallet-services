@@ -1,16 +1,35 @@
-import { Application, Request, Response, NextFunction, response, query } from 'express'
+import { Application, Request, Response } from 'express'
 import { RSKExplorerAPI } from '../rskExplorerApi'
 import { CoinMarketCapAPI } from '../coinmatketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
+import { validatePricesRequest } from '../coinmatketcap/validations'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
+const makeRequestFactory = (console) => async (req, res, query) => {
+  try {
+    console.log(req.url)
+    const result = await query()
+    res.status(200).json(result)
+  } catch (e: any) {
+    console.error(e)
+    res.status(500).send(e.message)
+  }
+}
+
+type APIOptions = {
+  rskExplorerApi: RSKExplorerAPI
+  coinMarketCapApi: CoinMarketCapAPI
+  registeredDapps: typeof _registeredDapps
+  logger?: any
+}
+
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps
-}: {
-  rskExplorerApi: RSKExplorerAPI, coinMarketCapApi: CoinMarketCapAPI, registeredDapps: typeof _registeredDapps
-}) => {
+  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }
+}: APIOptions) => {
+  const makeRequest = makeRequestFactory(logger)
+
   app.get('/tokens', (_: Request, res: Response) => rskExplorerApi.getTokens().then(res.status(200).json.bind(res)))
 
   app.get(
@@ -36,15 +55,14 @@ export const setupApi = (app: Application, {
 
   app.get(
     '/price',
-    async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => {
-      try {
-        const result = await coinMarketCapApi.getQuotesLatest(req.query)
-        responseJsonOk(res)(result)
-      } catch (e: any) {
-        console.error('e', e)
-        res.status(500).send(e.message)
+    async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => makeRequest(
+      req, res, () => {
+        const addresses = req.query.addresses.split(',')
+        const convert = req.query.convert
+        validatePricesRequest(addresses, convert)
+        return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
-    }
+    )
   )
 
   app.get('/dapps', (_: Request, res: Response) => responseJsonOk(res)(registeredDapps))
