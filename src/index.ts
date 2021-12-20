@@ -16,10 +16,7 @@ const environment = { // TODO: remove these defaults
 const app = express()
 const server = http.createServer(app)
 const io = new Server(server, {
-  path: '/ws',
-  cors: {
-    origin: 'https://amritb.github.io'
-  } // TODO: remove cors, it's just for testing proposes
+  path: '/ws'
 })
 
 const api = new Api(environment.API_URL, environment.CHAIN_ID)

@@ -2,7 +2,7 @@ import { Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
 import { Api } from '../api'
 
-interface ISendedBalances {
+interface ISentBalances {
   [address: string]: {
     [tokenAddress: string]: string
   }
@@ -10,7 +10,7 @@ interface ISendedBalances {
 
 const EXECUTION_INTERVAL = 60000
 
-const sendedBalances: ISendedBalances = {}
+const sentBalances: ISentBalances = {}
 
 const pushNewBalances = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
@@ -25,7 +25,7 @@ const pushNewBalances = (
 
   return () => {
     clearInterval(timer)
-    sendedBalances[address] = {}
+    sentBalances[address] = {}
   }
 }
 
@@ -34,15 +34,15 @@ const executeFactory = (
   api: Api,
   address: string
 ) => async () => {
-  if (!sendedBalances[address]) {
-    sendedBalances[address] = {}
+  if (!sentBalances[address]) {
+    sentBalances[address] = {}
   }
 
   const tokens = await api.getTokensByAddress(address.toLowerCase())
 
   for (const token of tokens) {
-    if (sendedBalances[address][token.contractAddress] !== token.balance) {
-      sendedBalances[address][token.contractAddress] = token.balance
+    if (sentBalances[address][token.contractAddress] !== token.balance) {
+      sentBalances[address][token.contractAddress] = token.balance
       socket.emit('change', { type: 'newBalance', payload: token })
     }
   }
