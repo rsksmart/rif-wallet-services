@@ -40,7 +40,7 @@ setupApi(app, {
 const server = http.createServer(app)
 const io = new Server(server, {
   // cors: {
-    // origin: 'https://amritb.github.io'
+  //   origin: 'https://amritb.github.io'
   // },
   path: '/ws'
 })
