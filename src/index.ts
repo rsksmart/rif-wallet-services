@@ -9,7 +9,7 @@ import { setupApi } from './api'
 import { Server } from 'socket.io'
 import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
-
+import pushNewTransactions from './subscriptions/pushNewTransactions'
 
 const environment = {
   // TODO: remove these defaults
@@ -23,23 +23,24 @@ const environment = {
   COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string
 }
 
-const app = express()
-const server = http.createServer(app)
-const io = new Server(server, {
-  path: '/ws'
-})
-
-
-
-
 const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios)
 const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios)
+
+const app = express()
 
 setupApi(app, {
   rskExplorerApi,
   coinMarketCapApi,
   registeredDapps,
   logger: console
+})
+
+const server = http.createServer(app)
+const io = new Server(server, {
+  // cors: {
+  //   origin: 'https://amritb.github.io'
+  // },
+  path: '/ws'
 })
 
 io.on('connection', (socket) => {
@@ -49,9 +50,11 @@ io.on('connection', (socket) => {
     console.log('new subscription with address: ', address)
 
     const stopPushingNewBalances = pushNewBalances(socket, rskExplorerApi, address)
+    const stopPushingNewTransactions = pushNewTransactions(socket, address)
 
     socket.on('disconnect', () => {
       stopPushingNewBalances()
+      stopPushingNewTransactions()
     })
   })
 })

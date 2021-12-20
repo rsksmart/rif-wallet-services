@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { RSKExplorerAPI } from '../rskExplorerApi'
+import { RSKExplorerAPI } from '../rskExplorerApi/index'
 
 interface ISentBalances {
   [address: string]: {
