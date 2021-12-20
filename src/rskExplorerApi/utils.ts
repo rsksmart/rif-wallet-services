@@ -1,4 +1,10 @@
-import { IApiEvents, IApiTokens, IEvent, IToken, ITokenWithBalance } from './types'
+import {
+  IApiEvents,
+  IApiTokens,
+  IEvent,
+  IToken,
+  ITokenWithBalance
+} from './types'
 import tokens from '@rsksmart/rsk-contract-metadata'
 import { toChecksumAddress } from '@rsksmart/rsk-utils'
 
@@ -35,7 +41,3 @@ export const fromApiToTEvents = (apiEvent:IApiEvents): IEvent =>
     transactionHash: apiEvent.transactionHash,
     txStatus: apiEvent.txStatus
   })
-
-export const isValidAddress = (address:string):boolean => {
-  return address.startsWith('0x') && address.length === 42 // TODO: maybe check better with a regex
-}

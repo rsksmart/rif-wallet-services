@@ -1,6 +1,6 @@
 import { Socket } from 'socket.io'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { Api } from '../api'
+import { RSKExplorerAPI } from '../rskExplorerApi/index'
 
 interface ISentBalances {
   [address: string]: {
@@ -14,7 +14,7 @@ const sentBalances: ISentBalances = {}
 
 const pushNewBalances = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
-  api: Api,
+  api: RSKExplorerAPI,
   address: string
 ) => {
   const execute = executeFactory(socket, api, address)
@@ -31,7 +31,7 @@ const pushNewBalances = (
 
 const executeFactory = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
-  api: Api,
+  api: RSKExplorerAPI,
   address: string
 ) => async () => {
   if (!sentBalances[address]) {
