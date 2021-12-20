@@ -9,7 +9,7 @@ interface IRegisteredDappsGroup {
     dapps: IRegisteredDapp[]
 }
 
-const registeredDapps: IRegisteredDappsGroup[] = [{
+export const registeredDapps: IRegisteredDappsGroup[] = [{
   groupName: 'Sample apps',
   dapps: [{
     title: 'rLogin Sample App',
@@ -67,5 +67,3 @@ const registeredDapps: IRegisteredDappsGroup[] = [{
     allowedNetworks: [31]
   }]
 }]
-
-export default registeredDapps
