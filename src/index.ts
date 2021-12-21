@@ -22,11 +22,17 @@ const environment = {
   COIN_MARKET_CAP_URL: process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com',
   COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
   COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
-  DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
+  DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string
 }
 
 const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios)
-const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios, environment.CHAIN_ID)
+const coinMarketCapApi = new CoinMarketCapAPI(
+  environment.COIN_MARKET_CAP_URL,
+  environment.COIN_MARKET_CAP_VERSION,
+  environment.COIN_MARKET_CAP_KEY,
+  axios,
+  environment.CHAIN_ID
+)
 
 const app = express()
 
@@ -54,7 +60,13 @@ io.on('connection', (socket) => {
 
     const stopPushingNewBalances = pushNewBalances(socket, rskExplorerApi, address)
     const stopPushingNewTransactions = pushNewTransactions(socket, address)
-    const stopPushingNewPrices = pushNewPrices(socket, rskExplorerApi, coinMarketCapApi, address, environment.DEFAULT_CONVERT_FIAT)
+    const stopPushingNewPrices = pushNewPrices(
+      socket,
+      rskExplorerApi,
+      coinMarketCapApi,
+      address,
+      environment.DEFAULT_CONVERT_FIAT
+    )
 
     socket.on('disconnect', () => {
       stopPushingNewBalances()
