@@ -22,11 +22,12 @@ type APIOptions = {
   rskExplorerApi: RSKExplorerAPI
   coinMarketCapApi: CoinMarketCapAPI
   registeredDapps: typeof _registeredDapps
-  logger?: any
+  logger?: any,
+  chainId: number
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }
+  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }, chainId
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -59,7 +60,7 @@ export const setupApi = (app: Application, {
       req, res, () => {
         const addresses = req.query.addresses.split(',')
         const convert = req.query.convert
-        validatePricesRequest(addresses, convert)
+        validatePricesRequest(addresses, convert, chainId)
         return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
     )
