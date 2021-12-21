@@ -12,7 +12,7 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
     rskExplorerApi: {} as any,
     coinMarketCapApi,
     registeredDapps: {} as any,
-    chainId: 30,
+    chainId: 30
   })
 
   return app
