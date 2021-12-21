@@ -54,6 +54,11 @@ export const registeredDapps: IRegisteredDappsGroup[] = [{
     title: 'rMarketplace App',
     url: 'https://marketplace.testnet.rifos.org/',
     allowedNetworks: []
+  },
+  {
+    title: 'RSK Swap',
+    url: 'https://app.rskswap.com/',
+    allowedNetworks: []
   }]
 }, {
   groupName: 'Faucets',
