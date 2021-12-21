@@ -5,16 +5,13 @@ import { Prices } from '../api/types'
 
 type PricesQueryParams = { addresses: string[], convert: string }
 
-const coinmarketcapIdToAddress = Object.keys(addressToCoinmarketcapId)
-  .reduce((p, c) => ({ ...p, [addressToCoinmarketcapId[c]]: c }), {})
-
-const fromQueryParamsToRequestParams = (params: PricesQueryParams): ICoinMarketCapQuoteParams => ({
-  id: params.addresses.map(address => addressToCoinmarketcapId[address]).join(','),
+const fromQueryParamsToRequestParams = (params: PricesQueryParams, chaindId: number): ICoinMarketCapQuoteParams => ({
+  id: params.addresses.map(address => addressToCoinmarketcapId[chaindId][address]).join(','),
   convert: params.convert
 })
 
 const fromQuotesResponseToPrices =
-  (convert: string) =>
+  (convert: string, coinmarketcapIdToAddress: Record<string, string>) =>
     (response: AxiosResponse<ICoinMarketCapQuoteResponse>) =>
       Object.keys(response.data.data).reduce<Prices>((p, c) => ({
         ...p,
@@ -28,23 +25,29 @@ export class CoinMarketCapAPI {
   headers: { 'X-CMC_PRO_API_KEY': string }
   baseURL: string
   axios: typeof _axios
+  chainId: number
+  coinmarketcapIdToAddress: Record<string, string>
 
   constructor (
     url: string,
     version: string,
     apiKey: string,
-    axios: typeof _axios
+    axios: typeof _axios,
+    chainId: number
   ) {
     this.baseURL = `${url}/${version}`
     this.headers = {
       'X-CMC_PRO_API_KEY': apiKey
     }
     this.axios = axios
+    this.chainId = chainId
+    this.coinmarketcapIdToAddress = Object.keys(addressToCoinmarketcapId[chainId])
+      .reduce((p, c) => ({ ...p, [addressToCoinmarketcapId[chainId][c]]: c }), {})
   }
 
   getQuotesLatest = (queryParams: PricesQueryParams): Promise<Prices> => this.axios.get<ICoinMarketCapQuoteResponse>(
     `${this.baseURL}/cryptocurrency/quotes/latest`, {
       headers: this.headers,
-      params: fromQueryParamsToRequestParams(queryParams)
-    }).then(fromQuotesResponseToPrices(queryParams.convert!))
+      params: fromQueryParamsToRequestParams(queryParams, this.chainId)
+    }).then(fromQuotesResponseToPrices(queryParams.convert!, this.coinmarketcapIdToAddress))
 }
