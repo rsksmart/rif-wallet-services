@@ -9,6 +9,7 @@ import { setupApi } from './api'
 import { Server } from 'socket.io'
 import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
+import pushNewPrices from './subscriptions/pushNewPrices'
 import pushNewTransactions from './subscriptions/pushNewTransactions'
 
 const environment = {
@@ -20,11 +21,12 @@ const environment = {
   CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
   COIN_MARKET_CAP_URL: process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com',
   COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
-  COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string
+  COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
+  DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
 }
 
 const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios)
-const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios)
+const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios, environment.CHAIN_ID)
 
 const app = express()
 
@@ -32,7 +34,8 @@ setupApi(app, {
   rskExplorerApi,
   coinMarketCapApi,
   registeredDapps,
-  logger: console
+  logger: console,
+  chainId: environment.CHAIN_ID
 })
 
 const server = http.createServer(app)
@@ -51,10 +54,12 @@ io.on('connection', (socket) => {
 
     const stopPushingNewBalances = pushNewBalances(socket, rskExplorerApi, address)
     const stopPushingNewTransactions = pushNewTransactions(socket, address)
+    const stopPushingNewPrices = pushNewPrices(socket, rskExplorerApi, coinMarketCapApi, address, environment.DEFAULT_CONVERT_FIAT)
 
     socket.on('disconnect', () => {
       stopPushingNewBalances()
       stopPushingNewTransactions()
+      stopPushingNewPrices()
     })
   })
 })
