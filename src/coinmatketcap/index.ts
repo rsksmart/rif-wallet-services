@@ -1,12 +1,15 @@
 import _axios, { AxiosResponse } from 'axios'
 import { ICoinMarketCapQuoteParams, ICoinMarketCapQuoteResponse } from './types'
 import { addressToCoinmarketcapId } from './support'
+import { isTokenSupported } from '../coinmatketcap/validations'
 import { Prices } from '../api/types'
 
 type PricesQueryParams = { addresses: string[], convert: string }
 
 const fromQueryParamsToRequestParams = (params: PricesQueryParams, chaindId: number): ICoinMarketCapQuoteParams => ({
-  id: params.addresses.map(address => addressToCoinmarketcapId[chaindId][address]).join(','),
+  id: params.addresses
+    .filter((address) => isTokenSupported(address, chaindId))
+    .map(address => addressToCoinmarketcapId[chaindId][address]).join(','),
   convert: params.convert
 })
 

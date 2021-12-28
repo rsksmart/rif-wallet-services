@@ -1,6 +1,6 @@
 import { addressToCoinmarketcapId, supportedFiat } from './support'
 
-const isTokenSupported = (address: string, chainId: number) => addressToCoinmarketcapId[chainId][address] !== undefined
+export const isTokenSupported = (address: string, chainId: number) => addressToCoinmarketcapId[chainId][address] !== undefined
 const isConvertSupported = (convert: string) => supportedFiat.includes(convert)
 
 export const validatePricesRequest = (addresses: string[], convert: string, chainId: number) => {
