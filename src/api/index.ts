@@ -60,7 +60,7 @@ export const setupApi = (app: Application, {
       req, res, () => {
         const addresses = req.query.addresses.split(',')
         const convert = req.query.convert
-        validatePricesRequest(addresses, convert, chainId)
+        //validatePricesRequest(addresses, convert, chainId)
         return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
     )
