@@ -3,7 +3,7 @@ import { RSKExplorerAPI } from '../rskExplorerApi'
 import { CoinMarketCapAPI } from '../coinmatketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
-import { validatePricesRequest } from '../coinmatketcap/validations'
+// import { validatePricesRequest } from '../coinmatketcap/validations'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
@@ -60,7 +60,7 @@ export const setupApi = (app: Application, {
       req, res, () => {
         const addresses = req.query.addresses.split(',')
         const convert = req.query.convert
-        //validatePricesRequest(addresses, convert, chainId)
+        // validatePricesRequest(addresses, convert, chainId)
         return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
     )
