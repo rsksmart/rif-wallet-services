@@ -27,7 +27,7 @@ type APIOptions = {
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }, chainId
+  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 

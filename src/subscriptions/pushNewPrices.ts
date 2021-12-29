@@ -33,11 +33,11 @@ const getPricesByToken = (
     .map(token => token.contractAddress.toLocaleLowerCase())
 
   const isAddressesEmpty = addresses.length === 0
-  
+
   if (!isAddressesEmpty) {
     prices = await cmc.getQuotesLatest({ addresses, convert })
   }
-  
+
   socket.emit('change', { type: 'newPrice', payload: prices })
 }
 
