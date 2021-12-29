@@ -28,9 +28,16 @@ const getPricesByToken = (
   cmc: CoinMarketCapAPI,
   address: string,
   convert: string) => async () => {
+  let prices = {}
   const addresses = (await api.getTokensByAddress(address.toLowerCase()))
     .map(token => token.contractAddress.toLocaleLowerCase())
-  const prices = await cmc.getQuotesLatest({ addresses, convert })
+
+  const isAddressesEmpty = addresses.length === 0
+  
+  if (!isAddressesEmpty) {
+    prices = await cmc.getQuotesLatest({ addresses, convert })
+  }
+  
   socket.emit('change', { type: 'newPrice', payload: prices })
 }
 
