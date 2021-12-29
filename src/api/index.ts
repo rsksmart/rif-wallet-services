@@ -60,7 +60,9 @@ export const setupApi = (app: Application, {
       req, res, () => {
         const addresses = req.query.addresses.split(',')
         const convert = req.query.convert
+        const isAddressesEmpty = addresses.length === 0
         // validatePricesRequest(addresses, convert, chainId)
+        if (isAddressesEmpty) return ({})
         return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
     )
