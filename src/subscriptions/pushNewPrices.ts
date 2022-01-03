@@ -31,7 +31,6 @@ const getPricesByToken = (
   address: string,
   convert: string,
   chainId: number) => async () => {
-
   let prices = {}
   const addresses = (await api.getTokensByAddress(address.toLowerCase()))
     .map(token => token.contractAddress.toLocaleLowerCase())
