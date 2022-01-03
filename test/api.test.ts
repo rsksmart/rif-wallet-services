@@ -72,9 +72,9 @@ describe('coin market cap', () => {
 
       const res = await request(app)
         .get('/price?convert=USD&addresses=0x2acc95758f8b5f583470ba265eb685a8f45fc9d')
-        .expect(500)
+        .expect(200)
 
-      expect(res.text).toEqual('Token address not supported')
+      expect(res.text).toEqual('{}')
       expect(axiosMock.get).not.toHaveBeenCalled()
     })
   })
