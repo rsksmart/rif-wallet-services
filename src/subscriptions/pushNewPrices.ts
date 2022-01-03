@@ -31,10 +31,11 @@ const getPricesByToken = (
   address: string,
   convert: string,
   chainId: number) => async () => {
+  const RBTC = '0x0000000000000000000000000000000000000000'
   let prices = {}
-  const addresses = (await api.getTokensByAddress(address.toLowerCase()))
+  const addresses = [RBTC, ...(await api.getTokensByAddress(address.toLowerCase()))
     .map(token => token.contractAddress.toLocaleLowerCase())
-    .filter(token => isTokenSupported(token, chainId))
+    .filter(token => isTokenSupported(token, chainId))]
 
   const isAddressesEmpty = addresses.length === 0
 
