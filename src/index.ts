@@ -65,7 +65,8 @@ io.on('connection', (socket) => {
       rskExplorerApi,
       coinMarketCapApi,
       address,
-      environment.DEFAULT_CONVERT_FIAT
+      environment.DEFAULT_CONVERT_FIAT,
+      environment.CHAIN_ID
     )
 
     socket.on('disconnect', () => {
