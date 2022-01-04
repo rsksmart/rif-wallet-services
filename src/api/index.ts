@@ -3,7 +3,7 @@ import { RSKExplorerAPI } from '../rskExplorerApi'
 import { CoinMarketCapAPI } from '../coinmatketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
-import { validatePricesRequest } from '../coinmatketcap/validations'
+import { isConvertSupported, isTokenSupported } from '../coinmatketcap/validations'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
@@ -22,11 +22,12 @@ type APIOptions = {
   rskExplorerApi: RSKExplorerAPI
   coinMarketCapApi: CoinMarketCapAPI
   registeredDapps: typeof _registeredDapps
-  logger?: any
+  logger?: any,
+  chainId: number
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }
+  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }, chainId
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -57,9 +58,14 @@ export const setupApi = (app: Application, {
     '/price',
     async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => makeRequest(
       req, res, () => {
-        const addresses = req.query.addresses.split(',')
+        const addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
         const convert = req.query.convert
-        validatePricesRequest(addresses, convert)
+
+        const isAddressesEmpty = addresses.length === 0
+        if (isAddressesEmpty) return ({})
+
+        if (!isConvertSupported(convert)) throw new Error('Convert not supported')
+
         return coinMarketCapApi.getQuotesLatest({ addresses, convert })
       }
     )
