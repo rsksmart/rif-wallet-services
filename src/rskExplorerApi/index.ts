@@ -1,25 +1,27 @@
 
-import axios from 'axios'
+import _axios from 'axios'
 import { EventsServerResponse, TransactionsServerResponse, TokensServerResponse } from './types'
 import { fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
-export class Api {
+export class RSKExplorerAPI {
     apiURL: string
     chainId: number
+    axios: typeof _axios
 
-    constructor (apiURL: string, chainId: number) {
+    constructor (apiURL: string, chainId: number, axios: typeof _axios) {
       this.apiURL = apiURL
       this.chainId = chainId
+      this.axios = axios
     }
 
     async getEventsByAddress (address:string) {
       const params = {
         module: 'events',
         action: 'getAllEventsByAddress',
-        address
+        address: address.toLowerCase()
       }
 
-      const response = await axios.get<EventsServerResponse>(this.apiURL, { params })
+      const response = await this.axios.get<EventsServerResponse>(this.apiURL, { params })
       return response.data.data.map(ev => fromApiToTEvents(ev))
     }
 
@@ -29,7 +31,7 @@ export class Api {
         action: 'getTokens'
       }
 
-      const response = await axios.get<TokensServerResponse>(this.apiURL, { params })
+      const response = await this.axios.get<TokensServerResponse>(this.apiURL, { params })
       return response.data.data
         .filter(t => t.name != null)
         .map(t => fromApiToTokens(t, this.chainId))
@@ -39,10 +41,10 @@ export class Api {
       const params = {
         module: 'tokens',
         action: 'getTokensByAddress',
-        address
+        address: address.toLowerCase()
       }
 
-      const response = await axios.get<TokensServerResponse>(this.apiURL, { params })
+      const response = await this.axios.get<TokensServerResponse>(this.apiURL, { params })
       return response.data.data
         .filter(t => t.name != null)
         .map(t => fromApiToTokenWithBalance(t, this.chainId))
@@ -62,7 +64,7 @@ export class Api {
         prev,
         next
       }
-      const response = await axios.get<TransactionsServerResponse>(this.apiURL, { params })
+      const response = await this.axios.get<TransactionsServerResponse>(this.apiURL, { params })
 
       const pagesInfo = (response.data as any).pages
 
