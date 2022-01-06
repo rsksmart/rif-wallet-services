@@ -9,7 +9,7 @@ interface IRegisteredDappsGroup {
     dapps: IRegisteredDapp[]
 }
 
-const registeredDapps: IRegisteredDappsGroup[] = [{
+export const registeredDapps: IRegisteredDappsGroup[] = [{
   groupName: 'Sample apps',
   dapps: [{
     title: 'rLogin Sample App',
@@ -54,6 +54,11 @@ const registeredDapps: IRegisteredDappsGroup[] = [{
     title: 'rMarketplace App',
     url: 'https://marketplace.testnet.rifos.org/',
     allowedNetworks: []
+  },
+  {
+    title: 'RSK Swap',
+    url: 'https://app.rskswap.com/',
+    allowedNetworks: []
   }]
 }, {
   groupName: 'Faucets',
@@ -67,5 +72,3 @@ const registeredDapps: IRegisteredDappsGroup[] = [{
     allowedNetworks: [31]
   }]
 }]
-
-export default registeredDapps
