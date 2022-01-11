@@ -1,4 +1,5 @@
 import express from 'express'
+import NodeCache from 'node-cache'
 import request from 'supertest'
 
 import { setupApi } from '../src/api'
@@ -8,10 +9,12 @@ import { mockCoinMarketCap, pricesResponse } from './mockResponses'
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   const app = express()
 
+  const cache = new NodeCache()
   setupApi(app, {
     rskExplorerApi: {} as any,
     coinMarketCapApi,
     registeredDapps: {} as any,
+    cache,
     chainId: 30
   })
 
