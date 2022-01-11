@@ -3,7 +3,7 @@ import { RSKExplorerAPI } from '../rskExplorerApi'
 import { CoinMarketCapAPI } from '../coinmatketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
-import { validatePricesRequest } from '../coinmatketcap/validations'
+import { isConvertSupported, isTokenSupported } from '../coinmatketcap/validations'
 import NodeCache from 'node-cache'
 import { findInCache } from '../coinmatketcap/cache'
 
@@ -26,10 +26,11 @@ type APIOptions = {
   registeredDapps: typeof _registeredDapps
   cache: NodeCache
   logger?: any
+  chainId: number
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, cache, logger = { log: () => {}, error: () => {} }
+  rskExplorerApi, coinMarketCapApi, registeredDapps, cache, logger = { log: () => {}, error: () => {} }, chainId
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -60,9 +61,14 @@ export const setupApi = (app: Application, {
     '/price',
     async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => makeRequest(
       req, res, () => {
-        let addresses = req.query.addresses.split(',')
+        let addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
         const convert = req.query.convert
-        validatePricesRequest(addresses, convert)
+
+        const isAddressesEmpty = addresses.length === 0
+        if (isAddressesEmpty) return ({})
+
+        if (!isConvertSupported(convert)) throw new Error('Convert not supported')
+
         const pricesInCache = findInCache(addresses, cache)
         addresses = addresses.filter(address => !Object.keys(pricesInCache).includes(address))
         let prices = {}
