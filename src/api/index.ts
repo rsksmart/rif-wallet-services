@@ -4,6 +4,8 @@ import { CoinMarketCapAPI } from '../coinmatketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
 import { validatePricesRequest } from '../coinmatketcap/validations'
+import NodeCache from 'node-cache'
+import { findInCache } from '../coinmatketcap/cache'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
@@ -22,11 +24,12 @@ type APIOptions = {
   rskExplorerApi: RSKExplorerAPI
   coinMarketCapApi: CoinMarketCapAPI
   registeredDapps: typeof _registeredDapps
+  cache: NodeCache
   logger?: any
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, logger = { log: () => {}, error: () => {} }
+  rskExplorerApi, coinMarketCapApi, registeredDapps, cache, logger = { log: () => {}, error: () => {} }
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -57,10 +60,22 @@ export const setupApi = (app: Application, {
     '/price',
     async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response) => makeRequest(
       req, res, () => {
-        const addresses = req.query.addresses.split(',')
+        let addresses = req.query.addresses.split(',')
         const convert = req.query.convert
         validatePricesRequest(addresses, convert)
-        return coinMarketCapApi.getQuotesLatest({ addresses, convert })
+        const pricesInCache = findInCache(addresses, cache)
+        addresses = addresses.filter(address => !Object.keys(pricesInCache).includes(address))
+        let prices = {}
+        if (addresses.length) {
+          prices = coinMarketCapApi.getQuotesLatest({ addresses, convert })
+        }
+        return Promise.all([pricesInCache, prices]).then(values => {
+          Object.keys(values[1]).forEach(address => cache.set(address, { [address]: values[1][address] }, 60))
+          return {
+            ...values[0],
+            ...values[1]
+          }
+        })
       }
     )
   )

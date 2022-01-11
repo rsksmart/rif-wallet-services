@@ -9,6 +9,7 @@ import { registeredDapps } from './registered_dapps'
 import { setupApi } from './api'
 
 import { Server } from 'socket.io'
+import NodeCache from 'node-cache'
 import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
 import pushNewTransactions from './subscriptions/pushNewTransactions'
@@ -29,11 +30,12 @@ const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN
 const coinMarketCapApi = new CoinMarketCapAPI(environment.COIN_MARKET_CAP_URL, environment.COIN_MARKET_CAP_VERSION, environment.COIN_MARKET_CAP_KEY, axios)
 
 const app = express()
-
+const cache = new NodeCache()
 setupApi(app, {
   rskExplorerApi,
   coinMarketCapApi,
   registeredDapps,
+  cache,
   logger: console
 })
 
