@@ -2,7 +2,7 @@ import 'dotenv/config'
 import express from 'express'
 
 import axios from 'axios'
-import { CoinMarketCapAPI } from './coinmatketcap'
+import { CoinMarketCapAPI } from './coinmarketcap'
 import { RSKExplorerAPI } from './rskExplorerApi'
 import { registeredDapps } from './registered_dapps'
 import { setupApi } from './api'
@@ -36,12 +36,12 @@ const coinMarketCapApi = new CoinMarketCapAPI(
 )
 
 const app = express()
-const cache = new NodeCache()
+const priceCache = new NodeCache()
 setupApi(app, {
   rskExplorerApi,
   coinMarketCapApi,
   registeredDapps,
-  cache,
+  priceCache,
   logger: console,
   chainId: environment.CHAIN_ID
 })
@@ -68,7 +68,8 @@ io.on('connection', (socket) => {
       coinMarketCapApi,
       address,
       environment.DEFAULT_CONVERT_FIAT,
-      environment.CHAIN_ID
+      environment.CHAIN_ID,
+      priceCache
     )
 
     socket.on('disconnect', () => {
