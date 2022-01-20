@@ -1,4 +1,4 @@
-import { CoinMarketCapAPI } from '../src/coinmatketcap'
+import { CoinMarketCapAPI } from '../src/coinmarketcap'
 
 const rbtcLastUpdated = '2021-12-18T03:51:07.000Z'
 const rbtcPrice = 46173.353546991406

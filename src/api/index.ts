@@ -2,11 +2,10 @@ import { Application, Request, Response } from 'express'
 import { RSKExplorerAPI } from '../rskExplorerApi'
 import { CoinMarketCapAPI } from '../coinmarketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
-import { Prices, PricesQueryParams } from './types'
+import { PricesQueryParams } from './types'
 import { isConvertSupported, isTokenSupported } from '../coinmarketcap/validations'
 import NodeCache from 'node-cache'
 import { findInCache, storeInCache } from '../coinmarketcap/priceCache'
-import { IPriceCacheSearch } from '../coinmarketcap/types'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
@@ -31,7 +30,7 @@ type APIOptions = {
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, priceCache: priceCache, logger = { log: () => {}, error: () => {} }, chainId
+  rskExplorerApi, coinMarketCapApi, registeredDapps, priceCache, logger = { log: () => {}, error: () => {} }, chainId
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -71,8 +70,8 @@ export const setupApi = (app: Application, {
         if (!isConvertSupported(convert)) throw new Error('Convert not supported')
 
         const { missingAddresses, pricesInCache } = findInCache(addresses, priceCache)
-        if(!missingAddresses.length) return pricesInCache.prices
-        
+        if (!missingAddresses.length) return pricesInCache.prices
+
         const prices = coinMarketCapApi.getQuotesLatest({ addresses: missingAddresses, convert })
         return prices.then(pricesFromCMC => {
           storeInCache(pricesFromCMC, priceCache)

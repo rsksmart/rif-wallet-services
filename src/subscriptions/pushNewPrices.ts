@@ -36,22 +36,18 @@ const getPricesByToken = (
   chainId: number,
   priceCache: NodeCache) => async () => {
   const RBTC = '0x0000000000000000000000000000000000000000'
-  let addresses = [RBTC, ...(await api.getTokensByAddress(address.toLowerCase()))
+  const addresses = [RBTC, ...(await api.getTokensByAddress(address.toLowerCase()))
     .map(token => token.contractAddress.toLocaleLowerCase())
     .filter(token => isTokenSupported(token, chainId))]
 
-  const isAddressesEmpty = addresses.length === 0
-
   const { missingAddresses, pricesInCache } = findInCache(addresses, priceCache)
-  if(!missingAddresses.length) return pricesInCache
-  
+  if (!missingAddresses.length) return pricesInCache
+
   const prices = cmc.getQuotesLatest({ addresses: missingAddresses, convert })
   prices.then(pricesFromCMC => {
     storeInCache(pricesFromCMC, priceCache)
-    socket.emit('change', { type: 'newPrice', payload: {...pricesInCache, ...pricesFromCMC} })
-  })        
-
-  
+    socket.emit('change', { type: 'newPrice', payload: { ...pricesInCache, ...pricesFromCMC } })
+  })
 }
 
 export default pushNewPrices

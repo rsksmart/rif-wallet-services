@@ -1,4 +1,4 @@
-import { Prices } from "../api/types";
+import { Prices } from '../api/types'
 
 export interface ICoinMarketCapQuoteParams {
   id?: string;
