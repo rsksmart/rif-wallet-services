@@ -1,7 +1,7 @@
 import _axios, { AxiosResponse } from 'axios'
 import { ICoinMarketCapQuoteParams, ICoinMarketCapQuoteResponse } from './types'
 import { addressToCoinmarketcapId } from './support'
-import { isTokenSupported } from '../coinmatketcap/validations'
+import { isTokenSupported } from './validations'
 import { Prices } from '../api/types'
 
 type PricesQueryParams = { addresses: string[], convert: string }

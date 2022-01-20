@@ -1,6 +1,7 @@
 import { Socket } from 'socket.io'
 import io from 'socket.io-client'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
+import { ChannelServerResponse } from '../rskExplorerApi/types'
 
 interface ISentBalances {
   [address: string]: {
@@ -28,14 +29,13 @@ const pushNewTransactions = (
     console.log(`Subscription to ${res.channel} was successfully`)
   })
 
-  client.on('data', res => {
-    const { channel, action, data } = res
-    if (channel === transactionChannel && action === transactionAction) {
-      if (!data || !data.data) return
-      const transactions = data.data
-      transactions
-        .filter(transaction => transaction.from === address.toLowerCase() ||
-          transaction.to === address.toLowerCase())
+  client.on('data', (res: ChannelServerResponse) => {
+    if (res.channel === transactionChannel && res.action === transactionAction) {
+      if (!res.data || !res.data.data) return
+      const transactions = res.data.data
+      transactions.filter(transaction =>
+        transaction.from === address.toLowerCase() ||
+        transaction.to === address.toLowerCase())
         .forEach(transaction => {
           if (!sentTransactions[address][transaction.hash]) {
             sentTransactions[address][transaction.hash] = transaction.hash

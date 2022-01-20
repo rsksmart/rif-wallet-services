@@ -78,3 +78,9 @@ export interface IApiTransactions {
 export interface TransactionsServerResponse {
   data: IApiTransactions[];
 }
+
+export interface ChannelServerResponse {
+  channel: string;
+  action: string;
+  data: TransactionsServerResponse
+}
