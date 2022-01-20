@@ -6,6 +6,9 @@ const rbtcPrice = 46173.353546991406
 const rifLastUpdated = '2021-12-18T03:50:08.000Z'
 const rifPrice = 0.1966674666988437
 
+const sovLastUpdated = '2022-01-18T03:50:08.000Z'
+const sovPrice = 7.38
+
 export const coinmarketcapResponse = {
   status: {
     timestamp: '2021-12-18T03:52:09.880Z',
@@ -107,6 +110,33 @@ export const pricesResponse = {
   '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': {
     price: rifPrice,
     lastUpdated: rifLastUpdated
+  }
+}
+
+export const pricesResponseForCaching = {
+  '0x0000000000000000000000000000000000000000': {
+    price: rbtcPrice,
+    lastUpdated: rbtcLastUpdated
+  },
+  '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': {
+    price: rifPrice,
+    lastUpdated: rifLastUpdated
+  },
+  '0xefc78fc7d48b64958315949279ba181c2114abbd': {
+    price: sovPrice,
+    lastUpdated: sovLastUpdated
+  }
+}
+
+export const rifPriceFromCache = {
+  '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': {
+    price: 0.2077774666988437, lastUpdated: '2021-12-08T03:50:08.000Z'
+  }
+}
+
+export const sovPriceFromCache = {
+  '0xefc78fc7d48b64958315949279ba181c2114abbd': {
+    price: 7.38, lastUpdated: '2022-01-18T03:50:08.000Z'
   }
 }
 
