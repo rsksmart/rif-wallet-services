@@ -6,7 +6,7 @@ import { PricesQueryParams } from './types'
 import { isConvertSupported, isTokenSupported } from '../coinmatketcap/validations'
 import NodeCache from 'node-cache'
 import { findInCache } from '../coinmatketcap/cache'
-import { CustomError } from '../middleware'
+import { CustomError, errorHandler } from '../middleware'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
 
@@ -94,4 +94,6 @@ export const setupApi = (app: Application, {
   )
 
   app.get('/dapps', (_: Request, res: Response) => responseJsonOk(res)(registeredDapps))
+
+  app.use(errorHandler)
 }
