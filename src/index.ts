@@ -12,6 +12,7 @@ import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
 import pushNewPrices from './subscriptions/pushNewPrices'
 import pushNewTransactions from './subscriptions/pushNewTransactions'
+import { errorHandler } from './middleware'
 
 const environment = {
   // TODO: remove these defaults
@@ -45,6 +46,8 @@ setupApi(app, {
   logger: console,
   chainId: environment.CHAIN_ID
 })
+
+app.use(errorHandler)
 
 const server = http.createServer(app)
 const io = new Server(server, {
