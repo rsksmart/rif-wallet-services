@@ -1,11 +1,11 @@
 import { Application, NextFunction, Request, Response } from 'express'
 import { RSKExplorerAPI } from '../rskExplorerApi'
-import { CoinMarketCapAPI } from '../coinmatketcap'
+import { CoinMarketCapAPI } from '../coinmarketcap'
 import { registeredDapps as _registeredDapps } from '../registered_dapps'
 import { PricesQueryParams } from './types'
-import { isConvertSupported, isTokenSupported } from '../coinmatketcap/validations'
+import { isConvertSupported, isTokenSupported } from '../coinmarketcap/validations'
 import NodeCache from 'node-cache'
-import { findInCache } from '../coinmatketcap/cache'
+import { findInCache, storeInCache } from '../coinmarketcap/priceCache'
 import { CustomError, errorHandler } from '../middleware'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
@@ -25,13 +25,13 @@ type APIOptions = {
   rskExplorerApi: RSKExplorerAPI
   coinMarketCapApi: CoinMarketCapAPI
   registeredDapps: typeof _registeredDapps
-  cache: NodeCache
+  priceCache: NodeCache
   logger?: any
   chainId: number
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, cache, logger = { log: () => {}, error: () => {} }, chainId
+  rskExplorerApi, coinMarketCapApi, registeredDapps, priceCache, logger = { log: () => {}, error: () => {} }, chainId
 }: APIOptions) => {
   const makeRequest = makeRequestFactory(logger)
 
@@ -68,25 +68,25 @@ export const setupApi = (app: Application, {
     '/price',
     async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => makeRequest(
       req, res, next, () => {
-        let addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
+        const addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
         const convert = req.query.convert
 
-        if (!isConvertSupported(convert)) throw new CustomError(500, 'Convert not supported')
+        if (!isConvertSupported(convert)) throw new Error('Convert not supported')
 
         const isAddressesEmpty = addresses.length === 0
         if (isAddressesEmpty) return ({})
 
-        const pricesInCache = findInCache(addresses, cache)
-        addresses = addresses.filter(address => !Object.keys(pricesInCache).includes(address))
-        let prices = {}
-        if (addresses.length) {
-          prices = coinMarketCapApi.getQuotesLatest({ addresses, convert })
-        }
-        return Promise.all([pricesInCache, prices]).then(values => {
-          Object.keys(values[1]).forEach(address => cache.set(address, { [address]: values[1][address] }, 60))
+        if (!isConvertSupported(convert)) throw new CustomError(500, 'Convert not supported')
+
+        const { missingAddresses, pricesInCache } = findInCache(addresses, priceCache)
+        if (!missingAddresses.length) return pricesInCache.prices
+
+        const prices = coinMarketCapApi.getQuotesLatest({ addresses: missingAddresses, convert })
+        return prices.then(pricesFromCMC => {
+          storeInCache(pricesFromCMC, priceCache)
           return {
-            ...values[0],
-            ...values[1]
+            ...pricesInCache,
+            ...pricesFromCMC
           }
         })
       }

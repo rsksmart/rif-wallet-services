@@ -1,3 +1,5 @@
+import { Prices } from '../api/types'
+
 export interface ICoinMarketCapQuoteParams {
   id?: string;
   slug?: string;
@@ -63,4 +65,9 @@ interface ICryptocurrencyQuota {
 export interface ICoinMarketCapQuoteResponse {
   status: IStatus;
   data: ICryptocurrencyQuota;
+}
+
+export interface IPriceCacheSearch {
+  missingAddresses: string[];
+  pricesInCache: Prices
 }
