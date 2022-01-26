@@ -37,7 +37,7 @@ export const setupApi = (app: Application, {
 
   app.get('/tokens', (_: Request, res: Response, next: NextFunction) => rskExplorerApi.getTokens()
     .then(res.status(200).json.bind(res))
-    .catch(e => next(new Error(e.message)))
+    .catch(next)
   )
 
   app.get(
