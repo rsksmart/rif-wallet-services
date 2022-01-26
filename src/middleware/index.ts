@@ -2,7 +2,7 @@ import { ErrorRequestHandler } from 'express'
 
 export class CustomError extends Error {
   status: number;
-  constructor (status: number, message: string) {
+  constructor (message: string, status: number) {
     super(message)
     this.status = status
   }
