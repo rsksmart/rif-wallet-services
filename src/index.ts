@@ -61,7 +61,7 @@ io.on('connection', (socket) => {
     console.log('new subscription with address: ', address)
 
     const stopPushingNewBalances = pushNewBalances(socket, rskExplorerApi, address)
-    const stopPushingNewTransactions = pushNewTransactions(socket, address)
+    const stopPushingNewTransactions = pushNewTransactions(socket, rskExplorerApi, address)
     const stopPushingNewPrices = pushNewPrices(
       socket,
       rskExplorerApi,

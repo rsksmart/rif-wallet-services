@@ -1,7 +1,6 @@
 import { Socket } from 'socket.io'
-import io from 'socket.io-client'
 import { DefaultEventsMap } from 'socket.io/dist/typed-events'
-import { ChannelServerResponse } from '../rskExplorerApi/types'
+import { RSKExplorerAPI } from '../rskExplorerApi'
 
 interface ISentBalances {
   [address: string]: {
@@ -10,43 +9,38 @@ interface ISentBalances {
 }
 
 const sentTransactions: ISentBalances = {}
+const EXECUTION_INTERVAL = 60000
 
 const pushNewTransactions = (
   socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+  api: RSKExplorerAPI,
   address: string) => {
-  const transactionChannel = 'transactions'
-  const transactionAction = 'newTransactions'
-  const WS_URL = process.env.WS_EXPLORER_URL as string || 'wss://backend.explorer.testnet.rsk.co'
-  const client = io(WS_URL, { reconnect: true })
+  const execute = executeFactory(socket, api, address)
 
-  client.on('connect', () => {
-    console.log('connected!')
+  const timer = setInterval(execute, EXECUTION_INTERVAL)
+
+  return () => {
+    clearInterval(timer)
     sentTransactions[address] = {}
-    client.emit('subscribe', { to: transactionChannel })
-  })
+  }
+}
 
-  client.on('subscription', res => {
-    console.log(`Subscription to ${res.channel} was successfully`)
-  })
+const executeFactory = (
+  socket: Socket<DefaultEventsMap, DefaultEventsMap, DefaultEventsMap, any>,
+  api: RSKExplorerAPI,
+  address: string
+) => async () => {
+  if (!sentTransactions[address]) {
+    sentTransactions[address] = {}
+  }
 
-  client.on('data', (res: ChannelServerResponse) => {
-    if (res.channel === transactionChannel && res.action === transactionAction) {
-      if (!res.data || !res.data.data) return
-      const transactions = res.data.data
-      transactions.filter(transaction =>
-        transaction.from === address.toLowerCase() ||
-        transaction.to === address.toLowerCase())
-        .forEach(transaction => {
-          if (!sentTransactions[address][transaction.hash]) {
-            sentTransactions[address][transaction.hash] = transaction.hash
-            socket.emit('change', { type: 'newTransaction', payload: transaction })
-          }
-        })
+  const { data } = await api.getTransactionsByAddress(address.toLowerCase())
+  data.forEach(transaction => {
+    if (!sentTransactions[address][transaction.hash]) {
+      sentTransactions[address][transaction.hash] = transaction.hash
+      socket.emit('change', { type: 'newTransaction', payload: transaction })
     }
   })
-  return () => {
-    client.close()
-  }
 }
 
 export default pushNewTransactions
