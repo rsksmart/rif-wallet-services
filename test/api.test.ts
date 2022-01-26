@@ -71,7 +71,7 @@ describe('coin market cap', () => {
   })
 
   test('handles error', async () => {
-    const getQuotesLatestThrowsMock = jest.fn(() => Promise.reject(new CustomError(500, 'error')))
+    const getQuotesLatestThrowsMock = jest.fn(() => Promise.reject(new CustomError('error', 500)))
 
     const coinMarketCapApiThrowsMock = {
       getQuotesLatest: getQuotesLatestThrowsMock

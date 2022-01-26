@@ -6,20 +6,9 @@ import { PricesQueryParams } from './types'
 import { isConvertSupported, isTokenSupported } from '../coinmarketcap/validations'
 import NodeCache from 'node-cache'
 import { findInCache, storeInCache } from '../coinmarketcap/priceCache'
-import { CustomError, errorHandler } from '../middleware'
+import { errorHandler } from '../middleware'
 
 const responseJsonOk = (res: Response) => res.status(200).json.bind(res)
-
-const makeRequestFactory = (console) => async (req, res, next, query) => {
-  try {
-    console.log(req.url)
-    const result = await query()
-    res.status(200).json(result)
-  } catch (e: any) {
-    console.log(e)
-    next(e)
-  }
-}
 
 type APIOptions = {
   rskExplorerApi: RSKExplorerAPI
@@ -31,10 +20,8 @@ type APIOptions = {
 }
 
 export const setupApi = (app: Application, {
-  rskExplorerApi, coinMarketCapApi, registeredDapps, priceCache, logger = { log: () => {}, error: () => {} }, chainId
+  rskExplorerApi, coinMarketCapApi, registeredDapps, priceCache, chainId
 }: APIOptions) => {
-  const makeRequest = makeRequestFactory(logger)
-
   app.get('/tokens', (_: Request, res: Response, next: NextFunction) => rskExplorerApi.getTokens()
     .then(res.status(200).json.bind(res))
     .catch(next)
@@ -44,14 +31,14 @@ export const setupApi = (app: Application, {
     '/address/:address/tokens',
     ({ params: { address } }: Request, res: Response, next: NextFunction) => rskExplorerApi.getTokensByAddress(address)
       .then(responseJsonOk(res))
-      .catch(e => next(new Error(e.message)))
+      .catch(next)
   )
 
   app.get(
     '/address/:address/events',
     ({ params: { address } }: Request, res: Response, next: NextFunction) => rskExplorerApi.getEventsByAddress(address)
       .then(responseJsonOk(res))
-      .catch(e => next(new Error(e.message)))
+      .catch(next)
   )
 
   app.get(
@@ -61,36 +48,35 @@ export const setupApi = (app: Application, {
         address, limit as string, prev as string, next as string
       )
         .then(responseJsonOk(res))
-        .catch(e => nextFunction(new Error(e.message)))
+        .catch(nextFunction)
   )
 
   app.get(
     '/price',
-    async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => makeRequest(
-      req, res, next, () => {
-        const addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
-        const convert = req.query.convert
+    (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => {
+      const addresses = req.query.addresses.split(',').filter((address) => isTokenSupported(address, chainId))
+      const convert = req.query.convert
 
-        if (!isConvertSupported(convert)) throw new Error('Convert not supported')
+      if (!isConvertSupported(convert)) throw new Error('Convert not supported')
 
-        const isAddressesEmpty = addresses.length === 0
-        if (isAddressesEmpty) return ({})
+      const isAddressesEmpty = addresses.length === 0
+      if (isAddressesEmpty) return responseJsonOk(res)({})
 
-        if (!isConvertSupported(convert)) throw new CustomError(500, 'Convert not supported')
+      const { missingAddresses, pricesInCache } = findInCache(addresses, priceCache)
+      if (!missingAddresses.length) return responseJsonOk(res)(pricesInCache)
 
-        const { missingAddresses, pricesInCache } = findInCache(addresses, priceCache)
-        if (!missingAddresses.length) return pricesInCache.prices
-
-        const prices = coinMarketCapApi.getQuotesLatest({ addresses: missingAddresses, convert })
-        return prices.then(pricesFromCMC => {
+      const prices = coinMarketCapApi.getQuotesLatest({ addresses: missingAddresses, convert })
+      prices
+        .then(pricesFromCMC => {
           storeInCache(pricesFromCMC, priceCache)
-          return {
+          const pricesRes = {
             ...pricesInCache,
             ...pricesFromCMC
           }
+          return responseJsonOk(res)(pricesRes)
         })
-      }
-    )
+        .catch(next)
+    }
   )
 
   app.get('/dapps', (_: Request, res: Response) => responseJsonOk(res)(registeredDapps))
