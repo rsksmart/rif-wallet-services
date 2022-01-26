@@ -6,6 +6,8 @@ import { setupApi } from '../src/api'
 import { CoinMarketCapAPI } from '../src/coinmarketcap'
 import { mockCoinMarketCap, pricesResponse, pricesResponseForCaching, rifPriceFromCache, sovPriceFromCache } from './mockResponses'
 
+import { CustomError } from '../src/middleware'
+
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI, priceCache: NodeCache = new NodeCache()) => {
   const app = express()
 
@@ -69,7 +71,7 @@ describe('coin market cap', () => {
   })
 
   test('handles error', async () => {
-    const getQuotesLatestThrowsMock = jest.fn(() => Promise.reject(new Error('error')))
+    const getQuotesLatestThrowsMock = jest.fn(() => Promise.reject(new CustomError('error', 500)))
 
     const coinMarketCapApiThrowsMock = {
       getQuotesLatest: getQuotesLatestThrowsMock
