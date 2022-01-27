@@ -52,9 +52,9 @@ export class RSKExplorerAPI {
 
     async getTransactionsByAddress (
       address:string,
-      limit: string | undefined,
-      prev: string | undefined,
-      next: string | undefined
+      limit?: string | undefined,
+      prev?: string | undefined,
+      next?: string | undefined
     ) {
       const params = {
         module: 'transactions',
