@@ -1,0 +1,67 @@
+@startuml
+class Controller {
+    Profiler profiler
+    void init()
+}
+
+class Profiler {
+    Provider priceProvider
+    Provider balanceProvider
+    Provider transactionsProvider
+    void init()
+}
+
+class Provider {
+    String address
+    void subscribe(String address)
+    void unsubscribe(String address)
+}
+
+class PriceProvider {
+    Price[] currentPrice(String address)
+}
+class BalanceProvider {
+    Balance[] currentBalance(String address)
+}
+class TransactionsProvider {
+    Transaction[] lastTransactions(String address)
+}
+
+class RskExplorerApi {
+
+}
+
+class CoinMarketCapPriceProvider {
+    void start() 
+    void current()
+    void validation()
+}
+
+class CoinMarketCapApi {
+
+}
+
+class PriceCache {
+    NodeCache cache
+    Prices[] find()
+    void store() 
+}
+class EventEmitter {
+
+}
+
+EventEmitter <|-- Provider
+Provider <|-- Profiler
+Profiler <.. PriceProvider : emit Prices
+Profiler <.. BalanceProvider : emit Balances
+Profiler <.. TransactionsProvider : emit Transactions
+Controller <.. Profiler : emit changes
+Provider <|-- PriceProvider
+Provider <|-- BalanceProvider
+Provider <|-- TransactionsProvider
+PriceProvider o-- CoinMarketCapPriceProvider : aggregation
+CoinMarketCapPriceProvider o-- PriceCache : aggregation
+CoinMarketCapPriceProvider o-- CoinMarketCapApi : aggregation
+BalanceProvider o-- RskExplorerApi : aggregation
+TransactionsProvider o-- RskExplorerApi : aggregation
+@enduml 
