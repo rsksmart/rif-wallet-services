@@ -12,6 +12,7 @@ import http from 'http'
 import pushNewBalances from './subscriptions/pushNewBalances'
 import pushNewPrices from './subscriptions/pushNewPrices'
 import pushNewTransactions from './subscriptions/pushNewTransactions'
+import { AddressController } from './controller/address'
 
 const environment = {
   // TODO: remove these defaults
@@ -36,6 +37,8 @@ const coinMarketCapApi = new CoinMarketCapAPI(
 )
 
 const app = express()
+const addressController : AddressController = new AddressController(app)
+addressController.init()
 const priceCache = new NodeCache()
 setupApi(app, {
   rskExplorerApi,
