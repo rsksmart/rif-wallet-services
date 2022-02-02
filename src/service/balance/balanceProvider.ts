@@ -1,20 +1,16 @@
 import EventEmitter from 'events'
-import { Provider } from '../../util/provider';
+import { Provider } from '../../util/provider'
 
-export class BalanceProvider extends EventEmitter implements Provider{
-  
-
-  constructor() {
-    super();
+export class BalanceProvider extends EventEmitter implements Provider {
+  constructor () {
+    super()
   }
 
-  
-
-  subscribe(address: string): void {
-    throw new Error('Method not implemented.');
-  }
-  unsubscribe(address: string): void {
-    throw new Error('Method not implemented.');
+  subscribe (address: string): void {
+    throw new Error('Method not implemented.')
   }
 
+  unsubscribe (address: string): void {
+    throw new Error('Method not implemented.')
+  }
 }

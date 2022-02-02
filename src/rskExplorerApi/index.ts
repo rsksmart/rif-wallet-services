@@ -15,9 +15,8 @@ export class RSKExplorerAPI {
       this.axios = axios
     }
 
-
-    public static getInstance(): RSKExplorerAPI {
-      if(!RSKExplorerAPI.instance) {
+    public static getInstance (): RSKExplorerAPI {
+      if (!RSKExplorerAPI.instance) {
         const API_URL = (process.env.API_URL as string) || 'https://backend.explorer.testnet.rsk.co/api'
         const CHAIN_ID = parseInt(process.env.CHAIN_ID as string) || 31
         RSKExplorerAPI.instance = new RSKExplorerAPI(API_URL, CHAIN_ID, _axios)

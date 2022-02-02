@@ -1,15 +1,13 @@
-import { RSKExplorerAPI } from "../../rskExplorerApi";
+import { RSKExplorerAPI } from '../../rskExplorerApi'
 
 export class EventProvider {
   private rskExplorerApi: RSKExplorerAPI
 
-  constructor() {
+  constructor () {
     this.rskExplorerApi = RSKExplorerAPI.getInstance()
   }
 
-
-  async getEventsByAddress(address: string) {
+  async getEventsByAddress (address: string) {
     return this.rskExplorerApi.getEventsByAddress(address)
   }
-
 }
