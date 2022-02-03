@@ -13,6 +13,7 @@ import pushNewBalances from './subscriptions/pushNewBalances'
 import pushNewPrices from './subscriptions/pushNewPrices'
 import pushNewTransactions from './subscriptions/pushNewTransactions'
 import { AddressController } from './controller/address'
+import { LiveController } from './controller/live'
 
 const environment = {
   // TODO: remove these defaults
@@ -50,6 +51,8 @@ setupApi(app, {
 })
 
 const server = http.createServer(app)
+const liveController : LiveController = new LiveController(server)
+liveController.init()
 const io = new Server(server, {
   // cors: {
   //   origin: 'https://amritb.github.io'
