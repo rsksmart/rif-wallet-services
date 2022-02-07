@@ -15,10 +15,10 @@ export class TransactionProvider extends EventEmitter implements Provider {
   }
 
   subscribe (address: string): void {
-    throw new Error('Method not implemented.')
+    this.emit(address, 'tx')
   }
 
   unsubscribe (address: string): void {
-    throw new Error('Method not implemented.')
+    this.removeAllListeners(address)
   }
 }
