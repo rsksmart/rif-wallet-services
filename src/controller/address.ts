@@ -46,10 +46,12 @@ export class AddressController {
 
     this.app.get(
       '/v2/price',
-      (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) =>
-        this.profiler.priceProvider.getPrices(req.query.addresses, req.query.convert)
+      (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => {
+        const addresses = req.query.addresses.split(',')
+        this.profiler.priceProvider.getPrices(addresses, req.query.convert)
           .then(apiUtil.responseJsonOk(res))
           .catch(next)
+      }
     )
 
     this.app.get('/v2/dapps', (_: Request, res: Response) => apiUtil.responseJsonOk(res)(registeredDapps))
