@@ -13,9 +13,9 @@ export class LiveController {
 
   init () {
     const io = new Server(this.server, {
-      cors: {
-        origin: 'https://amritb.github.io'
-      },
+      // cors: {
+      //   origin: 'https://amritb.github.io'
+      // },
       path: '/ws'
     })
 
@@ -25,7 +25,6 @@ export class LiveController {
       socket.on('subscribe', ({ address }: { address: string }) => {
         console.log('new subscription with address: ', address)
         this.profiler.on(address, (data) => {
-          console.log(data)
           socket.emit('change', data)
         })
         this.profiler.subscribe(address)
