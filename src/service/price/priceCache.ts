@@ -5,8 +5,8 @@ import { IPriceCacheSearch } from '../../coinmarketcap/types'
 export class PriceCache {
   private cache: NodeCache
 
-  constructor () {
-    this.cache = new NodeCache()
+  constructor (cache?: NodeCache) {
+    this.cache = cache ? cache : new NodeCache()
   }
 
   store (prices: Prices) {

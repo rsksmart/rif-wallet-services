@@ -2,28 +2,30 @@ import express from 'express'
 import NodeCache from 'node-cache'
 import request from 'supertest'
 
-import { setupApi } from '../src/api'
-import { CoinMarketCapAPI } from '../src/coinmarketcap'
+import { AddressController } from '../src/controller/address'
 import { mockCoinMarketCap, pricesResponse, pricesResponseForCaching, rifPriceFromCache, sovPriceFromCache } from './mockResponses'
 
 import { CustomError } from '../src/middleware'
+import { Profiler } from '../src/service/profiler'
+import { CoinMarketCapPriceProvider } from '../src/service/price/coinMarketCapPriceProvider'
+import { PriceProvider } from '../src/service/price/priceProvider'
+import { CoinMarketCapAPI } from '../src/coinmarketcap'
+import { PriceCache } from '../src/service/price/priceCache'
 
-const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI, priceCache: NodeCache = new NodeCache()) => {
+const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI, cache: NodeCache = new NodeCache()) => {
+  process.env.CHAIN_ID = '30'
   const app = express()
-
-  setupApi(app, {
-    rskExplorerApi: {} as any,
-    coinMarketCapApi,
-    registeredDapps: {} as any,
-    priceCache,
-    chainId: 30
-  })
-
+  const addressController = new AddressController(app)
+  const profiler = new Profiler()
+  const coinMarketCapPriceProvider = new CoinMarketCapPriceProvider(coinMarketCapApi as any, new PriceCache(cache))
+  const priceProvider = new PriceProvider(coinMarketCapPriceProvider)
+  profiler.priceProvider = priceProvider
+  addressController.profiler = profiler
+  addressController.init()
   return app
 }
 
 const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
-
 const coinMarketCapApiMock = {
   getQuotesLatest: getQuotesLatestMock
 }
@@ -42,9 +44,9 @@ describe('coin market cap', () => {
   })
 
   test('valid response from cache', async () => {
-    const priceCache = new NodeCache()
-    priceCache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', sovPriceFromCache)
-    const app = setupTestApi(coinMarketCapApiMock as any, priceCache)
+    const cache = new NodeCache()
+    cache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', sovPriceFromCache)
+    const app = setupTestApi(coinMarketCapApiMock as any, cache)
 
     const { res: { text } } = await request(app)
       .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5,0xefc78fc7d48b64958315949279ba181c2114abbd')
@@ -56,10 +58,10 @@ describe('coin market cap', () => {
   })
 
   test('valid response with cache invalidated', async () => {
-    const priceCache = new NodeCache()
-    priceCache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', rifPriceFromCache)
-    const app = setupTestApi(coinMarketCapApiMock as any, priceCache)
-    priceCache.flushAll()
+    const cache = new NodeCache()
+    cache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', rifPriceFromCache)
+    const app = setupTestApi(coinMarketCapApiMock as any, cache)
+    cache.flushAll()
 
     const { res: { text } } = await request(app)
       .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5')

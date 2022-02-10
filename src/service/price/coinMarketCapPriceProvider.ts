@@ -8,19 +8,19 @@ export class CoinMarketCapPriceProvider {
   private priceCache: PriceCache
   private CHAIN_ID: number
 
-  constructor () {
+  constructor (coinMarketCapApi?: CoinMarketCapAPI, priceCache?: PriceCache) {
     this.CHAIN_ID = parseInt(process.env.CHAIN_ID as string) || 31
     const COIN_MARKET_CAP_URL = process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com'
     const COIN_MARKET_CAP_VERSION = process.env.COIN_MARKET_CAP_VERSION as string || 'v1'
     const COIN_MARKET_CAP_KEY = process.env.COIN_MARKET_CAP_KEY! as string
-    this.coinMarketCapApi =
+    this.coinMarketCapApi = coinMarketCapApi ? coinMarketCapApi :
       new CoinMarketCapAPI(
         COIN_MARKET_CAP_URL,
         COIN_MARKET_CAP_VERSION,
         COIN_MARKET_CAP_KEY,
         axios,
         this.CHAIN_ID)
-    this.priceCache = new PriceCache()
+    this.priceCache = priceCache ? priceCache : new PriceCache()
   }
 
   validation (addresses: string[], convert: string): string[] {
