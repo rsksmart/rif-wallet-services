@@ -34,5 +34,6 @@ export class LiveController {
         })
       })
     })
+    return io
   }
 }

@@ -13,9 +13,17 @@ export class BalanceProvider extends EventEmitter implements Provider {
   private EXECUTION_INTERVAL = 60000
   private timers = {}
 
-  constructor () {
+  constructor (rskExplorerApi? : RSKExplorerAPI) {
     super()
-    this.rskExplorerApi = RSKExplorerAPI.getInstance()
+    this.rskExplorerApi = rskExplorerApi || RSKExplorerAPI.getInstance()
+  }
+
+  set interval (time: number) {
+    this.EXECUTION_INTERVAL = time
+  }
+
+  get interval () {
+    return this.EXECUTION_INTERVAL
   }
 
   private async execute (address: string) {

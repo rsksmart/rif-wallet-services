@@ -5,12 +5,20 @@ import { Provider } from '../../util/provider'
 export class TransactionProvider extends EventEmitter implements Provider {
   private rskExplorerApi: RSKExplorerAPI
   private EXECUTION_INTERVAL = 60000
-  private lastReceivedTransactionBlockNumber = {} 
+  private lastReceivedTransactionBlockNumber = {}
   private timers = {}
 
-  constructor () {
+  constructor (rskExplorerApi? : RSKExplorerAPI) {
     super()
-    this.rskExplorerApi = RSKExplorerAPI.getInstance()
+    this.rskExplorerApi = rskExplorerApi || RSKExplorerAPI.getInstance()
+  }
+
+  set interval (time: number) {
+    this.EXECUTION_INTERVAL = time
+  }
+
+  get interval () {
+    return this.EXECUTION_INTERVAL
   }
 
   async getTransactions (address: string, limit?: string, prev?: string, next?: string) {
@@ -26,7 +34,7 @@ export class TransactionProvider extends EventEmitter implements Provider {
       // push them in historical order
       data.reverse().forEach(transaction => {
         if (transaction.blockNumber > lastReceivedTransactionBlockNumber) {
-          console.log('change', { type: 'newTransaction', payload: transaction })
+          // console.log('change', { type: 'newTransaction', payload: transaction })
           this.emit(address, { type: 'newTransaction', payload: transaction })
         }
       })

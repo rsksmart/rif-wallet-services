@@ -9,10 +9,19 @@ export class PriceProvider extends EventEmitter implements Provider {
   private EXECUTION_INTERVAL = 60000
   private DEFAULT_CONVERT_FIAT = process.env.DEFAULT_CONVERT_FIAT! as string
   private timers = {}
-  constructor (coinMarketCapPriceProvider?: CoinMarketCapPriceProvider) {
+
+  constructor (coinMarketCapPriceProvider?: CoinMarketCapPriceProvider, rskExplorerApi?: RSKExplorerAPI) {
     super()
-    this.rskExplorerApi = RSKExplorerAPI.getInstance()
-    this.coinMarketCapPriceProvider = coinMarketCapPriceProvider ? coinMarketCapPriceProvider : new CoinMarketCapPriceProvider()
+    this.rskExplorerApi = rskExplorerApi || RSKExplorerAPI.getInstance()
+    this.coinMarketCapPriceProvider = coinMarketCapPriceProvider || new CoinMarketCapPriceProvider()
+  }
+
+  set interval (time: number) {
+    this.EXECUTION_INTERVAL = time
+  }
+
+  get interval () {
+    return this.EXECUTION_INTERVAL
   }
 
   getPrices (addresses: string[], convert: string) {

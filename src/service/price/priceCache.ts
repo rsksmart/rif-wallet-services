@@ -6,7 +6,7 @@ export class PriceCache {
   private cache: NodeCache
 
   constructor (cache?: NodeCache) {
-    this.cache = cache ? cache : new NodeCache()
+    this.cache = cache || new NodeCache()
   }
 
   store (prices: Prices) {

@@ -113,6 +113,17 @@ export const pricesResponse = {
   }
 }
 
+export const pricesSecondResponse = {
+  '0x0000000000000000000000000000000000000000': {
+    price: rbtcPrice + 1,
+    lastUpdated: rbtcLastUpdated
+  },
+  '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': {
+    price: rifPrice + 0.1,
+    lastUpdated: rifLastUpdated
+  }
+}
+
 export const pricesResponseForCaching = {
   '0x0000000000000000000000000000000000000000': {
     price: rbtcPrice,

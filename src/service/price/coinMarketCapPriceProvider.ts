@@ -13,14 +13,13 @@ export class CoinMarketCapPriceProvider {
     const COIN_MARKET_CAP_URL = process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com'
     const COIN_MARKET_CAP_VERSION = process.env.COIN_MARKET_CAP_VERSION as string || 'v1'
     const COIN_MARKET_CAP_KEY = process.env.COIN_MARKET_CAP_KEY! as string
-    this.coinMarketCapApi = coinMarketCapApi ? coinMarketCapApi :
-      new CoinMarketCapAPI(
-        COIN_MARKET_CAP_URL,
-        COIN_MARKET_CAP_VERSION,
-        COIN_MARKET_CAP_KEY,
-        axios,
-        this.CHAIN_ID)
-    this.priceCache = priceCache ? priceCache : new PriceCache()
+    this.coinMarketCapApi = coinMarketCapApi || new CoinMarketCapAPI(
+      COIN_MARKET_CAP_URL,
+      COIN_MARKET_CAP_VERSION,
+      COIN_MARKET_CAP_KEY,
+      axios,
+      this.CHAIN_ID)
+    this.priceCache = priceCache || new PriceCache()
   }
 
   validation (addresses: string[], convert: string): string[] {

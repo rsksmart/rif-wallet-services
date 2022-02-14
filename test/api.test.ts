@@ -3,7 +3,10 @@ import NodeCache from 'node-cache'
 import request from 'supertest'
 
 import { AddressController } from '../src/controller/address'
-import { mockCoinMarketCap, pricesResponse, pricesResponseForCaching, rifPriceFromCache, sovPriceFromCache } from './mockResponses'
+import {
+  mockCoinMarketCap, pricesResponse, pricesResponseForCaching,
+  rifPriceFromCache, sovPriceFromCache
+} from './mockPriceResponses'
 
 import { CustomError } from '../src/middleware'
 import { Profiler } from '../src/service/profiler'
@@ -33,13 +36,24 @@ const coinMarketCapApiMock = {
 describe('coin market cap', () => {
   test('valid response', async () => {
     const app = setupTestApi(coinMarketCapApiMock as any)
-
+    const addresses = [
+      '0x0000000000000000000000000000000000000000',
+      '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+    ]
     const { res: { text } } = await request(app)
-      .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5')
+      .get(`/price?convert=USD&addresses=${addresses.join(',')}`)
       .expect('Content-Type', /json/)
       .expect(200)
 
-    expect(getQuotesLatestMock).toHaveBeenCalledWith({ addresses: ['0x0000000000000000000000000000000000000000', '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'], convert: 'USD' })
+    expect(getQuotesLatestMock).toHaveBeenCalledWith(
+      {
+        addresses: [
+          '0x0000000000000000000000000000000000000000',
+          '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+        ],
+        convert: 'USD'
+      }
+    )
     expect(JSON.parse(text)).toEqual(pricesResponse)
   })
 
@@ -47,13 +61,25 @@ describe('coin market cap', () => {
     const cache = new NodeCache()
     cache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', sovPriceFromCache)
     const app = setupTestApi(coinMarketCapApiMock as any, cache)
-
+    const addresses = [
+      '0x0000000000000000000000000000000000000000',
+      '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5',
+      '0xefc78fc7d48b64958315949279ba181c2114abbd'
+    ]
     const { res: { text } } = await request(app)
-      .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5,0xefc78fc7d48b64958315949279ba181c2114abbd')
+      .get(`/price?convert=USD&addresses=${addresses.join(',')}`)
       .expect('Content-Type', /json/)
       .expect(200)
 
-    expect(getQuotesLatestMock).toHaveBeenCalledWith({ addresses: ['0x0000000000000000000000000000000000000000', '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'], convert: 'USD' })
+    expect(getQuotesLatestMock).toHaveBeenCalledWith(
+      {
+        addresses: [
+          '0x0000000000000000000000000000000000000000',
+          '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+        ],
+        convert: 'USD'
+      }
+    )
     expect(JSON.parse(text)).toEqual(pricesResponseForCaching)
   })
 
@@ -62,13 +88,24 @@ describe('coin market cap', () => {
     cache.set('0xefc78fc7d48b64958315949279ba181c2114abbd', rifPriceFromCache)
     const app = setupTestApi(coinMarketCapApiMock as any, cache)
     cache.flushAll()
-
+    const addresses = [
+      '0x0000000000000000000000000000000000000000',
+      '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+    ]
     const { res: { text } } = await request(app)
-      .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5')
+      .get(`/price?convert=USD&addresses=${addresses.join(',')}`)
       .expect('Content-Type', /json/)
       .expect(200)
 
-    expect(getQuotesLatestMock).toHaveBeenCalledWith({ addresses: ['0x0000000000000000000000000000000000000000', '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'], convert: 'USD' })
+    expect(getQuotesLatestMock).toHaveBeenCalledWith(
+      {
+        addresses: [
+          '0x0000000000000000000000000000000000000000',
+          '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+        ],
+        convert: 'USD'
+      }
+    )
     expect(JSON.parse(text)).toEqual(pricesResponse)
   })
 
@@ -80,9 +117,12 @@ describe('coin market cap', () => {
     }
 
     const app = setupTestApi(coinMarketCapApiThrowsMock as any)
-
+    const addresses = [
+      '0x0000000000000000000000000000000000000000',
+      '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+    ]
     const res = await request(app)
-      .get('/price?convert=USD&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5')
+      .get(`/price?convert=USD&addresses=${addresses.join(',')}`)
       .expect(500)
 
     expect(res.text).toEqual('error')
@@ -92,9 +132,12 @@ describe('coin market cap', () => {
     test('convert not supported', async () => {
       const { axiosMock, coinMarketCapApi } = mockCoinMarketCap()
       const app = setupTestApi(coinMarketCapApi)
-
+      const addresses = [
+        '0x0000000000000000000000000000000000000000',
+        '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
+      ]
       const res = await request(app)
-        .get('/price?convert=asd&addresses=0x0000000000000000000000000000000000000000,0x2acc95758f8b5f583470ba265eb685a8f45fc9d5')
+        .get(`/price?convert=asd&addresses=${addresses.join(',')}`)
         .expect(500)
 
       expect(res.text).toEqual('Convert not supported')
