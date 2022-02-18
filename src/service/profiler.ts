@@ -1,53 +1,41 @@
-import { EventEmitter } from 'events'
-import { Provider } from '../util/provider'
-import { BalanceProvider } from './balance/balanceProvider'
-import { EventProvider } from './event/eventProvider'
-import { PriceProvider } from './price/priceProvider'
-import { TokenProvider } from './token/tokenProvider'
-import { TransactionProvider } from './transaction/transactionProvider'
+import { RSKExplorerAPI } from '../rskExplorerApi';
+import { Emitter } from '../types/emitter'
+import { BalanceProfiler } from './balance/balanceProfiler'
+import { PriceEmitter } from './price/priceEmitter'
+import { TransactionProfiler } from './transaction/transactionProfiler'
 
-export class Profiler extends EventEmitter implements Provider {
-    balanceProvider: BalanceProvider;
-    transactionProvider: TransactionProvider;
-    priceProvider: PriceProvider;
-    tokenProvider: TokenProvider;
-    eventProvider: EventProvider;
-    private static instance: Profiler;
+export class Profiler extends Emitter {
+    balanceProfiler: BalanceProfiler;
+    transactionProfiler: TransactionProfiler;
+    priceEmitter: PriceEmitter;
+    address: string
 
-    constructor () {
+    constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
       super()
-      this.balanceProvider = new BalanceProvider()
-      this.priceProvider = new PriceProvider()
-      this.transactionProvider = new TransactionProvider()
-      this.tokenProvider = new TokenProvider()
-      this.eventProvider = new EventProvider()
+      this.address = address
+      this.balanceProfiler = new BalanceProfiler(address, rskExplorerApi)
+      this.transactionProfiler = new TransactionProfiler(address, rskExplorerApi)
+      this.priceEmitter = new PriceEmitter()
     }
 
-    public static getInstance (): Profiler {
-      if (!Profiler.instance) {
-        Profiler.instance = new Profiler()
-      }
-      return Profiler.instance
-    }
-
-    subscribe (address: string): void {
+    subscribe(): void {
       const emitChange = (data) => {
-        this.emit(address, data)
+        this.emit(this.address, data)
       }
 
-      this.balanceProvider.on(address, emitChange)
-      this.balanceProvider.subscribe(address)
+      this.balanceProfiler.on(this.address, emitChange)
+      this.balanceProfiler.subscribe()
 
-      this.transactionProvider.on(address, emitChange)
-      this.transactionProvider.subscribe(address)
+      this.transactionProfiler.on(this.address, emitChange)
+      this.transactionProfiler.subscribe()
 
-      this.priceProvider.on(address, emitChange)
-      this.priceProvider.subscribe(address)
+      this.priceEmitter.on('prices', emitChange)
+      this.priceEmitter.subscribe()
     }
 
-    unsubscribe (address: string): void {
-      this.balanceProvider.unsubscribe(address)
-      this.transactionProvider.unsubscribe(address)
-      this.priceProvider.unsubscribe(address)
+    unsubscribe(): void {
+      this.balanceProfiler.unsubscribe()
+      this.transactionProfiler.unsubscribe()
+      this.priceEmitter.unsubscribe()
     }
 }

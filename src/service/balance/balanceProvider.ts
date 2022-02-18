@@ -1,55 +1,40 @@
 import EventEmitter from 'events'
 import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { Provider } from '../../util/provider'
+import { Emitter } from '../../types/emitter'
+import { PollingProvider } from '../../types/provider'
 
 interface ISentBalances {
   [address: string]: {
     [tokenAddress: string]: string
   }
 }
-export class BalanceProvider extends EventEmitter implements Provider {
+export class BalanceProvider extends PollingProvider {
+  
   private rskExplorerApi: RSKExplorerAPI
-  private sentBalances: ISentBalances = {}
-  private EXECUTION_INTERVAL = 60000
-  private timers = {}
-
-  constructor (rskExplorerApi? : RSKExplorerAPI) {
+  private address: string
+  
+  constructor(address: string, rskExplorerApi: RSKExplorerAPI) {
     super()
-    this.rskExplorerApi = rskExplorerApi || RSKExplorerAPI.getInstance()
+    this.address = address
+    this.rskExplorerApi = rskExplorerApi
   }
-
-  set interval (time: number) {
-    this.EXECUTION_INTERVAL = time
-  }
-
-  get interval () {
-    return this.EXECUTION_INTERVAL
-  }
-
-  private async execute (address: string) {
-    if (!this.sentBalances[address]) {
-      this.sentBalances[address] = {}
-    }
-
-    const tokens = await this.rskExplorerApi.getTokensByAddress(address.toLowerCase())
+  
+  
+  async getBalances() {
+    const tokens = await this.rskExplorerApi.getTokensByAddress(this.address.toLowerCase())
     for (const token of tokens) {
-      if (this.sentBalances[address][token.contractAddress] !== token.balance) {
-        this.sentBalances[address][token.contractAddress] = token.balance
-        this.emit(address, { type: 'newBalance', payload: token })
-      }
+      this.emit(this.address, { type: 'newBalance', payload: token })
     }
   }
-
-  subscribe (address: string): void {
-    this.execute(address)
-
-    const timer = setInterval(() => this.execute(address), this.EXECUTION_INTERVAL)
-    this.timers[address] = timer
+  
+  subscribe(): void {
+    this.getBalances()
+    this.timer = setInterval(() => this.getBalances(), this.interval)
   }
 
-  unsubscribe (address: string): void {
-    this.removeAllListeners(address)
-    clearInterval(this.timers[address])
-    this.sentBalances[address] = {}
+  unsubscribe(): void {
+    this.removeAllListeners(this.address)
+    clearInterval(this.timer)
   }
+
 }
