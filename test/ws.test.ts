@@ -1,7 +1,7 @@
 import http from 'http'
 import { io } from 'socket.io-client'
 import { mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
-import { LiveController } from '../src/controller/live'
+import { WebSocketAPI } from '../src/controller/webSocketAPI'
 import { Profiler } from '../src/service/profiler'
 import { TransactionProvider } from '../src/service/transaction/transactionProvider'
 import { PriceProvider } from '../src/service/price/priceProvider'
@@ -19,7 +19,7 @@ describe('web socket', () => {
     process.env.DEFAULT_CONVERT_FIAT = 'USD'
     process.env.CHAIN_ID = '30'
     const server = http.createServer()
-    const liveController = new LiveController(server)
+    const webSocketAPI = new WebSocketAPI(server)
     const profiler = new Profiler()
     const rskExplorerApiMock = {
       getTransactionsByAddress: getTransactionsByAddressMock,
@@ -32,8 +32,8 @@ describe('web socket', () => {
     const coinMarketCapPriceProvider = new CoinMarketCapPriceProvider(coinMarketCapApiMock as any)
     profiler.priceProvider = new PriceProvider(coinMarketCapPriceProvider, rskExplorerApiMock as any)
     profiler.balanceProvider = new BalanceProvider(rskExplorerApiMock as any)
-    liveController.profiler = profiler
-    serverSocket = liveController.init()
+    webSocketAPI.profiler = profiler
+    serverSocket = webSocketAPI.init()
     const port = 3000
     server.listen(port, () => {
       console.log(`RIF Wallet services running on ${port}.`)

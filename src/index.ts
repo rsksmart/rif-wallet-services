@@ -6,6 +6,8 @@ import { HttpsAPI } from './controller/httpsAPI'
 import { WebSocketAPI } from './controller/webSocketAPI'
 import { RSKExplorerAPI } from './rskExplorerApi'
 import { CoinMarketCapAPI } from './coinmarketcap'
+import { PriceCollector } from './service/price/priceCollector'
+import { LastPrice } from './service/price/lastPrice'
 
 const environment = {
   // TODO: remove these defaults
@@ -28,13 +30,22 @@ const coinMarketCapApi = new CoinMarketCapAPI(
   axios,
   environment.CHAIN_ID
 )
+const priceCollector = new PriceCollector(coinMarketCapApi, environment.DEFAULT_CONVERT_FIAT, environment.CHAIN_ID)
+const lastPrice = new LastPrice(environment.CHAIN_ID)
+
+priceCollector.on('prices', (prices) => {
+  lastPrice.save(prices)
+})
+
+priceCollector.init()
+
 
 const app = express()
-const httpsAPI : HttpsAPI = new HttpsAPI(app, rskExplorerApi)
+const httpsAPI : HttpsAPI = new HttpsAPI(app, rskExplorerApi, lastPrice)
 httpsAPI.init()
 
 const server = http.createServer(app)
-const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, rskExplorerApi)
+const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, rskExplorerApi, lastPrice)
 webSocketAPI.init()
 
 server.listen(environment.PORT, () => {

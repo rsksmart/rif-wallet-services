@@ -1,25 +1,21 @@
 import { Application, NextFunction, Request, Response } from 'express'
 import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
-import { Profiler } from '../service/profiler'
 import { errorHandler } from '../middleware'
-import { TokenProvider } from '../service/token/tokenProvider'
-import { EventProvider } from '../service/event/eventProvider'
-import { TransactionProvider } from '../service/transaction/transactionProvider'
-import { PriceProvider } from '../service/price/priceProvider'
 import { RSKExplorerAPI } from '../rskExplorerApi'
+import { LastPrice } from '../service/price/lastPrice'
 
 export class HttpsAPI {
   private app: Application
   private rskExplorerApi: RSKExplorerAPI
+  private lastPrice: LastPrice
   
-  constructor (app: Application, rskExplorerApi: RSKExplorerAPI) {
+  constructor (app: Application, rskExplorerApi: RSKExplorerAPI, lastPrice) {
     this.app = app
     this.rskExplorerApi = rskExplorerApi
-    this.priceProvider = new PriceProvider()
+    this.lastPrice = lastPrice
   }
 
-  priceProvider: PriceProvider
 
   responseJsonOk(res: Response) {
     return res.status(200).json.bind(res)
@@ -60,7 +56,7 @@ export class HttpsAPI {
       '/price',
       (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => {
         const addresses = req.query.addresses.split(',')
-        this.priceProvider.getPrices(addresses, req.query.convert)
+        this.lastPrice.getPrices(addresses, req.query.convert)
           .then(this.responseJsonOk(res))
           .catch(next)
       }

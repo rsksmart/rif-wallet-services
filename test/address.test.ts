@@ -1,6 +1,6 @@
 import express from 'express'
 import request from 'supertest'
-import { AddressController } from '../src/controller/address'
+import { HttpsAPI } from '../src/controller/httpsAPI'
 import { RSKExplorerAPI } from '../src/rskExplorerApi'
 import { EventProvider } from '../src/service/event/eventProvider'
 import { Profiler } from '../src/service/profiler'
@@ -10,13 +10,13 @@ import { eventResponse, mockAddress, tokenResponse, transactionResponse } from '
 
 const setupTestApi = (rskExplorerApi: RSKExplorerAPI) => {
   const app = express()
-  const addressController = new AddressController(app)
+  const httpsAPI = new HttpsAPI(app)
   const profiler = new Profiler()
   profiler.transactionProvider = new TransactionProvider(rskExplorerApi)
   profiler.eventProvider = new EventProvider(rskExplorerApi)
   profiler.tokenProvider = new TokenProvider(rskExplorerApi)
-  addressController.profiler = profiler
-  addressController.init()
+  httpsAPI.profiler = profiler
+  httpsAPI.init()
   return app
 }
 

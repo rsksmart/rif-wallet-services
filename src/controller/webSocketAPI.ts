@@ -1,17 +1,18 @@
-import { response } from 'express'
 import http from 'http'
 import { Server } from 'socket.io'
 import { RSKExplorerAPI } from '../rskExplorerApi'
-import { PriceProvider } from '../service/price/priceProvider'
+import { LastPrice } from '../service/price/lastPrice'
 import { Profiler } from '../service/profiler'
 
 export class WebSocketAPI {
   private server: http.Server
   private rskExplorerApi: RSKExplorerAPI
+  private lastPrice: LastPrice
 
-  constructor (server: http.Server, rskExplorerApi: RSKExplorerAPI) {
+  constructor (server: http.Server, rskExplorerApi: RSKExplorerAPI, lastPrice: LastPrice) {
     this.server = server
     this.rskExplorerApi = rskExplorerApi
+    this.lastPrice = lastPrice
   }
 
   init () {
@@ -27,10 +28,14 @@ export class WebSocketAPI {
 
       socket.on('subscribe', ({ address }: { address: string }) => {
         console.log('new subscription with address: ', address)
-        const profiler = new Profiler(address, this.rskExplorerApi)
+        const profiler = new Profiler(address, this.rskExplorerApi, this.lastPrice)
         profiler.on(address, (data) => {
           console.log(data)
           socket.emit('change', data)
+        })
+        profiler.on('prices', (newPrices) => {
+          console.log(newPrices)
+          socket.emit('change', newPrices)
         })
         profiler.subscribe()
 

@@ -2,7 +2,7 @@ import express from 'express'
 import NodeCache from 'node-cache'
 import request from 'supertest'
 
-import { AddressController } from '../src/controller/address'
+import { HttpsAPI } from '../src/controller/httpsAPI'
 import {
   mockCoinMarketCap, pricesResponse, pricesResponseForCaching,
   rifPriceFromCache, sovPriceFromCache
@@ -18,13 +18,13 @@ import { PriceCache } from '../src/service/price/priceCache'
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI, cache: NodeCache = new NodeCache()) => {
   process.env.CHAIN_ID = '30'
   const app = express()
-  const addressController = new AddressController(app)
+  const httpsAPI = new HttpsAPI(app)
   const profiler = new Profiler()
   const coinMarketCapPriceProvider = new CoinMarketCapPriceProvider(coinMarketCapApi as any, new PriceCache(cache))
   const priceProvider = new PriceProvider(coinMarketCapPriceProvider)
   profiler.priceProvider = priceProvider
-  addressController.profiler = profiler
-  addressController.init()
+  httpsAPI.profiler = profiler
+  httpsAPI.init()
   return app
 }
 
