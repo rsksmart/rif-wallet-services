@@ -10,12 +10,7 @@ import { eventResponse, mockAddress, tokenResponse, transactionResponse } from '
 
 const setupTestApi = (rskExplorerApi: RSKExplorerAPI) => {
   const app = express()
-  const httpsAPI = new HttpsAPI(app)
-  const profiler = new Profiler()
-  profiler.transactionProvider = new TransactionProvider(rskExplorerApi)
-  profiler.eventProvider = new EventProvider(rskExplorerApi)
-  profiler.tokenProvider = new TokenProvider(rskExplorerApi)
-  httpsAPI.profiler = profiler
+  const httpsAPI = new HttpsAPI(app, rskExplorerApi, {})
   httpsAPI.init()
   return app
 }

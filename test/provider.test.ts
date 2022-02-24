@@ -1,8 +1,6 @@
 import NodeCache from 'node-cache'
 import { BalanceProvider } from '../src/service/balance/balanceProvider'
-import { CoinMarketCapPriceProvider } from '../src/service/price/coinMarketCapPriceProvider'
 import { PriceCache } from '../src/service/price/priceCache'
-import { PriceProvider } from '../src/service/price/priceProvider'
 import { TransactionProvider } from '../src/service/transaction/transactionProvider'
 import {
   mockAddress, tokenResponse, tokenSecondResponse,

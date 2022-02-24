@@ -19,7 +19,13 @@ export class PriceCollector extends EventEmitter{
 
   async getPrices(): Promise<Prices> {
     const tokenAddresses = Object.keys(addressToCoinmarketcapId[this.chainId])
-    const prices = await this.coinMarketCapApi.getQuotesLatest({addresses: tokenAddresses, convert: this.convert})
+    let prices = {}
+    try {
+      prices = await this.coinMarketCapApi.getQuotesLatest({addresses: tokenAddresses, convert: this.convert})
+    } catch (error) {
+      console.error(error)
+      prices = {}
+    }
     return prices
   }
 
