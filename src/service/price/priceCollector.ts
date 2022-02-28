@@ -1,41 +1,39 @@
-import { CoinMarketCapAPI } from "../../coinmarketcap";
+import { CoinMarketCapAPI } from '../../coinmarketcap'
 import EventEmitter from 'events'
-import { addressToCoinmarketcapId } from "../../coinmarketcap/support";
-import { Prices } from "../../api/types";
+import { addressToCoinmarketcapId } from '../../coinmarketcap/support'
+import { Prices } from '../../api/types'
 
-export class PriceCollector extends EventEmitter{
-
+export class PriceCollector extends EventEmitter {
   private coinMarketCapApi: CoinMarketCapAPI
-  private cmcPollingTime = 5*60*1000
+  private cmcPollingTime: number
   private convert: string
   private chainId: number
 
-  constructor(coinMarketCapApi: CoinMarketCapAPI , convert: string, chainId: number) {
+  constructor (coinMarketCapApi: CoinMarketCapAPI, convert: string, chainId: number, cmcPollingTime) {
     super()
     this.coinMarketCapApi = coinMarketCapApi
     this.convert = convert
     this.chainId = chainId
+    this.cmcPollingTime = cmcPollingTime
   }
 
-  async getPrices(): Promise<Prices> {
-    const tokenAddresses = Object.keys(addressToCoinmarketcapId[this.chainId])
-    let prices = {}
-    try {
-      prices = await this.coinMarketCapApi.getQuotesLatest({addresses: tokenAddresses, convert: this.convert})
-    } catch (error) {
-      console.error(error)
-      prices = {}
-    }
-    return prices
+  getPrices = (): Promise<Prices> => this.coinMarketCapApi.getQuotesLatest({
+    addresses: Object.keys(addressToCoinmarketcapId[this.chainId]),
+    convert: this.convert
+  }).catch(error => {
+    console.log(error)
+    return {}
+  })
+
+  async emitPrice (prices: Prices) {
+    this.emit('prices', prices)
   }
 
-  async emitPrice(prices: Prices) {
-    this.emit('prices',prices)
+  async init () {
+    this.getAndEmitPrices()
+    setInterval(this.getAndEmitPrices, this.cmcPollingTime)
   }
 
-  async init() {
-    const getAndEmitPrices = () => this.getPrices().then((prices) => this.emitPrice(prices))
-    getAndEmitPrices()
-    setInterval(getAndEmitPrices, this.cmcPollingTime)
-  }
+  private getAndEmitPrices = () =>
+    this.getPrices().then((prices) => this.emitPrice(prices))
 }

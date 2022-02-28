@@ -9,15 +9,14 @@ export class HttpsAPI {
   private app: Application
   private rskExplorerApi: RSKExplorerAPI
   private lastPrice: LastPrice
-  
+
   constructor (app: Application, rskExplorerApi: RSKExplorerAPI, lastPrice) {
     this.app = app
     this.rskExplorerApi = rskExplorerApi
     this.lastPrice = lastPrice
   }
 
-
-  responseJsonOk(res: Response) {
+  responseJsonOk (res: Response) {
     return res.status(200).json.bind(res)
   }
 

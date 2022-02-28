@@ -1,40 +1,18 @@
-import EventEmitter from 'events'
 import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { Emitter } from '../../types/emitter'
+import { Event } from '../../types/event'
 import { PollingProvider } from '../../types/provider'
 
-interface ISentBalances {
-  [address: string]: {
-    [tokenAddress: string]: string
-  }
-}
-export class BalanceProvider extends PollingProvider {
-  
+export class BalanceProvider extends PollingProvider<Event> {
   private rskExplorerApi: RSKExplorerAPI
-  private address: string
-  
-  constructor(address: string, rskExplorerApi: RSKExplorerAPI) {
+
+  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
     super()
     this.address = address
     this.rskExplorerApi = rskExplorerApi
   }
-  
-  
-  async getBalances() {
+
+  async poll () {
     const tokens = await this.rskExplorerApi.getTokensByAddress(this.address.toLowerCase())
-    for (const token of tokens) {
-      this.emit(this.address, { type: 'newBalance', payload: token })
-    }
+    return tokens.map(token => new Event('newBalance', token))
   }
-  
-  subscribe(): void {
-    this.getBalances()
-    this.timer = setInterval(() => this.getBalances(), this.interval)
-  }
-
-  unsubscribe(): void {
-    this.removeAllListeners(this.address)
-    clearInterval(this.timer)
-  }
-
 }

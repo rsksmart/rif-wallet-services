@@ -29,14 +29,17 @@ export class WebSocketAPI {
       socket.on('subscribe', ({ address }: { address: string }) => {
         console.log('new subscription with address: ', address)
         const profiler = new Profiler(address, this.rskExplorerApi, this.lastPrice)
+
         profiler.on(address, (data) => {
           console.log(data)
           socket.emit('change', data)
         })
+
         profiler.on('prices', (newPrices) => {
           console.log(newPrices)
           socket.emit('change', newPrices)
         })
+
         profiler.subscribe()
 
         socket.on('disconnect', () => {
@@ -44,6 +47,7 @@ export class WebSocketAPI {
         })
       })
     })
+
     return io
   }
 }

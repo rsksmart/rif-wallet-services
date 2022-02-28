@@ -1,10 +1,20 @@
 import EventEmitter from 'events'
 
-export abstract class PollingProvider extends EventEmitter {
+export abstract class PollingProvider<T> extends EventEmitter {
+  address!: string
+  interval: number = 60000
+  timer!: NodeJS.Timer
 
-    interval: number = 60000
-    timer!: NodeJS.Timer
-    abstract subscribe() : void
-    abstract unsubscribe() : void
+  emitWhatPoll = () => this.poll().then((t: T[]) => t.forEach(e => this.emit(this.address, e)))
 
+  abstract poll(): Promise<T[]>
+
+  async subscribe () {
+    await this.emitWhatPoll()
+    this.timer = setInterval(this.emitWhatPoll, this.interval)
+  }
+
+  unsubscribe () {
+    clearInterval(this.timer)
+  }
 }

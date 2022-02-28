@@ -1,10 +1,9 @@
-import { CoinMarketCapAPI } from '../coinmarketcap';
-import { RSKExplorerAPI } from '../rskExplorerApi';
+import { RSKExplorerAPI } from '../rskExplorerApi'
 import { Emitter } from '../types/emitter'
-import { BalanceProfiler } from './balance/balanceProfiler'
-import { LastPrice } from './price/lastPrice';
-import { PriceProfiler } from './price/priceProfiler'
-import { TransactionProfiler } from './transaction/transactionProfiler'
+import { BalanceProfiler } from '../profiler/balance/balanceProfiler'
+import { LastPrice } from './price/lastPrice'
+import { PriceProfiler } from '../profiler/price/priceProfiler'
+import { TransactionProfiler } from '../profiler/transaction/transactionProfiler'
 
 export class Profiler extends Emitter {
     balanceProfiler: BalanceProfiler;
@@ -22,8 +21,7 @@ export class Profiler extends Emitter {
       this.priceProfiler = new PriceProfiler(lastPrice)
     }
 
-    subscribe(): void {
-      
+    subscribe (): void {
       this.priceProfiler.on('prices', (newPrices) => {
         this.emit('prices', newPrices)
       })
@@ -31,7 +29,6 @@ export class Profiler extends Emitter {
 
       this.balanceProfiler.on(this.address, (newBalance) => {
         this.emit(this.address, newBalance)
-        this.lastPrice.getLastPrice()
       })
       this.balanceProfiler.subscribe()
 
@@ -39,10 +36,9 @@ export class Profiler extends Emitter {
         this.emit(this.address, newTransaction)
       })
       this.transactionProfiler.subscribe()
-
     }
 
-    unsubscribe(): void {
+    unsubscribe (): void {
       this.balanceProfiler.unsubscribe()
       this.transactionProfiler.unsubscribe()
       this.priceProfiler.unsubscribe()
