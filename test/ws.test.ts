@@ -2,25 +2,18 @@ import http from 'http'
 import { io } from 'socket.io-client'
 import { mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
 import { WebSocketAPI } from '../src/controller/webSocketAPI'
-import { Profiler } from '../src/service/profiler'
-import { TransactionProvider } from '../src/service/transaction/transactionProvider'
-import { PriceProvider } from '../src/service/price/priceProvider'
-import { BalanceProvider } from '../src/service/balance/balanceProvider'
-import { CoinMarketCapPriceProvider } from '../src/service/price/coinMarketCapPriceProvider'
 import { pricesResponse } from './mockPriceResponses'
+import { LastPrice } from '../src/service/price/lastPrice'
+import { PriceCollector } from '../src/service/price/priceCollector'
 
 describe('web socket', () => {
-  let serverSocket, clientSocket
+  let serverSocket, clientSocket, priceCollector
   const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
   const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
   const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
 
   beforeAll((done) => {
-    process.env.DEFAULT_CONVERT_FIAT = 'USD'
-    process.env.CHAIN_ID = '30'
     const server = http.createServer()
-    const webSocketAPI = new WebSocketAPI(server)
-    const profiler = new Profiler()
     const rskExplorerApiMock = {
       getTransactionsByAddress: getTransactionsByAddressMock,
       getTokensByAddress: getTokensByAddressMock
@@ -28,11 +21,16 @@ describe('web socket', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    profiler.transactionProvider = new TransactionProvider(rskExplorerApiMock as any)
-    const coinMarketCapPriceProvider = new CoinMarketCapPriceProvider(coinMarketCapApiMock as any)
-    profiler.priceProvider = new PriceProvider(coinMarketCapPriceProvider, rskExplorerApiMock as any)
-    profiler.balanceProvider = new BalanceProvider(rskExplorerApiMock as any)
-    webSocketAPI.profiler = profiler
+    const lastPrice = new LastPrice(30)
+
+    priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+
+    priceCollector.on('prices', (prices) => {
+      lastPrice.save(prices)
+    })
+
+    priceCollector.init()
+    const webSocketAPI = new WebSocketAPI(server, rskExplorerApiMock as any, lastPrice)
     serverSocket = webSocketAPI.init()
     const port = 3000
     server.listen(port, () => {
@@ -51,9 +49,10 @@ describe('web socket', () => {
   afterAll(() => {
     serverSocket.close()
     clientSocket.close()
+    priceCollector.stop()
   })
 
-  test('balances', (done) => {
+  test('events', (done) => {
     clientSocket.on('change', (arg) => {
       const { type, payload } = arg
       if (type === 'newBalance') {
@@ -63,7 +62,6 @@ describe('web socket', () => {
         expect(payload).toEqual(transactionResponse.data[0])
       }
       if (type === 'newPrice') {
-        console.log(payload)
         expect(payload).toEqual(pricesResponse)
       }
     })

@@ -12,7 +12,9 @@ export class BalanceProvider extends PollingProvider<Event> {
   }
 
   async poll () {
-    const tokens = await this.rskExplorerApi.getTokensByAddress(this.address.toLowerCase())
-    return tokens.map(token => new Event('newBalance', token))
+    const events = await this.rskExplorerApi.getTokensByAddress(this.address.toLowerCase())
+      .then(tokens => tokens.map(token => new Event('newBalance', token)))
+      .catch(() => [])
+    return events
   }
 }

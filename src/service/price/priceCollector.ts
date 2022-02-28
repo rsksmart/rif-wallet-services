@@ -8,6 +8,7 @@ export class PriceCollector extends EventEmitter {
   private cmcPollingTime: number
   private convert: string
   private chainId: number
+  private timer!: NodeJS.Timer
 
   constructor (coinMarketCapApi: CoinMarketCapAPI, convert: string, chainId: number, cmcPollingTime) {
     super()
@@ -31,7 +32,11 @@ export class PriceCollector extends EventEmitter {
 
   async init () {
     this.getAndEmitPrices()
-    setInterval(this.getAndEmitPrices, this.cmcPollingTime)
+    this.timer = setInterval(this.getAndEmitPrices, this.cmcPollingTime)
+  }
+
+  stop () {
+    clearInterval(this.timer)
   }
 
   private getAndEmitPrices = () =>

@@ -1,21 +1,19 @@
 import express from 'express'
-import NodeCache from 'node-cache'
 import request from 'supertest'
 
 import { HttpsAPI } from '../src/controller/httpsAPI'
-import {
-  mockCoinMarketCap, pricesResponse, pricesResponseForCaching,
-  rifPriceFromCache, sovPriceFromCache
-} from './mockPriceResponses'
+import { mockCoinMarketCap, pricesResponse } from './mockPriceResponses'
 
 import { CustomError } from '../src/middleware'
 import { CoinMarketCapAPI } from '../src/coinmarketcap'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 
+let priceCollector
+
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   const app = express()
-  const priceCollector = new PriceCollector(coinMarketCapApi, 'USD', 30)
+  priceCollector = new PriceCollector(coinMarketCapApi, 'USD', 30, 5 * 60 * 1000)
   const lastPrice = new LastPrice(30)
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
@@ -30,6 +28,10 @@ const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
 const coinMarketCapApiMock = {
   getQuotesLatest: getQuotesLatestMock
 }
+
+afterEach(() => {
+  priceCollector.stop()
+})
 
 describe('coin market cap', () => {
   test('valid response', async () => {

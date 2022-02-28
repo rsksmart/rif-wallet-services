@@ -16,7 +16,9 @@ export class TransactionProvider extends PollingProvider<Event> {
   }
 
   async poll () {
-    const { data: transactions } = await this.getTransactionsPaginated(this.address)
-    return transactions.map(transaction => new Event('newTransaction', transaction))
+    const events = await this.getTransactionsPaginated(this.address)
+      .then(transactions => transactions.data.map(transaction => new Event('newTransaction', transaction)))
+      .catch(() => [])
+    return events
   }
 }

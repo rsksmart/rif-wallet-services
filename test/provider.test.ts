@@ -1,107 +1,60 @@
-import NodeCache from 'node-cache'
 import { BalanceProvider } from '../src/service/balance/balanceProvider'
-import { PriceCache } from '../src/service/price/priceCache'
+import { LastPrice } from '../src/service/price/lastPrice'
+import { PriceCollector } from '../src/service/price/priceCollector'
 import { TransactionProvider } from '../src/service/transaction/transactionProvider'
-import {
-  mockAddress, tokenResponse, tokenSecondResponse,
-  transactionResponse, transactionSecondResponse
-} from './mockAddressResponses'
-import { pricesResponse, pricesSecondResponse } from './mockPriceResponses'
+import { mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
+import { pricesResponse } from './mockPriceResponses'
 
-let secondTime = false
-const getTransactionsByAddressMock = jest.fn(() =>
-  Promise.resolve(secondTime ? transactionSecondResponse : transactionResponse)
-)
-const getQuotesLatestMock = jest.fn(() =>
-  Promise.resolve(secondTime ? pricesSecondResponse : pricesResponse)
-)
-const getTokensByAddressMock = jest.fn(() => Promise.resolve(secondTime ? tokenSecondResponse : tokenResponse))
+const getTransactionsByAddressMock = jest.fn(() => Promise.resolve((transactionResponse)))
+const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
+const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
 
 describe('Emmitting Events', () => {
-  test('emit transactions', (done) => {
+  test('emit transactions', async () => {
     const rskExplorerApiMock = {
       getTransactionsByAddress: getTransactionsByAddressMock
     }
-    const transactionProvider = new TransactionProvider(rskExplorerApiMock as any)
-    transactionProvider.interval = 500
-    transactionProvider.on(mockAddress, (data) => {
+    const transactionProvider = new TransactionProvider(mockAddress, rskExplorerApiMock as any)
+    transactionProvider.on(mockAddress, async (data) => {
       const { type, payload } = data
       expect(type).toEqual('newTransaction')
-      if (secondTime) {
-        expect(payload).toEqual(transactionSecondResponse.data[1])
-      } else {
-        expect(payload).toEqual(transactionResponse.data[0])
-      }
+      expect(payload).toEqual(transactionResponse.data[0])
     })
-    transactionProvider.subscribe(mockAddress)
-    setTimeout(() => {
-      secondTime = true
-    }, 250)
-    setTimeout(() => {
-      transactionProvider.unsubscribe(mockAddress)
-      secondTime = false
-      done()
-    }, 1000)
+    await transactionProvider.subscribe()
+    transactionProvider.unsubscribe()
   })
 
-  test('emit balances', (done) => {
+  test('emit balances', async () => {
     const rskExplorerApiMock = {
       getTokensByAddress: getTokensByAddressMock
     }
-    const balanceProvider = new BalanceProvider(rskExplorerApiMock as any)
-    balanceProvider.interval = 500
+    const balanceProvider = new BalanceProvider(mockAddress, rskExplorerApiMock as any)
     balanceProvider.on(mockAddress, (data) => {
       const { type, payload } = data
       expect(type).toEqual('newBalance')
-      if (secondTime) {
-        expect(payload).toEqual(tokenSecondResponse[0])
-      } else {
-        expect(payload).toEqual(tokenResponse[0])
-      }
+      expect(payload).toEqual(tokenResponse[0])
     })
-    balanceProvider.subscribe(mockAddress)
-    setTimeout(() => {
-      secondTime = true
-    }, 250)
-    setTimeout(() => {
-      balanceProvider.unsubscribe(mockAddress)
-      secondTime = false
-      done()
-    }, 1000)
+    await balanceProvider.subscribe()
+    balanceProvider.unsubscribe()
   })
 
-  test('emit prices', (done) => {
-    process.env.CHAIN_ID = '30'
-    process.env.DEFAULT_CONVERT_FIAT = 'USD'
+  test('emit prices', async () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    const rskExplorerApiMock = {
-      getTokensByAddress: getTokensByAddressMock
-    }
-    const cache = new NodeCache()
-    const priceCache = new PriceCache(cache)
-    const coinMarketCapPriceProvider = new CoinMarketCapPriceProvider(coinMarketCapApiMock as any, priceCache)
-    const priceProvider = new PriceProvider(coinMarketCapPriceProvider, rskExplorerApiMock as any)
-    priceProvider.interval = 500
-    priceProvider.on(mockAddress, (data) => {
+    const lastPrice = new LastPrice(30)
+    lastPrice.on('prices', (data) => {
       const { type, payload } = data
       expect(type).toEqual('newPrice')
-      if (secondTime) {
-        expect(payload).toEqual(pricesSecondResponse)
-      } else {
-        expect(payload).toEqual(pricesResponse)
-      }
+      expect(payload).toEqual(pricesResponse)
     })
-    priceProvider.subscribe(mockAddress)
-    setTimeout(() => {
-      secondTime = true
-      cache.flushAll()
-    }, 250)
-    setTimeout(() => {
-      priceProvider.unsubscribe(mockAddress)
-      secondTime = false
-      done()
-    }, 1000)
+
+    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+    priceCollector.once('prices', (prices) => {
+      lastPrice.save(prices)
+    })
+
+    await priceCollector.init()
+    priceCollector.stop()
   })
 })

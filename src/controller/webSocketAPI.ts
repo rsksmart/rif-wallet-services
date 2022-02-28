@@ -1,8 +1,8 @@
 import http from 'http'
 import { Server } from 'socket.io'
+import { Profiler } from '../profiler/profiler'
 import { RSKExplorerAPI } from '../rskExplorerApi'
 import { LastPrice } from '../service/price/lastPrice'
-import { Profiler } from '../service/profiler'
 
 export class WebSocketAPI {
   private server: http.Server

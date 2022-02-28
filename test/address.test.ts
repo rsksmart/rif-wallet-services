@@ -2,10 +2,6 @@ import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
 import { RSKExplorerAPI } from '../src/rskExplorerApi'
-import { EventProvider } from '../src/service/event/eventProvider'
-import { Profiler } from '../src/service/profiler'
-import { TokenProvider } from '../src/service/token/tokenProvider'
-import { TransactionProvider } from '../src/service/transaction/transactionProvider'
 import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
 
 const setupTestApi = (rskExplorerApi: RSKExplorerAPI) => {

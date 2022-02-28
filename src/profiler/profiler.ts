@@ -1,9 +1,9 @@
 import { RSKExplorerAPI } from '../rskExplorerApi'
 import { Emitter } from '../types/emitter'
 import { BalanceProfiler } from '../profiler/balance/balanceProfiler'
-import { LastPrice } from './price/lastPrice'
 import { PriceProfiler } from '../profiler/price/priceProfiler'
 import { TransactionProfiler } from '../profiler/transaction/transactionProfiler'
+import { LastPrice } from '../service/price/lastPrice'
 
 export class Profiler extends Emitter {
     balanceProfiler: BalanceProfiler;
