@@ -17,9 +17,9 @@ export class WebSocketAPI {
 
   init () {
     const io = new Server(this.server, {
-      cors: {
-        origin: 'https://amritb.github.io'
-      },
+      // cors: {
+      //   origin: 'https://amritb.github.io'
+      // },
       path: '/ws'
     })
 

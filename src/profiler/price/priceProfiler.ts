@@ -17,7 +17,6 @@ export class PriceProfiler extends Emitter {
   }
 
   unsubscribe (): void {
-    this.removeAllListeners('prices')
-    this.lastPrice.removeAllListeners('prices')
+
   }
 }
