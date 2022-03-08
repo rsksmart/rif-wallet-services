@@ -1,6 +1,6 @@
 import { RSKExplorerAPI } from '../../rskExplorerApi'
 import { Event } from '../../types/event'
-import { PollingProvider } from '../../types/provider'
+import { PollingProvider } from '../AbstractPollingProvider'
 
 export class TransactionProvider extends PollingProvider<Event> {
   private rskExplorerApi: RSKExplorerAPI

@@ -34,6 +34,5 @@ export class LastPrice extends EventEmitter {
 
   save (prices: Prices) {
     this.prices = prices
-    this.emitLastPrice()
   }
 }

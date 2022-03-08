@@ -1,6 +1,6 @@
-import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { TransactionProvider } from '../../service/transaction/transactionProvider'
-import { Emitter } from '../../types/emitter'
+import { RSKExplorerAPI } from '../rskExplorerApi'
+import { TransactionProvider } from '../service/transaction/transactionProvider'
+import { Emitter } from './Emitter'
 
 export class TransactionProfiler extends Emitter {
   private address: string

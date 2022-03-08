@@ -1,6 +1,6 @@
-import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { Emitter } from '../../types/emitter'
-import { BalanceProvider } from '../../service/balance/balanceProvider'
+import { RSKExplorerAPI } from '../rskExplorerApi'
+import { Emitter } from './Emitter'
+import { BalanceProvider } from '../service/balance/balanceProvider'
 
 export class BalanceProfiler extends Emitter {
   private address: string

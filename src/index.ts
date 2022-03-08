@@ -38,9 +38,10 @@ async function main () {
 
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
+    lastPrice.emitLastPrice()
   })
 
-  priceCollector.init()
+  await priceCollector.init()
 
   const app = express()
   const httpsAPI : HttpsAPI = new HttpsAPI(app, rskExplorerApi, lastPrice)

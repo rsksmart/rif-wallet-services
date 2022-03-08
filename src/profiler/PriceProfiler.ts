@@ -1,8 +1,11 @@
-import { Emitter } from '../../types/emitter'
-import { LastPrice } from '../../service/price/lastPrice'
+import { Emitter } from './Emitter'
+import { LastPrice } from '../service/price/lastPrice'
 
 export class PriceProfiler extends Emitter {
   private lastPrice: LastPrice
+  private emitPrice = (data) => {
+    this.emit('prices', data)
+  }
 
   constructor (lastPrice: LastPrice) {
     super()
@@ -10,13 +13,11 @@ export class PriceProfiler extends Emitter {
   }
 
   subscribe (): void {
-    this.lastPrice.on('prices', (data) => {
-      this.emit('prices', data)
-    })
+    this.lastPrice.on('prices', this.emitPrice)
     this.lastPrice.emitLastPrice()
   }
 
   unsubscribe (): void {
-
+    this.lastPrice.off('prices', this.emitPrice)
   }
 }
