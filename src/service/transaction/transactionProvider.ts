@@ -1,13 +1,12 @@
 import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { Event } from '../../types/event'
+import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 
 export class TransactionProvider extends PollingProvider<Event> {
   private rskExplorerApi: RSKExplorerAPI
 
   constructor (address: string, rskExplorerApi : RSKExplorerAPI) {
-    super()
-    this.address = address
+    super(address)
     this.rskExplorerApi = rskExplorerApi
   }
 
@@ -17,7 +16,7 @@ export class TransactionProvider extends PollingProvider<Event> {
 
   async poll () {
     const events = await this.getTransactionsPaginated(this.address)
-      .then(transactions => transactions.data.map(transaction => new Event('newTransaction', transaction)))
+      .then(transactions => transactions.data.map(transaction => ({ type: 'newTransaction', payload: transaction })))
       .catch(() => [])
     return events
   }

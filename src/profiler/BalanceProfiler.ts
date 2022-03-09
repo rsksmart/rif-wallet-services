@@ -13,15 +13,15 @@ export class BalanceProfiler extends Emitter {
     this.balanceProvider = new BalanceProvider(this.address, rskExplorerApi)
   }
 
-  async subscribe () {
-    this.balanceProvider.on(this.address, (data) => {
+  async subscribe (channel: string) {
+    this.balanceProvider.on(channel, (data) => {
       const { payload: token } = data
       if (this.currentBalance[token.contractAddress] !== token.balance) {
         this.currentBalance[token.contractAddress] = token.balance
-        this.emit(this.address, data)
+        this.emit(channel, data)
       }
     })
-    await this.balanceProvider.subscribe()
+    await this.balanceProvider.subscribe(channel)
   }
 
   unsubscribe (): void {

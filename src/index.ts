@@ -8,6 +8,7 @@ import { RSKExplorerAPI } from './rskExplorerApi'
 import { CoinMarketCapAPI } from './coinmarketcap'
 import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
+import { Server } from 'socket.io'
 
 async function main () {
   const environment = {
@@ -38,7 +39,7 @@ async function main () {
 
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
-    lastPrice.emitLastPrice()
+    lastPrice.emitLastPrice('prices')
   })
 
   await priceCollector.init()
@@ -49,7 +50,13 @@ async function main () {
 
   const server = http.createServer(app)
   const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, rskExplorerApi, lastPrice)
-  webSocketAPI.init()
+  const io = new Server(server, {
+    // cors: {
+    //   origin: 'https://amritb.github.io'
+    // },
+    path: '/ws'
+  })
+  webSocketAPI.init(io)
 
   server.listen(environment.PORT, () => {
     console.log(`RIF Wallet services running on port ${environment.PORT}.`)

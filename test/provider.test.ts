@@ -20,7 +20,7 @@ describe('Emmitting Events', () => {
       expect(type).toEqual('newTransaction')
       expect(payload).toEqual(transactionResponse.data[0])
     })
-    await transactionProvider.subscribe()
+    await transactionProvider.subscribe(mockAddress)
     transactionProvider.unsubscribe()
   })
 
@@ -34,7 +34,7 @@ describe('Emmitting Events', () => {
       expect(type).toEqual('newBalance')
       expect(payload).toEqual(tokenResponse[0])
     })
-    await balanceProvider.subscribe()
+    await balanceProvider.subscribe(mockAddress)
     balanceProvider.unsubscribe()
   })
 

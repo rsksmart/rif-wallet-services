@@ -5,6 +5,7 @@ import { WebSocketAPI } from '../src/controller/webSocketAPI'
 import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
+import { Server } from 'socket.io'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -31,7 +32,13 @@ describe('web socket', () => {
 
     priceCollector.init()
     const webSocketAPI = new WebSocketAPI(server, rskExplorerApiMock as any, lastPrice)
-    serverSocket = webSocketAPI.init()
+    serverSocket = new Server(server, {
+      // cors: {
+      //   origin: 'https://amritb.github.io'
+      // },
+      path: '/ws'
+    })
+    webSocketAPI.init(serverSocket)
     const port = 3000
     server.listen(port, () => {
       console.log(`RIF Wallet services running on ${port}.`)

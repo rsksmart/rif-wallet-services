@@ -19,8 +19,8 @@ export class LastPrice extends EventEmitter {
     return addresses
   }
 
-  emitLastPrice (): void {
-    this.emit('prices', { type: 'newPrice', payload: this.prices })
+  emitLastPrice (channel: string): void {
+    this.emit(channel, { type: 'newPrice', payload: this.prices })
   }
 
   getPrices (addresses: string[], convert: string): Promise<Prices> {

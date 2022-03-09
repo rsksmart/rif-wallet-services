@@ -13,18 +13,18 @@ export class TransactionProfiler extends Emitter {
     this.transactionProvider = new TransactionProvider(address, rskExplorerApi)
   }
 
-  async subscribe (): Promise<void> {
+  async subscribe (channel: string): Promise<void> {
     await this.transactionProvider.getTransactionsPaginated(this.address.toLowerCase()).then(({ data }) => {
       this.lastReceivedTransactionBlockNumber = data.length ? data[0].blockNumber : -1
     })
-    this.transactionProvider.on(this.address, (data) => {
+    this.transactionProvider.on(channel, (data) => {
       const { payload: transaction } = data
       if (transaction.blockNumber > this.lastReceivedTransactionBlockNumber) {
         this.lastReceivedTransactionBlockNumber = transaction.blockNumber
-        this.emit(this.address, data)
+        this.emit(channel, data)
       }
     })
-    this.transactionProvider.subscribe()
+    this.transactionProvider.subscribe(channel)
   }
 
   unsubscribe (): void {

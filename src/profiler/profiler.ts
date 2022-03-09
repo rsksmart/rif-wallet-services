@@ -18,24 +18,27 @@ export class Profiler extends Emitter {
       this.lastPrice = lastPrice
       this.balanceProfiler = new BalanceProfiler(address, rskExplorerApi)
       this.transactionProfiler = new TransactionProfiler(address, rskExplorerApi)
-      this.priceProfiler = new PriceProfiler(lastPrice)
+      const priceChannel = 'prices'
+      this.priceProfiler = new PriceProfiler(lastPrice, priceChannel)
     }
 
-    subscribe (): void {
-      this.priceProfiler.on('prices', (newPrices) => {
-        this.emit('prices', newPrices)
+    async subscribe () {
+      this.priceProfiler.on(this.priceProfiler.channel, (newPrices) => {
+        this.emit(this.priceProfiler.channel, newPrices)
       })
       this.priceProfiler.subscribe()
 
-      this.balanceProfiler.on(this.address, (newBalance) => {
-        this.emit(this.address, newBalance)
+      const balanceChannel = 'balances'
+      this.balanceProfiler.on(balanceChannel, (newBalance) => {
+        this.emit(balanceChannel, newBalance)
       })
-      this.balanceProfiler.subscribe()
+      await this.balanceProfiler.subscribe(balanceChannel)
 
-      this.transactionProfiler.on(this.address, (newTransaction) => {
-        this.emit(this.address, newTransaction)
+      const transactionChannel = 'transactions'
+      this.transactionProfiler.on(transactionChannel, (newTransaction) => {
+        this.emit(transactionChannel, newTransaction)
       })
-      this.transactionProfiler.subscribe()
+      await this.transactionProfiler.subscribe(transactionChannel)
     }
 
     unsubscribe (): void {

@@ -15,22 +15,20 @@ export class WebSocketAPI {
     this.lastPrice = lastPrice
   }
 
-  init () {
-    const io = new Server(this.server, {
-      // cors: {
-      //   origin: 'https://amritb.github.io'
-      // },
-      path: '/ws'
-    })
-
+  init (io: Server) {
     io.on('connection', (socket) => {
       console.log('new user connected')
 
-      socket.on('subscribe', ({ address }: { address: string }) => {
+      socket.on('subscribe', async ({ address }: { address: string }) => {
         console.log('new subscription with address: ', address)
         const profiler = new Profiler(address, this.rskExplorerApi, this.lastPrice)
 
-        profiler.on(address, (data) => {
+        profiler.on('balances', (data) => {
+          console.log(data)
+          socket.emit('change', data)
+        })
+
+        profiler.on('transactions', (data) => {
           console.log(data)
           socket.emit('change', data)
         })
@@ -40,7 +38,7 @@ export class WebSocketAPI {
           socket.emit('change', newPrices)
         })
 
-        profiler.subscribe()
+        await profiler.subscribe()
 
         socket.on('disconnect', () => {
           profiler.unsubscribe()
