@@ -1,0 +1,104 @@
+@startuml
+class controller.WebSocketAPI {
+    Profiler profiler
+    void init()
+}
+
+class controller.HttpsAPI {
+  RskExplorerApi rskExplorerApi
+  LastPrice LastPrice
+}
+
+class PriceCollector {
+  Prices getPrices()
+  void emitPrice()
+  void init()
+  - void getAndEmitPrices()
+}
+
+class LastPrice {
+  prices: Prices
+  Prices getPrices(addresses: string[], convert: string)
+  save(prices: Prices)
+  void emitLastPrice()
+  string[] validate(addresses: string[], convert: string)
+}
+
+abstract class PollingProvider<T> extends EventEmitter {
+  address: string
+  interval: number
+  timer: timer
+  subscribe()
+  unsubscribe()
+  emitWhatPoll()
+  {abstract} T[] poll()
+}
+
+class profiler.Profiler extends Emitter{
+  address: string
+  Provider priceProvider
+  Provider balanceProvider
+  Provider transactionsProvider
+  void init()
+  void subscribe()
+  void unsubscribe()
+}
+
+abstract class Emitter extends EventEmitter {
+  {abstract} void subscribe()
+  {abstract} void unsubscribe()
+}
+
+class Event {
+  type: string
+  payload: Object
+}
+
+class BalanceProvider extends PollingProvider {
+  rskExplorerApi: RskExplorerApi
+}
+
+class profiler.BalanceProfiler extends Emitter {
+  address: string
+  balanceProvider: BalanceProvider
+}
+
+class TransactionProvider extends PollingProvider {
+  rskExplorerApi: RskExplorerApi
+}
+
+class profiler.TransactionProfiler extends Emitter {
+  address: string
+  transactionProvider: TransactionProvider
+}
+
+class profiler.PriceProfiler extends Emitter {
+  lastPrice: LastPrice
+}
+
+class RskExplorerApi {
+
+}
+
+class CoinMarketCapApi {
+
+}
+
+class EventEmitter {
+
+}
+
+profiler.Profiler o-- profiler.PriceProfiler : emit Event
+profiler.Profiler o-- profiler.BalanceProfiler : emit Event
+profiler.Profiler o-- profiler.TransactionProfiler : emit Event
+profiler.BalanceProfiler o-- BalanceProvider
+profiler.TransactionProfiler o-- TransactionProvider
+profiler.PriceProfiler o-- LastPrice
+BalanceProvider o-- RskExplorerApi : polling
+TransactionProvider o-- RskExplorerApi : polling
+controller.WebSocketAPI *-- profiler.Profiler : emit Events
+controller.HttpsAPI o-- RskExplorerApi : aggregation
+controller.HttpsAPI o-- LastPrice : aggregation
+PriceCollector o-- CoinMarketCapApi : polling
+LastPrice <-- PriceCollector
+@enduml 
