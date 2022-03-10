@@ -38,6 +38,11 @@ export class WebSocketAPI {
           socket.emit('change', newPrices)
         })
 
+        profiler.on('tokenTransfers', (newTokenTranfers) => {
+          console.log(newTokenTranfers)
+          socket.emit('change', newTokenTranfers)
+        })
+
         await profiler.subscribe()
 
         socket.on('disconnect', () => {
