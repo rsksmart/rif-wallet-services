@@ -1,6 +1,6 @@
 import http from 'http'
 import { io } from 'socket.io-client'
-import { mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
+import { mockAddress, tokenResponse, transactionResponse, eventResponse } from './mockAddressResponses'
 import { WebSocketAPI } from '../src/controller/webSocketAPI'
 import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
@@ -12,12 +12,14 @@ describe('web socket', () => {
   const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
   const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
   const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
+  const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
 
   beforeAll((done) => {
     const server = http.createServer()
     const rskExplorerApiMock = {
       getTransactionsByAddress: getTransactionsByAddressMock,
-      getTokensByAddress: getTokensByAddressMock
+      getTokensByAddress: getTokensByAddressMock,
+      getEventsByAddress: getEventsByAddressMock
     }
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
@@ -70,6 +72,9 @@ describe('web socket', () => {
       }
       if (type === 'newPrice') {
         expect(payload).toEqual(pricesResponse)
+      }
+      if (type === 'newTokenTransfer') {
+        expect(payload).toEqual(eventResponse[0])
       }
     })
     clientSocket.emit('subscribe', { address: mockAddress })
