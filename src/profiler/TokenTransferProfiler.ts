@@ -5,6 +5,7 @@ import { TokenTransferProvider } from '../service/tokenTransfer/tokenTransferPro
 export class TokenTransferProfiler extends Emitter {
   private address: string
   private tokenTransferProvider: TokenTransferProvider
+  private alreadySent = {}
 
   constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
     super()
@@ -14,7 +15,11 @@ export class TokenTransferProfiler extends Emitter {
 
   async subscribe (channel: string) {
     this.tokenTransferProvider.on(channel, (data) => {
-      this.emit(channel, data)
+      const { payload: tokenTransfer } = data
+      if (!this.alreadySent[tokenTransfer.transactionHash]) {
+        this.alreadySent[tokenTransfer.transactionHash] = true
+        this.emit(channel, data)
+      }
     })
     await this.tokenTransferProvider.subscribe(channel)
   }
