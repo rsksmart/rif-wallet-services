@@ -16,6 +16,9 @@ export interface IApiTokens {
 export interface TokensServerResponse {
   data: IApiTokens[];
 }
+export interface RbtcBalancesServerResponse {
+  data: IApiRbtcBalance[];
+}
 
 export interface IToken {
   name: string;
@@ -73,6 +76,15 @@ export interface IApiTransactions {
   receipt: any;
   txType: string;
   txId: string;
+}
+export interface IApiRbtcBalance {
+  _id: string,
+  address: string,
+  balance: string,
+  blockHash: string,
+  blockNumber: number,
+  timestamp: number,
+  _created: number
 }
 
 export interface TransactionsServerResponse {
