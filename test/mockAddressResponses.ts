@@ -136,6 +136,44 @@ export const transactionResponse = {
   ]
 }
 
+export const txResponse = {
+  data:
+  {
+    _id: '61ef707ae13e1554d70cd1b8',
+    hash: '0x82dbb412363693d7334d1e3fc15b7a6453861ffa16d511966565443ff73699dd',
+    nonce: 30,
+    blockHash: '0x5ddd52bde4249f382b3c95da3443425e5671c8ae86416ae1a107721eb830b92a',
+    blockNumber: 2526431,
+    transactionIndex: 0,
+    from: '0xdf3f858032e370ae039417b278403ba90ab8bb64',
+    to: '0xef69146474ee7fff43f78b2860518b005afae9f8',
+    gas: 35948,
+    gasPrice: '0x3ec4458',
+    value: '0x11c37937e08000',
+    input: '0x244f53b5000000000000000000000000',
+    v: '0x61',
+    r: '0x765df5df534909d41cd4fef4b783c653b9d5c3bf92a8227408c970ad19af9c31',
+    s: '0x462f9b61cbc808fb490c8353e8e93c23c764417ff66ff794694d8ee14dadb03a',
+    timestamp: 1643081782,
+    receipt: {
+      transactionHash: '0x82dbb412363693d7334d1e3fc15b7a6453861ffa16d511966565443ff73699dd',
+      transactionIndex: 0,
+      blockHash: '0x5ddd52bde4249f382b3c95da3443425e5671c8ae86416ae1a107721eb830b92a',
+      blockNumber: 2526431,
+      cumulativeGasUsed: 35948,
+      gasUsed: 35948,
+      contractAddress: null,
+      logs: [],
+      from: '0xdf3f858032e370ae039417b278403ba90ab8bb64',
+      to: '0xef69146474ee7fff43f78b2860518b005afae9f8',
+      status: '0x0',
+      logsBloom: '0x000000000000000000000000000000000000000000000'
+    },
+    txType: 'contract call',
+    txId: '0268cdf000ae1a107721eb830b92a'
+  }
+}
+
 export const eventResponse = [{
   blockNumber: 2525443,
   event: 'Transfer',
