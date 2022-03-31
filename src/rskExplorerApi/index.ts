@@ -1,6 +1,10 @@
-
 import _axios from 'axios'
-import { EventsServerResponse, TransactionsServerResponse, TokensServerResponse } from './types'
+import {
+  EventsServerResponse,
+  TransactionsServerResponse,
+  TokensServerResponse,
+  TransactionServerResponse
+} from './types'
 import { fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
 export class RSKExplorerAPI {
@@ -48,6 +52,18 @@ export class RSKExplorerAPI {
       return response.data.data
         .filter(t => t.name != null)
         .map(t => fromApiToTokenWithBalance(t, this.chainId))
+    }
+
+    async getTransaction (hash: string) {
+      const params = {
+        module: 'transactions',
+        action: 'getTransaction',
+        hash
+      }
+
+      const response = await this.axios.get<TransactionServerResponse>(this.apiURL, { params })
+
+      return response.data.data
     }
 
     async getTransactionsByAddress (
