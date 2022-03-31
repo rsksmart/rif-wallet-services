@@ -97,3 +97,7 @@ export interface ChannelServerResponse {
   action: string;
   data: TransactionsServerResponse
 }
+
+export interface TransactionServerResponse {
+  data: IApiTransactions
+}
