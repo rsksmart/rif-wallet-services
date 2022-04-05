@@ -1,5 +1,4 @@
 import { RSKExplorerAPI } from '../../rskExplorerApi'
-import { IApiTransactions } from '../../rskExplorerApi/types'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 import { isIncomingTransaction } from './utils'
@@ -29,7 +28,10 @@ export class TransactionProvider extends PollingProvider<Event> {
   }
 
   async poll () {
-    const txs: Array<IApiTransactions> = await this.getIncomingTransactions(this.address)
+    const txs = await this.getIncomingTransactions(this.address)
+      .then(transactions => transactions)
+      .catch(() => [])
+
     const events = await this.getTransactionsPaginated(this.address)
       .then(transactions => [...transactions.data, ...txs]
         .sort((txA, txB) => txA.timestamp - txB.timestamp)
