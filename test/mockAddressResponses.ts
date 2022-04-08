@@ -153,3 +153,14 @@ export const eventResponse = [{
   transactionHash: '0xcb08a5c3417c4d25956f7fa70d1da0f558568ad91979580664176281cfa037e9',
   txStatus: '0x1'
 }]
+
+export const rbtcBalanceResponse = [
+  {
+    name: 'RBTC',
+    logo: 'loco',
+    symbol: 'RBTC',
+    contractAddress: '0x0000000000000000000000000000000000000000',
+    decimals: 18,
+    balance: '0x56900d33ca7fc0000'
+
+  }]

@@ -16,6 +16,19 @@ export interface IApiTokens {
 export interface TokensServerResponse {
   data: IApiTokens[];
 }
+export interface IApiRbtcBalance {
+  _id: string,
+  address: string,
+  balance: string,
+  blockHash: string,
+  blockNumber: number,
+  timestamp: number,
+  _created: number
+}
+
+export interface RbtcBalancesServerResponse {
+  data: IApiRbtcBalance[];
+}
 
 export interface IToken {
   name: string;

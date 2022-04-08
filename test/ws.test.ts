@@ -1,6 +1,12 @@
 import http from 'http'
 import { io } from 'socket.io-client'
-import { mockAddress, tokenResponse, transactionResponse, eventResponse } from './mockAddressResponses'
+import {
+  mockAddress,
+  rbtcBalanceResponse,
+  tokenResponse,
+  transactionResponse,
+  eventResponse
+} from './mockAddressResponses'
 import { WebSocketAPI } from '../src/controller/webSocketAPI'
 import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
@@ -13,13 +19,15 @@ describe('web socket', () => {
   const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
   const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
   const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
+  const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
 
   beforeAll((done) => {
     const server = http.createServer()
     const rskExplorerApiMock = {
       getTransactionsByAddress: getTransactionsByAddressMock,
       getTokensByAddress: getTokensByAddressMock,
-      getEventsByAddress: getEventsByAddressMock
+      getEventsByAddress: getEventsByAddressMock,
+      getRbtcBalanceByAddress: getRbtcBalanceByAddressMock
     }
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
@@ -65,7 +73,11 @@ describe('web socket', () => {
     clientSocket.on('change', (arg) => {
       const { type, payload } = arg
       if (type === 'newBalance') {
-        expect(payload).toEqual(tokenResponse[0])
+        if (payload.symbol === 'RBTC') {
+          expect(payload).toEqual(rbtcBalanceResponse[0])
+        } else {
+          expect(payload).toEqual(tokenResponse[0])
+        }
       }
       if (type === 'newTransaction') {
         expect(payload).toEqual(transactionResponse.data[0])

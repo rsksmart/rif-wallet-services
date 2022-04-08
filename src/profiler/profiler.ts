@@ -5,9 +5,11 @@ import { PriceProfiler } from './PriceProfiler'
 import { TransactionProfiler } from './TransactionProfiler'
 import { LastPrice } from '../service/price/lastPrice'
 import { TokenTransferProfiler } from './TokenTransferProfiler'
+import { RbtcBalanceProfiler } from './RbtcBalanceProfiler'
 
 export class Profiler extends Emitter {
   balanceProfiler: BalanceProfiler;
+  rbtBalanceProfiler: RbtcBalanceProfiler;
   transactionProfiler: TransactionProfiler;
   priceProfiler: PriceProfiler;
   lastPrice: LastPrice;
@@ -18,11 +20,15 @@ export class Profiler extends Emitter {
     super()
     this.address = address
     this.lastPrice = lastPrice
+
     this.balanceProfiler = new BalanceProfiler(address, rskExplorerApi)
+    this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, rskExplorerApi)
+
     this.transactionProfiler = new TransactionProfiler(address, rskExplorerApi)
+    this.tokenTransferProfiler = new TokenTransferProfiler(address, rskExplorerApi)
+
     const priceChannel = 'prices'
     this.priceProfiler = new PriceProfiler(lastPrice, priceChannel)
-    this.tokenTransferProfiler = new TokenTransferProfiler(address, rskExplorerApi)
   }
 
   async subscribe () {
@@ -48,10 +54,17 @@ export class Profiler extends Emitter {
       this.emit(tokenTransferChannel, newTokenTransfer)
     })
     await this.tokenTransferProfiler.subscribe(tokenTransferChannel)
+
+    const rbtcBalanceChannel = 'rbtcBalance'
+    this.rbtBalanceProfiler.on(balanceChannel, (newBalance) => {
+      this.emit(rbtcBalanceChannel, newBalance)
+    })
+    await this.rbtBalanceProfiler.subscribe(balanceChannel)
   }
 
   unsubscribe (): void {
     this.balanceProfiler.unsubscribe()
+    this.rbtBalanceProfiler.unsubscribe()
     this.transactionProfiler.unsubscribe()
     this.priceProfiler.unsubscribe()
     this.tokenTransferProfiler.unsubscribe()
