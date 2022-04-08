@@ -28,6 +28,11 @@ export class WebSocketAPI {
           socket.emit('change', data)
         })
 
+        profiler.on('rbtcBalance', (data) => {
+          console.log(data)
+          socket.emit('change', data)
+        })
+
         profiler.on('transactions', (data) => {
           console.log(data)
           socket.emit('change', data)
