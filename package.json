@@ -1,0 +1,64 @@
+{
+  "name": "rif-wallet-services",
+  "version": "1.0.0-beta.2",
+  "description": "RIF Wallet Services",
+  "main": "lib/index.js",
+  "scripts": {
+    "start": "nodemon",
+    "start:prod": "npm run build && node lib/index.js",
+    "test": "npx jest --coverage",
+    "test:watch": "npx jest --coverage --watch",
+    "test:ci": "npx jest --coverage --ci",
+    "build": "rimraf ./lib && npx tsc",
+    "lint": "npx eslint ./src ./test --ext .json,.js,.ts",
+    "lint:fix": "npx eslint ./src ./test --ext .json,.js,.ts --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rsksmart/rif-wallet-services.git"
+  },
+  "keywords": [
+    "wallet",
+    "services"
+  ],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rsksmart/rif-wallet-services/issues"
+  },
+  "homepage": "https://github.com/rsksmart/rif-wallet-services#readme",
+  "devDependencies": {
+    "@types/dotenv": "^8.2.0",
+    "@types/express": "^4.17.13",
+    "@types/jest": "^27.0.2",
+    "@typescript-eslint/eslint-plugin": "^4.33.0",
+    "@typescript-eslint/parser": "^4.33.0",
+    "eslint": "^7.24.0",
+    "eslint-config-standard": "^16.0.2",
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-plugin-jest": "^24.3.5",
+    "eslint-plugin-json": "^2.1.2",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^5.1.0",
+    "eslint-plugin-standard": "^5.0.0",
+    "jest": "^27.4.5",
+    "jest-junit": "^12.0.0",
+    "nodemon": "^2.0.7",
+    "rimraf": "^3.0.2",
+    "socket.io-client": "^4.4.1",
+    "supertest": "^6.1.6",
+    "ts-jest": "^27.1.2",
+    "ts-node": "^10.2.1",
+    "tsc": "^2.0.3",
+    "typescript": "^4.4.3"
+  },
+  "dependencies": {
+    "@rsksmart/rsk-contract-metadata": "^1.0.15",
+    "@rsksmart/rsk-utils": "^1.1.0",
+    "axios": "^0.22.0",
+    "dotenv": "^10.0.0",
+    "express": "^4.17.1",
+    "node-cache": "^5.1.2",
+    "socket.io": "^4.4.0"
+  }
+}

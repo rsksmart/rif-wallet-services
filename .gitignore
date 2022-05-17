@@ -1,0 +1,14 @@
+
+# Coverage directory used by tools like istanbul
+coverage
+
+# build
+lib
+
+# Dependency directories
+node_modules/
+
+# others
+.vscode
+.env*
+.DS_Store
