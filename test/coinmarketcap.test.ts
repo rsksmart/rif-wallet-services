@@ -1,4 +1,4 @@
-import { mockCoinMarketCap, pricesResponse } from './mockResponses'
+import { mockCoinMarketCap, pricesResponse } from './mockPriceResponses'
 
 describe('coin market cap', () => {
   test('valid query', async () => {

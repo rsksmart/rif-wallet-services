@@ -93,3 +93,9 @@ npm run start:prod
 - `develop` has latest approved feature. PRs need to pass `ci`. Do squash&merge.
 - Use branches pointing to `develop` to add new PRs.
 - Do external PRs against latest commit in `develop`.
+
+### Documentation
+
+- Documentation is located in docs directory.
+- We use PlantUML to write our class diagram.
+- You can visit https://plantuml.com/ to check more about it.

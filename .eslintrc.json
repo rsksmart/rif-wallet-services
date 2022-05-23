@@ -9,6 +9,9 @@
         "standard",
         "plugin:json/recommended"
     ],
+    "globals": {
+        "NodeJS": true
+    },
     "parser": "@typescript-eslint/parser",
     "parserOptions": {
         "ecmaVersion": 11,
