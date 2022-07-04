@@ -12,6 +12,7 @@ import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
+import { MockPrice } from '../src/service/price/mockPrice'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -33,8 +34,9 @@ describe('web socket', () => {
       getQuotesLatest: getQuotesLatestMock
     }
     const lastPrice = new LastPrice(30)
+    const mockPrice = new MockPrice(30)
 
-    priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+    priceCollector = new PriceCollector(coinMarketCapApiMock as any, mockPrice, 'USD', 30, 5 * 60 * 1000)
 
     priceCollector.on('prices', (prices) => {
       lastPrice.save(prices)

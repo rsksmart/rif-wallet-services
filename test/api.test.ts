@@ -8,12 +8,14 @@ import { CustomError } from '../src/middleware'
 import { CoinMarketCapAPI } from '../src/coinmarketcap'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
+import { MockPrice } from '../src/service/price/mockPrice'
 
 let priceCollector
 
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   const app = express()
-  priceCollector = new PriceCollector(coinMarketCapApi, 'USD', 30, 5 * 60 * 1000)
+  const mockPrice = new MockPrice(30)
+  priceCollector = new PriceCollector(coinMarketCapApi, mockPrice, 'USD', 30, 5 * 60 * 1000)
   const lastPrice = new LastPrice(30)
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)

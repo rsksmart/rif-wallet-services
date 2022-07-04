@@ -32,7 +32,7 @@ export class PriceCollector extends EventEmitter {
     return Promise.all([
       this.mockPrice.getPrices(),
       coinMarketCapPrices
-    ]).then(([mockPrices, realPrices]) => Promise.resolve({...mockPrices, ...realPrices}))
+    ]).then(([mockPrices, realPrices]) => Promise.resolve({ ...mockPrices, ...realPrices }))
   }
 
   async emitPrice (prices: Prices) {
