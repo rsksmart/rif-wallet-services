@@ -3,11 +3,14 @@ import { Prices } from '../../api/types'
 // TODO: Remove when we have a price source for stablecoins
 export class MockPrice {
   private chainId: number
-  private prices = {
-    30: [],
+  static readonly prices = {
+    30: [
+      '0x2d919f19d4892381d58edebeca66d5642cef1a1f', // RDOC
+      '0xe700691da7b9851f2f35f8b8182c69c53ccad9db' // DOC
+    ],
     31: [
-      '0xC3De9f38581F83e281F260D0ddBAac0E102Ff9F8', // RDOC
-      '0xCb46C0DdC60d18eFEB0e586c17AF6Ea36452DaE0' // DOC
+      '0xc3de9f38581f83e281f260d0ddbaac0e102ff9f8', // RDOC
+      '0xcb46c0ddc60d18efeb0e586c17af6ea36452dae0' // DOC
     ]
   }
 
@@ -16,7 +19,7 @@ export class MockPrice {
   }
 
   getPrices ():Promise<Prices> {
-    const mockPrices = this.prices[this.chainId].reduce(
+    const mockPrices = MockPrice.prices[this.chainId].reduce(
       (p, c) => ({
         ...p,
         [c]: {

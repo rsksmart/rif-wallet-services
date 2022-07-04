@@ -12,7 +12,8 @@ export class PriceCollector extends EventEmitter {
   private chainId: number
   private timer!: NodeJS.Timer
 
-  constructor (coinMarketCapApi: CoinMarketCapAPI, mockPrice: MockPrice, convert: string, chainId: number, cmcPollingTime) {
+  constructor (coinMarketCapApi: CoinMarketCapAPI, mockPrice: MockPrice,
+    convert: string, chainId: number, cmcPollingTime: number) {
     super()
     this.coinMarketCapApi = coinMarketCapApi
     this.mockPrice = mockPrice
