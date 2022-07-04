@@ -9,6 +9,7 @@ import { CoinMarketCapAPI } from './coinmarketcap'
 import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
+import { MockPrice } from './service/price/mockPrice'
 
 async function main () {
   const environment = {
@@ -33,7 +34,8 @@ async function main () {
     axios,
     environment.CHAIN_ID
   )
-  const priceCollector = new PriceCollector(coinMarketCapApi,
+  const mockPrice = new MockPrice(environment.CHAIN_ID);
+  const priceCollector = new PriceCollector(coinMarketCapApi, mockPrice,
     environment.DEFAULT_CONVERT_FIAT, environment.CHAIN_ID, environment.DEFAULT_PRICE_POLLING_TIME)
   const lastPrice = new LastPrice(environment.CHAIN_ID)
 
