@@ -5,6 +5,7 @@ import { TransactionProvider } from '../src/service/transaction/transactionProvi
 import { mockAddress, tokenResponse, transactionResponse, eventResponse } from './mockAddressResponses'
 import { pricesResponse } from './mockPriceResponses'
 import { TokenTransferProvider } from '../src/service/tokenTransfer/tokenTransferProvider'
+import { MockPrice } from '../src/service/price/mockPrice'
 
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve((transactionResponse)))
 const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
@@ -44,6 +45,7 @@ describe('Emmitting Events', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
+    const mockPrice = new MockPrice(30)
     const lastPrice = new LastPrice(30)
     lastPrice.on('prices', (data) => {
       const { type, payload } = data
@@ -51,7 +53,7 @@ describe('Emmitting Events', () => {
       expect(payload).toEqual(pricesResponse)
     })
 
-    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, mockPrice, 'USD', 30, 5 * 60 * 1000)
     priceCollector.once('prices', (prices) => {
       lastPrice.save(prices)
     })
