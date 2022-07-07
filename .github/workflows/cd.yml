@@ -6,7 +6,7 @@ on:
       - develop
 
 env:
-  AWS_REGION: us-west-2                  
+  AWS_REGION: ${{ secrets.AWS_REGION }}                 
   ECR_REPOSITORY: rif-wallet-services-dev
   ECS_SERVICE: rif-wallet-services-dev-lb1                 # set this to your Amazon ECS service name
   ECS_CLUSTER: rif-wallet-services-dev                # set this to your Amazon ECS cluster name
