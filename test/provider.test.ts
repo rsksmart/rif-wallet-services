@@ -53,7 +53,7 @@ describe('Emmitting Events', () => {
       expect(payload).toEqual(pricesResponse)
     })
 
-    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, mockPrice, 'USD', 30, 5 * 60 * 1000)
+    const priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice], 'USD', 30, 5 * 60 * 1000)
     priceCollector.once('prices', (prices) => {
       lastPrice.save(prices)
     })

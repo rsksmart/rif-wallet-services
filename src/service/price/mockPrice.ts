@@ -1,8 +1,8 @@
 import { Prices } from '../../api/types'
+import { PriceSupplier } from './priceSupplier'
 
 // TODO: Remove when we have a price source for stablecoins
-export class MockPrice {
-  private chainId: number
+export class MockPrice extends PriceSupplier {
   static readonly prices = {
     30: [
       '0x2d919f19d4892381d58edebeca66d5642cef1a1f', // RDOC
@@ -14,11 +14,7 @@ export class MockPrice {
     ]
   }
 
-  constructor (chainId) {
-    this.chainId = chainId
-  }
-
-  getPrices ():Promise<Prices> {
+  getQuotesLatest ():Promise<Prices> {
     const mockPrices = MockPrice.prices[this.chainId].reduce(
       (p, c) => ({
         ...p,

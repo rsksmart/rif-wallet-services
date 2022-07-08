@@ -15,7 +15,7 @@ let priceCollector
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   const app = express()
   const mockPrice = new MockPrice(30)
-  priceCollector = new PriceCollector(coinMarketCapApi, mockPrice, 'USD', 30, 5 * 60 * 1000)
+  priceCollector = new PriceCollector([coinMarketCapApi, mockPrice], 'USD', 30, 5 * 60 * 1000)
   const lastPrice = new LastPrice(30)
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)

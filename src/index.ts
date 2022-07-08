@@ -35,7 +35,7 @@ async function main () {
     environment.CHAIN_ID
   )
   const mockPrice = new MockPrice(environment.CHAIN_ID)
-  const priceCollector = new PriceCollector(coinMarketCapApi, mockPrice,
+  const priceCollector = new PriceCollector([coinMarketCapApi, mockPrice],
     environment.DEFAULT_CONVERT_FIAT, environment.CHAIN_ID, environment.DEFAULT_PRICE_POLLING_TIME)
   const lastPrice = new LastPrice(environment.CHAIN_ID)
 

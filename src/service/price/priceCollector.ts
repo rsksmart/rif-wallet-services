@@ -1,39 +1,40 @@
-import { CoinMarketCapAPI } from '../../coinmarketcap'
 import EventEmitter from 'events'
 import { addressToCoinmarketcapId } from '../../coinmarketcap/support'
 import { Prices } from '../../api/types'
-import { MockPrice } from './mockPrice'
+import { PriceSupplier } from './priceSupplier'
 
 export class PriceCollector extends EventEmitter {
-  private coinMarketCapApi: CoinMarketCapAPI
-  private mockPrice: MockPrice
+  private suppliers: PriceSupplier[]
   private cmcPollingTime: number
   private convert: string
   private chainId: number
   private timer!: NodeJS.Timer
 
-  constructor (coinMarketCapApi: CoinMarketCapAPI, mockPrice: MockPrice,
+  constructor (suppliers: PriceSupplier[],
     convert: string, chainId: number, cmcPollingTime: number) {
     super()
-    this.coinMarketCapApi = coinMarketCapApi
-    this.mockPrice = mockPrice
+    this.suppliers = suppliers
     this.convert = convert
     this.chainId = chainId
     this.cmcPollingTime = cmcPollingTime
   }
 
   getPrices = (): Promise<Prices> => {
-    const coinMarketCapPrices = this.coinMarketCapApi.getQuotesLatest({
-      addresses: Object.keys(addressToCoinmarketcapId[this.chainId]),
-      convert: this.convert
-    }).catch(error => {
-      console.log(error)
-      return Promise.resolve({} as Prices)
-    })
-    return Promise.all([
-      this.mockPrice.getPrices(),
-      coinMarketCapPrices
-    ]).then(([mockPrices, realPrices]) => Promise.resolve({ ...mockPrices, ...realPrices }))
+    const lastPrices: Promise<Prices>[] = this.suppliers.map(supplier =>
+      supplier.getQuotesLatest({
+        addresses: Object.keys(addressToCoinmarketcapId[this.chainId]),
+        convert: this.convert
+      }).catch(e => {
+        console.log('Exception collecting price', e)
+        return Promise.resolve({} as Prices)
+      }
+      )
+    )
+    return Promise.all(lastPrices)
+      .then(prices =>
+        Promise.resolve(prices.reduce(
+          (p, c) => ({ ...p, ...c }), {}
+        )))
   }
 
   async emitPrice (prices: Prices) {

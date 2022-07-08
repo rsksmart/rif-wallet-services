@@ -3,6 +3,7 @@ import { ICoinMarketCapQuoteParams, ICoinMarketCapQuoteResponse } from './types'
 import { addressToCoinmarketcapId } from './support'
 import { isTokenSupported } from './validations'
 import { Prices } from '../api/types'
+import { PriceSupplier } from '../service/price/priceSupplier'
 
 type PricesQueryParams = { addresses: string[], convert: string }
 
@@ -24,11 +25,10 @@ const fromQuotesResponseToPrices =
         }
       }), {})
 
-export class CoinMarketCapAPI {
+export class CoinMarketCapAPI extends PriceSupplier {
   headers: { 'X-CMC_PRO_API_KEY': string }
   baseURL: string
   axios: typeof _axios
-  chainId: number
   coinmarketcapIdToAddress: Record<string, string>
 
   constructor (
@@ -38,12 +38,12 @@ export class CoinMarketCapAPI {
     axios: typeof _axios,
     chainId: number
   ) {
+    super(chainId)
     this.baseURL = `${url}/${version}`
     this.headers = {
       'X-CMC_PRO_API_KEY': apiKey
     }
     this.axios = axios
-    this.chainId = chainId
     this.coinmarketcapIdToAddress = Object.keys(addressToCoinmarketcapId[chainId])
       .reduce((p, c) => ({ ...p, [addressToCoinmarketcapId[chainId][c]]: c }), {})
   }
