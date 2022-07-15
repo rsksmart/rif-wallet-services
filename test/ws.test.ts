@@ -12,6 +12,7 @@ import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
+import { DataSource } from '../src/repository/DataSource'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -44,7 +45,9 @@ describe('web socket', () => {
     })
 
     priceCollector.init()
-    const webSocketAPI = new WebSocketAPI(server, rskExplorerApiMock as any, lastPrice)
+    const dataSourceMapping = new Map<string, DataSource>()
+    dataSourceMapping.set('31', rskExplorerApiMock as any)
+    const webSocketAPI = new WebSocketAPI(server, dataSourceMapping, lastPrice)
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'
