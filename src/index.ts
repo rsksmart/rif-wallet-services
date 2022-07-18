@@ -33,13 +33,12 @@ async function main () {
     environment.COIN_MARKET_CAP_URL,
     environment.COIN_MARKET_CAP_VERSION,
     environment.COIN_MARKET_CAP_KEY,
-    axios,
-    environment.CHAIN_ID
+    axios
   )
-  const mockPrice = new MockPrice(environment.CHAIN_ID)
+  const mockPrice = new MockPrice()
   const priceCollector = new PriceCollector([coinMarketCapApi, mockPrice],
-    environment.DEFAULT_CONVERT_FIAT, environment.CHAIN_ID, environment.DEFAULT_PRICE_POLLING_TIME)
-  const lastPrice = new LastPrice(environment.CHAIN_ID)
+    environment.DEFAULT_CONVERT_FIAT, environment.DEFAULT_PRICE_POLLING_TIME)
+  const lastPrice = new LastPrice()
 
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
@@ -49,15 +48,15 @@ async function main () {
   await priceCollector.init()
 
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, rskExplorerApi, lastPrice)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice)
   httpsAPI.init()
 
   const server = http.createServer(app)
   const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice)
   const io = new Server(server, {
-    // cors: {
-    //   origin: 'https://amritb.github.io'
-    // },
+    cors: {
+      origin: 'https://amritb.github.io'
+    },
     path: '/ws'
   })
   webSocketAPI.init(io)

@@ -7,22 +7,20 @@ export class PriceCollector extends EventEmitter {
   private suppliers: PriceSupplier[]
   private cmcPollingTime: number
   private convert: string
-  private chainId: number
   private timer!: NodeJS.Timer
 
   constructor (suppliers: PriceSupplier[],
-    convert: string, chainId: number, cmcPollingTime: number) {
+    convert: string, cmcPollingTime: number) {
     super()
     this.suppliers = suppliers
     this.convert = convert
-    this.chainId = chainId
     this.cmcPollingTime = cmcPollingTime
   }
 
   getPrices = (): Promise<Prices> => {
     const lastPrices: Promise<Prices>[] = this.suppliers.map(supplier =>
       supplier.getQuotesLatest({
-        addresses: Object.keys(addressToCoinmarketcapId[this.chainId]),
+        addresses: Object.keys(addressToCoinmarketcapId),
         convert: this.convert
       }).catch(e => {
         console.log('Exception collecting price', e)

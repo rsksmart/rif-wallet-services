@@ -1,12 +1,13 @@
 import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
-import { RSKExplorerAPI } from '../src/rskExplorerApi'
+import { DataSource } from '../src/repository/DataSource'
 import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
 
-const setupTestApi = (rskExplorerApi: RSKExplorerAPI) => {
+const setupTestApi = (dataSourceMapping: Map<string, DataSource>) => {
   const app = express()
-  const httpsAPI = new HttpsAPI(app, rskExplorerApi, {})
+  console.log(dataSourceMapping)
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {})
   httpsAPI.init()
   return app
 }
@@ -18,11 +19,13 @@ const rskExplorerApiMock = {
   getEventsByAddress: getEventsByAddressMock,
   getTransactionsByAddress: getTransactionsByAddressMock,
   getTokensByAddress: getTokensByAddressMock
-}
+} as any
+const dataSourceMapping = new Map<string, DataSource>()
+dataSourceMapping.set('31', rskExplorerApiMock)
 
 describe('transactions', () => {
   test('get transactions', async () => {
-    const app = setupTestApi(rskExplorerApiMock as any)
+    const app = setupTestApi(dataSourceMapping)
 
     const { res: { text } } = await request(app)
       .get(`/address/${mockAddress}/transactions?limit=50`)
@@ -35,12 +38,13 @@ describe('transactions', () => {
 
 describe('tokens', () => {
   test('get tokens', async () => {
-    const app = setupTestApi(rskExplorerApiMock as any)
+    const app = setupTestApi(dataSourceMapping)
 
     const { res: { text } } = await request(app)
       .get(`/address/${mockAddress}/tokens`)
       .expect('Content-Type', /json/)
       .expect(200)
+
     expect(JSON.parse(text)).toEqual(tokenResponse)
     expect(getTokensByAddressMock).toHaveBeenCalledWith(mockAddress)
   })
@@ -48,7 +52,7 @@ describe('tokens', () => {
 
 describe('events', () => {
   test('get events', async () => {
-    const app = setupTestApi(rskExplorerApiMock as any)
+    const app = setupTestApi(dataSourceMapping)
 
     const { res: { text } } = await request(app)
       .get(`/address/${mockAddress}/events`)

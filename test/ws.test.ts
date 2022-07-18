@@ -33,12 +33,12 @@ describe('web socket', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    const lastPrice = new LastPrice(30)
+    const lastPrice = new LastPrice()
     const mockPrice = {
       getQuotesLatest: jest.fn(() => Promise.resolve({}))
     }
 
-    priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice as any], 'USD', 30, 5 * 60 * 1000)
+    priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice as any], 'USD', 5 * 60 * 1000)
 
     priceCollector.on('prices', (prices) => {
       lastPrice.save(prices)
