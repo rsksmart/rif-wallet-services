@@ -7,7 +7,7 @@ on:
       - fix/devops
 
 env:
-  AWS_REGION: ${{ secrets.AWS_REGION }}                 
+  AWS_REGION: us-east-1                
   ECR_REPOSITORY: rif-wallet-services-testnet
   ECS_SERVICE: wallet-services-testnet                 # set this to your Amazon ECS service name
   ECS_CLUSTER: wallet-services-testnet                # set this to your Amazon ECS cluster name
@@ -31,7 +31,7 @@ jobs:
         with:
           aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
           aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
-          aws-region: ${{ secrets.AWS_REGION }}
+          aws-region: us-east-1
 
       - name: Login to Amazon ECR
         id: login-ecr
