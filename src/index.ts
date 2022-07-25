@@ -54,9 +54,9 @@ async function main () {
   const server = http.createServer(app)
   const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice)
   const io = new Server(server, {
-    cors: {
-      origin: 'https://amritb.github.io'
-    },
+    // cors: {
+    //   origin: 'https://amritb.github.io'
+    // },
     path: '/ws'
   })
   webSocketAPI.init(io)

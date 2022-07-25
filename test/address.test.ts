@@ -6,7 +6,6 @@ import { eventResponse, mockAddress, tokenResponse, transactionResponse } from '
 
 const setupTestApi = (dataSourceMapping: Map<string, DataSource>) => {
   const app = express()
-  console.log(dataSourceMapping)
   const httpsAPI = new HttpsAPI(app, dataSourceMapping, {})
   httpsAPI.init()
   return app

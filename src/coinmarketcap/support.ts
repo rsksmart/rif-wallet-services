@@ -6,6 +6,7 @@ export const addressToCoinmarketcapId = {
   '0xef213441a85df4d7acbdae0cf78004e1e486bb96': '825', // rUSDT
   '0x4991516df6053121121274397a8c1dad608bc95b': '7785', // rBUND
   '0xefc78fc7d48b64958315949279ba181c2114abbd': '8669', // SOV
+  BTC: '1',
 
   // TestNet
   '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe': '3701', // tRIF
