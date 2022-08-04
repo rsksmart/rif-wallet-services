@@ -158,7 +158,7 @@ export const mockCoinMarketCap = () => {
     get: getQuotesLatestMock
   }
 
-  const coinMarketCapApi = new CoinMarketCapAPI('url', 'v1', 'api-key', axiosMock as any, 30)
+  const coinMarketCapApi = new CoinMarketCapAPI('url', 'v1', 'api-key', axiosMock as any)
 
   return { axiosMock, coinMarketCapApi }
 }

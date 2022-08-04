@@ -1,4 +1,4 @@
-import { RSKExplorerAPI } from '../rskExplorerApi'
+import { DataSource } from '../repository/DataSource'
 import { TransactionProvider } from '../service/transaction/transactionProvider'
 import { Emitter } from './Emitter'
 
@@ -7,10 +7,10 @@ export class TransactionProfiler extends Emitter {
   private transactionProvider: TransactionProvider
   private lastReceivedTransactionBlockNumber = -1
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
+  constructor (address: string, dataSource: DataSource) {
     super()
     this.address = address
-    this.transactionProvider = new TransactionProvider(address, rskExplorerApi)
+    this.transactionProvider = new TransactionProvider(address, dataSource)
   }
 
   async subscribe (channel: string): Promise<void> {

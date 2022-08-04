@@ -1,16 +1,16 @@
-import { RSKExplorerAPI } from '../rskExplorerApi'
 import { Emitter } from './Emitter'
 import { BalanceProvider } from '../service/balance/balanceProvider'
+import { DataSource } from '../repository/DataSource'
 
 export class BalanceProfiler extends Emitter {
   private address: string
   private balanceProvider: BalanceProvider
   private currentBalance = {}
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
+  constructor (address: string, dataSource: DataSource) {
     super()
     this.address = address
-    this.balanceProvider = new BalanceProvider(this.address, rskExplorerApi)
+    this.balanceProvider = new BalanceProvider(this.address, dataSource)
   }
 
   async subscribe (channel: string) {

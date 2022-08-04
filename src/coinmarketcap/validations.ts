@@ -1,10 +1,9 @@
 import { MockPrice } from '../service/price/mockPrice'
 import { addressToCoinmarketcapId, supportedFiat } from './support'
 
-export const isTokenSupported = (address: string, chainId: number) => {
-  console.log(address)
-  return addressToCoinmarketcapId[chainId][address] !== undefined ||
-  MockPrice.prices[chainId].includes(address)
+export const isTokenSupported = (address: string) => {
+  return addressToCoinmarketcapId[address] !== undefined ||
+  MockPrice.prices.includes(address)
 }
 
 export const isConvertSupported = (convert: string) => supportedFiat.includes(convert)

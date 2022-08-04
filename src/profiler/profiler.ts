@@ -1,4 +1,3 @@
-import { RSKExplorerAPI } from '../rskExplorerApi'
 import { Emitter } from './Emitter'
 import { BalanceProfiler } from './BalanceProfiler'
 import { PriceProfiler } from './PriceProfiler'
@@ -6,6 +5,7 @@ import { TransactionProfiler } from './TransactionProfiler'
 import { LastPrice } from '../service/price/lastPrice'
 import { TokenTransferProfiler } from './TokenTransferProfiler'
 import { RbtcBalanceProfiler } from './RbtcBalanceProfiler'
+import { DataSource } from '../repository/DataSource'
 
 export class Profiler extends Emitter {
   balanceProfiler: BalanceProfiler;
@@ -16,16 +16,16 @@ export class Profiler extends Emitter {
   address: string
   tokenTransferProfiler: TokenTransferProfiler;
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI, lastPrice: LastPrice) {
+  constructor (address: string, dataSource: DataSource, lastPrice: LastPrice) {
     super()
     this.address = address
     this.lastPrice = lastPrice
 
-    this.balanceProfiler = new BalanceProfiler(address, rskExplorerApi)
-    this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, rskExplorerApi)
+    this.balanceProfiler = new BalanceProfiler(address, dataSource)
+    this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, dataSource)
 
-    this.transactionProfiler = new TransactionProfiler(address, rskExplorerApi)
-    this.tokenTransferProfiler = new TokenTransferProfiler(address, rskExplorerApi)
+    this.transactionProfiler = new TransactionProfiler(address, dataSource)
+    this.tokenTransferProfiler = new TokenTransferProfiler(address, dataSource)
 
     const priceChannel = 'prices'
     this.priceProfiler = new PriceProfiler(lastPrice, priceChannel)

@@ -1,5 +1,6 @@
 
 import _axios from 'axios'
+import { DataSource } from '../repository/DataSource'
 import {
   EventsServerResponse,
   TransactionsServerResponse,
@@ -9,15 +10,12 @@ import {
 } from './types'
 import { fromApiToRtbcBalance, fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
-export class RSKExplorerAPI {
-    apiURL: string
-    chainId: number
-    axios: typeof _axios
+export class RSKExplorerAPI extends DataSource {
+    private chainId: number;
 
-    constructor (apiURL: string, chainId: number, axios: typeof _axios) {
-      this.apiURL = apiURL
+    constructor (apiURL: string, chainId: number, axios: typeof _axios, id: string) {
+      super(apiURL, id, axios)
       this.chainId = chainId
-      this.axios = axios
     }
 
     async getEventsByAddress (address:string) {
@@ -27,7 +25,7 @@ export class RSKExplorerAPI {
         address: address.toLowerCase()
       }
 
-      const response = await this.axios.get<EventsServerResponse>(this.apiURL, { params })
+      const response = await this.axios!.get<EventsServerResponse>(this.url, { params })
       return response.data.data.map(ev => fromApiToTEvents(ev))
     }
 
@@ -37,7 +35,7 @@ export class RSKExplorerAPI {
         action: 'getTokens'
       }
 
-      const response = await this.axios.get<TokensServerResponse>(this.apiURL, { params })
+      const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
       return response.data.data
         .filter(t => t.name != null)
         .map(t => fromApiToTokens(t, this.chainId))
@@ -50,7 +48,7 @@ export class RSKExplorerAPI {
         address: address.toLowerCase()
       }
 
-      const response = await this.axios.get<TokensServerResponse>(this.apiURL, { params })
+      const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
       return response.data.data
         .filter(t => t.name != null)
         .map(t => fromApiToTokenWithBalance(t, this.chainId))
@@ -63,7 +61,7 @@ export class RSKExplorerAPI {
         address: address.toLowerCase()
       }
 
-      const response = await this.axios.get<RbtcBalancesServerResponse>(this.apiURL, { params })
+      const response = await this.axios!.get<RbtcBalancesServerResponse>(this.url, { params })
       const apiRbtcBalancesByBlocks:IApiRbtcBalance[] = response.data.data
 
       // eslint-disable-next-line max-len
@@ -86,7 +84,7 @@ export class RSKExplorerAPI {
         prev,
         next
       }
-      const response = await this.axios.get<TransactionsServerResponse>(this.apiURL, { params })
+      const response = await this.axios!.get<TransactionsServerResponse>(this.url, { params })
 
       const pagesInfo = (response.data as any).pages
 

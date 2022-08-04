@@ -4,16 +4,14 @@ import { isConvertSupported, isTokenSupported } from '../../coinmarketcap/valida
 
 export class LastPrice extends EventEmitter {
   private prices: Prices
-  private chainId: number
 
-  constructor (chainId: number) {
+  constructor () {
     super()
     this.prices = {}
-    this.chainId = chainId
   }
 
   validate (addresses: string[], convert: string): string[] {
-    addresses = addresses.filter((address) => isTokenSupported(address, this.chainId))
+    addresses = addresses.filter((address) => isTokenSupported(address))
 
     if (!isConvertSupported(convert)) throw new Error('Convert not supported')
     return addresses

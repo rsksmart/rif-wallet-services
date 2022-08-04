@@ -45,15 +45,15 @@ describe('Emmitting Events', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    const mockPrice = new MockPrice(30)
-    const lastPrice = new LastPrice(30)
+    const mockPrice = new MockPrice()
+    const lastPrice = new LastPrice()
     lastPrice.on('prices', (data) => {
       const { type, payload } = data
       expect(type).toEqual('newPrice')
       expect(payload).toEqual(pricesResponse)
     })
 
-    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, mockPrice, 'USD', 30, 5 * 60 * 1000)
+    const priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice], 'USD', 5 * 60 * 1000)
     priceCollector.once('prices', (prices) => {
       lastPrice.save(prices)
     })

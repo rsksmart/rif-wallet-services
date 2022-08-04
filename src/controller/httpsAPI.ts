@@ -2,17 +2,17 @@ import { Application, NextFunction, Request, Response } from 'express'
 import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
-import { RSKExplorerAPI } from '../rskExplorerApi'
 import { LastPrice } from '../service/price/lastPrice'
+import { DataSource } from '../repository/DataSource'
 
 export class HttpsAPI {
   private app: Application
-  private rskExplorerApi: RSKExplorerAPI
+  private dataSourceMapping: Map<string, DataSource>
   private lastPrice: LastPrice
 
-  constructor (app: Application, rskExplorerApi: RSKExplorerAPI, lastPrice) {
+  constructor (app: Application, dataSourceMapping: Map<string, DataSource>, lastPrice) {
     this.app = app
-    this.rskExplorerApi = rskExplorerApi
+    this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
   }
 
@@ -21,32 +21,34 @@ export class HttpsAPI {
   }
 
   init () : void {
-    this.app.get('/tokens', (_: Request, res: Response, next: NextFunction) => this
-      .rskExplorerApi.getTokens()
+    this.app.get('/tokens', ({ query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
+      .dataSourceMapping.get(chainId as string)?.getTokens()
       .then(this.responseJsonOk(res))
       .catch(next)
     )
 
     this.app.get(
       '/address/:address/tokens',
-      ({ params: { address } }: Request, res: Response, next: NextFunction) => this
-        .rskExplorerApi.getTokensByAddress(address)
+      ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
+        .dataSourceMapping.get(chainId as string)?.getTokensByAddress(address)
         .then(this.responseJsonOk(res))
         .catch(next)
     )
 
     this.app.get(
       '/address/:address/events',
-      ({ params: { address } }: Request, res: Response, next: NextFunction) => this
-        .rskExplorerApi.getEventsByAddress(address)
+      ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
+        .dataSourceMapping.get(chainId as string)?.getEventsByAddress(address)
         .then(this.responseJsonOk(res))
         .catch(next)
     )
 
     this.app.get(
       '/address/:address/transactions',
-      ({ params: { address }, query: { limit, prev, next } }: Request, res: Response, nextFunction: NextFunction) =>
-        this.rskExplorerApi.getTransactionsByAddress(address, limit as string, prev as string, next as string)
+      ({ params: { address }, query: { limit, prev, next, chainId = '31' } }: Request,
+        res: Response, nextFunction: NextFunction) =>
+        this.dataSourceMapping.get(chainId as string)
+          ?.getTransactionsByAddress(address, limit as string, prev as string, next as string)
           .then(this.responseJsonOk(res))
           .catch(nextFunction)
     )

@@ -1,17 +1,17 @@
-import { RSKExplorerAPI } from '../../rskExplorerApi'
+import { DataSource } from '../../repository/DataSource'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 
 export class TransactionProvider extends PollingProvider<Event> {
-  private rskExplorerApi: RSKExplorerAPI
+  private dataSource: DataSource
 
-  constructor (address: string, rskExplorerApi : RSKExplorerAPI) {
+  constructor (address: string, dataSource : DataSource) {
     super(address)
-    this.rskExplorerApi = rskExplorerApi
+    this.dataSource = dataSource
   }
 
   async getTransactionsPaginated (address: string, limit?: string, prev?: string, next?: string) {
-    return this.rskExplorerApi.getTransactionsByAddress(address, limit, prev, next)
+    return this.dataSource.getTransactionsByAddress(address, limit, prev, next)
   }
 
   async poll () {
