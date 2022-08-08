@@ -1,8 +1,4 @@
-<<<<<<< HEAD
 import { DataSource } from '../../repository/DataSource'
-=======
-import { RSKExplorerAPI } from '../../rskExplorerApi'
->>>>>>> 5253776 (Adding incoming txs)
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 import { isIncomingTransaction } from './utils'
@@ -16,12 +12,12 @@ export class TransactionProvider extends PollingProvider<Event> {
   }
 
   async getIncomingTransactions (address: string) {
-    const events = await this.rskExplorerApi.getEventsByAddress(this.address.toLowerCase())
+    const events = await this.dataSource.getEventsByAddress(this.address.toLowerCase())
       .then(events => events.filter(event => isIncomingTransaction(event, address)))
       .catch(() => [])
 
     const txs = events
-      .map(event => this.rskExplorerApi.getTransaction(event.transactionHash))
+      .map(event => this.dataSource.getTransaction(event.transactionHash))
 
     const result = await Promise.all(txs)
     return result

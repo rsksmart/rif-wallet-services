@@ -5,7 +5,8 @@ import {
   TransactionsServerResponse,
   TokensServerResponse,
   IApiRbtcBalance,
-  RbtcBalancesServerResponse
+  RbtcBalancesServerResponse,
+  TransactionServerResponse
 } from './types'
 import { fromApiToRtbcBalance, fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
@@ -67,6 +68,18 @@ export class RSKExplorerAPI extends DataSource {
       const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce((prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
 
       return [fromApiToRtbcBalance(balanceInLatestBlock, this.chainId)]
+    }
+
+    async getTransaction (hash: string) {
+      const params = {
+        module: 'transactions',
+        action: 'getTransaction',
+        hash
+      }
+
+      const response = await this.axios!.get<TransactionServerResponse>(this.url, { params })
+
+      return response.data.data
     }
 
     async getTransactionsByAddress (
