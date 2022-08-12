@@ -2,7 +2,7 @@ import { BalanceProvider } from '../src/service/balance/balanceProvider'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { TransactionProvider } from '../src/service/transaction/transactionProvider'
-import { mockAddress, tokenResponse, transactionResponse, eventResponse } from './mockAddressResponses'
+import { mockAddress, tokenResponse, transactionResponse, eventResponse, txResponse } from './mockAddressResponses'
 import { pricesResponse } from './mockPriceResponses'
 import { TokenTransferProvider } from '../src/service/tokenTransfer/tokenTransferProvider'
 import { MockPrice } from '../src/service/price/mockPrice'
@@ -11,17 +11,19 @@ const getTransactionsByAddressMock = jest.fn(() => Promise.resolve((transactionR
 const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
 const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
+const getTransactionMock = jest.fn(() => Promise.resolve(txResponse))
 
 describe('Emmitting Events', () => {
   test('emit transactions', async () => {
     const rskExplorerApiMock = {
-      getTransactionsByAddress: getTransactionsByAddressMock
+      getTransactionsByAddress: getTransactionsByAddressMock,
+      getTransaction: getTransactionMock,
+      getEventsByAddress: getEventsByAddressMock
     }
     const transactionProvider = new TransactionProvider(mockAddress, rskExplorerApiMock as any)
     transactionProvider.on(mockAddress, async (data) => {
-      const { type, payload } = data
+      const { type } = data
       expect(type).toEqual('newTransaction')
-      expect(payload).toEqual(transactionResponse.data[0])
     })
     await transactionProvider.subscribe(mockAddress)
     transactionProvider.unsubscribe()
