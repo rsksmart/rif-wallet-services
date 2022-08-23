@@ -1,16 +1,16 @@
-import { RSKExplorerAPI } from '../rskExplorerApi'
 import { Emitter } from './Emitter'
 import { TokenTransferProvider } from '../service/tokenTransfer/tokenTransferProvider'
+import { DataSource } from '../repository/DataSource'
 
 export class TokenTransferProfiler extends Emitter {
   private address: string
   private tokenTransferProvider: TokenTransferProvider
   private lastReceivedTransactionBlockNumber = -1
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
+  constructor (address: string, dataSource: DataSource) {
     super()
     this.address = address
-    this.tokenTransferProvider = new TokenTransferProvider(this.address, rskExplorerApi)
+    this.tokenTransferProvider = new TokenTransferProvider(this.address, dataSource)
   }
 
   async subscribe (channel: string) {

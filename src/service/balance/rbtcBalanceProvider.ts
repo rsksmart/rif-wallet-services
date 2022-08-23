@@ -1,17 +1,17 @@
-import { RSKExplorerAPI } from '../../rskExplorerApi'
+import { DataSource } from '../../repository/DataSource'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 
 export class RbtcBalanceProvider extends PollingProvider<Event> {
-  private rskExplorerApi: RSKExplorerAPI
+  private dataSource: DataSource
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
+  constructor (address: string, dataSource: DataSource) {
     super(address)
-    this.rskExplorerApi = rskExplorerApi
+    this.dataSource = dataSource
   }
 
   async poll () {
-    const events = await this.rskExplorerApi.getRbtcBalanceByAddress(this.address.toLowerCase())
+    const events = await this.dataSource.getRbtcBalanceByAddress(this.address.toLowerCase())
       .then(tokens => tokens.map(token => ({ type: 'newBalance', payload: token })))
       .catch(() => [])
     return events

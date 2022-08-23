@@ -9,6 +9,8 @@ import { CoinMarketCapAPI } from './coinmarketcap'
 import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
+import { MockPrice } from './service/price/mockPrice'
+import { DataSource } from './repository/DataSource'
 
 async function main () {
   const environment = {
@@ -24,18 +26,19 @@ async function main () {
     DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
     DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000
   }
-
-  const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios)
+  const datasourceMapping = new Map<string, DataSource>()
+  const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios, '31')
+  datasourceMapping.set('31', rskExplorerApi)
   const coinMarketCapApi = new CoinMarketCapAPI(
     environment.COIN_MARKET_CAP_URL,
     environment.COIN_MARKET_CAP_VERSION,
     environment.COIN_MARKET_CAP_KEY,
-    axios,
-    environment.CHAIN_ID
+    axios
   )
-  const priceCollector = new PriceCollector(coinMarketCapApi,
-    environment.DEFAULT_CONVERT_FIAT, environment.CHAIN_ID, environment.DEFAULT_PRICE_POLLING_TIME)
-  const lastPrice = new LastPrice(environment.CHAIN_ID)
+  const mockPrice = new MockPrice()
+  const priceCollector = new PriceCollector([coinMarketCapApi, mockPrice],
+    environment.DEFAULT_CONVERT_FIAT, environment.DEFAULT_PRICE_POLLING_TIME)
+  const lastPrice = new LastPrice()
 
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
@@ -45,11 +48,11 @@ async function main () {
   await priceCollector.init()
 
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, rskExplorerApi, lastPrice)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice)
   httpsAPI.init()
 
   const server = http.createServer(app)
-  const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, rskExplorerApi, lastPrice)
+  const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice)
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'

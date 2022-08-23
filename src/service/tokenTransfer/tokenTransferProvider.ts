@@ -1,17 +1,17 @@
-import { RSKExplorerAPI } from '../../rskExplorerApi'
+import { DataSource } from '../../repository/DataSource'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 
 export class TokenTransferProvider extends PollingProvider<Event> {
-  private rskExplorerApi: RSKExplorerAPI
+  private dataSource: DataSource
 
-  constructor (address: string, rskExplorerApi: RSKExplorerAPI) {
+  constructor (address: string, dataSource: DataSource) {
     super(address)
-    this.rskExplorerApi = rskExplorerApi
+    this.dataSource = dataSource
   }
 
   async poll () {
-    const events = await this.rskExplorerApi.getEventsByAddress(this.address.toLowerCase())
+    const events = await this.dataSource.getEventsByAddress(this.address.toLowerCase())
       .then((tokenTransfers) => tokenTransfers.map(tokenTransfer => ({
         type: 'newTokenTransfer',
         payload: tokenTransfer

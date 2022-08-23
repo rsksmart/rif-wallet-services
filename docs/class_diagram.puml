@@ -5,8 +5,8 @@ class controller.WebSocketAPI {
 }
 
 class controller.HttpsAPI {
-  RskExplorerApi rskExplorerApi
-  LastPrice LastPrice
+  DataSource dataSource
+  LastPrice lastPrice
 }
 
 class PriceCollector {
@@ -55,7 +55,7 @@ class Event {
 }
 
 class BalanceProvider extends PollingProvider {
-  rskExplorerApi: RskExplorerApi
+  dataSource: DataSource
 }
 
 class profiler.BalanceProfiler extends Emitter {
@@ -64,7 +64,7 @@ class profiler.BalanceProfiler extends Emitter {
 }
 
 class TransactionProvider extends PollingProvider {
-  rskExplorerApi: RskExplorerApi
+  dataSource: DataSource
 }
 
 class profiler.TransactionProfiler extends Emitter {
@@ -76,16 +76,32 @@ class profiler.PriceProfiler extends Emitter {
   lastPrice: LastPrice
 }
 
-class RskExplorerApi {
+class RskExplorerApi extends DataSource {
 
 }
 
-class CoinMarketCapApi {
+class CoinMarketCapApi extends PriceSupplier{
+
+}
+
+class MockPrice extends PriceSupplier {
 
 }
 
 class EventEmitter {
 
+}
+
+abstract class PriceSupplier {
+  {abstract} getQuotesLatest( queryParams )
+}
+
+abstract class DataSource {
+  {abstract} getTokens()
+  {abstract} getTokensByAddress(address: string)
+  {abstract} getRbtcBalanceByAddress(address: string)
+  {abstract} getEventsByAddress(address: string)
+  {abstract} getTransactionsByAddress(address:string)
 }
 
 profiler.Profiler o-- profiler.PriceProfiler : emit Event
@@ -94,11 +110,11 @@ profiler.Profiler o-- profiler.TransactionProfiler : emit Event
 profiler.BalanceProfiler o-- BalanceProvider
 profiler.TransactionProfiler o-- TransactionProvider
 profiler.PriceProfiler o-- LastPrice
-BalanceProvider o-- RskExplorerApi : polling
-TransactionProvider o-- RskExplorerApi : polling
+BalanceProvider o-- DataSource : polling
+TransactionProvider o-- DataSource : polling
 controller.WebSocketAPI *-- profiler.Profiler : emit Events
-controller.HttpsAPI o-- RskExplorerApi : aggregation
+controller.HttpsAPI o-- DataSource : aggregation
 controller.HttpsAPI o-- LastPrice : aggregation
-PriceCollector o-- CoinMarketCapApi : polling
-LastPrice <-- PriceCollector
+PriceCollector o-- PriceSupplier : polling
+LastPrice <-- PriceCollector : store
 @enduml 

@@ -2,25 +2,28 @@ import { BalanceProvider } from '../src/service/balance/balanceProvider'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { TransactionProvider } from '../src/service/transaction/transactionProvider'
-import { mockAddress, tokenResponse, transactionResponse, eventResponse } from './mockAddressResponses'
+import { mockAddress, tokenResponse, transactionResponse, eventResponse, txResponse } from './mockAddressResponses'
 import { pricesResponse } from './mockPriceResponses'
 import { TokenTransferProvider } from '../src/service/tokenTransfer/tokenTransferProvider'
+import { MockPrice } from '../src/service/price/mockPrice'
 
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve((transactionResponse)))
 const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
 const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
+const getTransactionMock = jest.fn(() => Promise.resolve(txResponse))
 
 describe('Emmitting Events', () => {
   test('emit transactions', async () => {
     const rskExplorerApiMock = {
-      getTransactionsByAddress: getTransactionsByAddressMock
+      getTransactionsByAddress: getTransactionsByAddressMock,
+      getTransaction: getTransactionMock,
+      getEventsByAddress: getEventsByAddressMock
     }
     const transactionProvider = new TransactionProvider(mockAddress, rskExplorerApiMock as any)
     transactionProvider.on(mockAddress, async (data) => {
-      const { type, payload } = data
+      const { type } = data
       expect(type).toEqual('newTransaction')
-      expect(payload).toEqual(transactionResponse.data[0])
     })
     await transactionProvider.subscribe(mockAddress)
     transactionProvider.unsubscribe()
@@ -44,14 +47,15 @@ describe('Emmitting Events', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    const lastPrice = new LastPrice(30)
+    const mockPrice = new MockPrice()
+    const lastPrice = new LastPrice()
     lastPrice.on('prices', (data) => {
       const { type, payload } = data
       expect(type).toEqual('newPrice')
       expect(payload).toEqual(pricesResponse)
     })
 
-    const priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+    const priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice], 'USD', 5 * 60 * 1000)
     priceCollector.once('prices', (prices) => {
       lastPrice.save(prices)
     })

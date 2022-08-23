@@ -12,6 +12,7 @@ import { pricesResponse } from './mockPriceResponses'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
+import { DataSource } from '../src/repository/DataSource'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -32,16 +33,21 @@ describe('web socket', () => {
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
     }
-    const lastPrice = new LastPrice(30)
+    const lastPrice = new LastPrice()
+    const mockPrice = {
+      getQuotesLatest: jest.fn(() => Promise.resolve({}))
+    }
 
-    priceCollector = new PriceCollector(coinMarketCapApiMock as any, 'USD', 30, 5 * 60 * 1000)
+    priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice as any], 'USD', 5 * 60 * 1000)
 
     priceCollector.on('prices', (prices) => {
       lastPrice.save(prices)
     })
 
     priceCollector.init()
-    const webSocketAPI = new WebSocketAPI(server, rskExplorerApiMock as any, lastPrice)
+    const dataSourceMapping = new Map<string, DataSource>()
+    dataSourceMapping.set('31', rskExplorerApiMock as any)
+    const webSocketAPI = new WebSocketAPI(server, dataSourceMapping, lastPrice)
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'
