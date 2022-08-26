@@ -1,5 +1,5 @@
 module.exports = {
-  openapi:'3.0.3',
+  openapi: '3.0.3',
   info: {
     title: 'Rif Wallet Services',
     version: '1.0.0-beta.2',
@@ -15,11 +15,11 @@ module.exports = {
       description: 'TestNet'
     }
   ],
-  paths:{
+  paths: {
     '/tokens': {
       get: {
-        summary:'Get all tokens available in network identified by chainId',
-        tags:[
+        summary: 'Get all tokens available in network identified by chainId',
+        tags: [
           'Tokens'
         ],
         parameters: [
@@ -33,23 +33,23 @@ module.exports = {
               default: '31'
             },
             examples: {
-              'RSK Testnet':{
-                value: '31',
+              'RSK Testnet': {
+                value: '31'
               },
-              'RSK Mainnet':{
+              'RSK Mainnet': {
                 value: '30'
               }
             }
           }
         ],
         responses: {
-          '200': {
+          200: {
             description: 'successful operation',
-            'content': {
+            content: {
               'application/json': {
-                'schema': {
-                  'type': 'array',
-                  'items': {
+                schema: {
+                  type: 'array',
+                  items: {
                     $ref: '#/components/schemas/Token'
                   }
                 }
@@ -61,7 +61,7 @@ module.exports = {
     },
     '/address/{address}/tokens': {
       get: {
-        summary:'Get all tokens available by smart wallet address in network identified by chainId',
+        summary: 'Get all tokens available by smart wallet address in network identified by chainId',
         tags: [
           'Tokens'
         ],
@@ -86,23 +86,23 @@ module.exports = {
               default: '31'
             },
             examples: {
-              'RSK Testnet':{
-                value: '31',
+              'RSK Testnet': {
+                value: '31'
               },
-              'RSK Mainnet':{
+              'RSK Mainnet': {
                 value: '30'
               }
             }
           }
         ],
         responses: {
-          '200': {
+          200: {
             description: 'successful operation',
-            'content': {
+            content: {
               'application/json': {
-                'schema': {
-                  'type': 'array',
-                  'items': {
+                schema: {
+                  type: 'array',
+                  items: {
                     $ref: '#/components/schemas/Token'
                   }
                 }
@@ -114,7 +114,7 @@ module.exports = {
     },
     '/address/{address}/events': {
       get: {
-        summary:'Get all events(token transfers) by smart wallet address in network identified by chainId',
+        summary: 'Get all events(token transfers) by smart wallet address in network identified by chainId',
         tags: [
           'Events'
         ],
@@ -139,23 +139,23 @@ module.exports = {
               default: '31'
             },
             examples: {
-              'RSK Testnet':{
-                value: '31',
+              'RSK Testnet': {
+                value: '31'
               },
-              'RSK Mainnet':{
+              'RSK Mainnet': {
                 value: '30'
               }
             }
           }
         ],
         responses: {
-          '200': {
+          200: {
             description: 'successful operation',
-            'content': {
+            content: {
               'application/json': {
-                'schema': {
-                  'type': 'array',
-                  'items': {
+                schema: {
+                  type: 'array',
+                  items: {
                     $ref: '#/components/schemas/Event'
                   }
                 }
@@ -192,10 +192,10 @@ module.exports = {
               default: '31'
             },
             examples: {
-              'RSK Testnet':{
-                value: '31',
+              'RSK Testnet': {
+                value: '31'
               },
-              'RSK Mainnet':{
+              'RSK Mainnet': {
                 value: '30'
               }
             }
@@ -206,7 +206,7 @@ module.exports = {
             description: 'Transactions limit',
             required: false,
             schema: {
-              type: 'string',
+              type: 'string'
             }
           },
           {
@@ -215,7 +215,7 @@ module.exports = {
             description: 'Chain Id identifies the network',
             required: false,
             schema: {
-              type: 'string',
+              type: 'string'
             }
           },
           {
@@ -224,30 +224,30 @@ module.exports = {
             description: 'Chain Id identifies the network',
             required: false,
             schema: {
-              type: 'string',
-            },
+              type: 'string'
+            }
           }
         ],
         responses: {
-          '200':{
+          200: {
             description: 'successful operation',
             content: {
               'application/json': {
                 schema: {
                   type: 'object',
                   properties: {
-                    data:{
+                    data: {
                       type: 'array',
                       items: {
                         $ref: '#/components/schemas/Transaction'
-                        
+
                       }
                     },
-                    prev:{
+                    prev: {
                       type: 'string',
                       nullable: true
                     },
-                    next:{
+                    next: {
                       type: 'string',
                       nullable: true
                     }
@@ -288,7 +288,7 @@ module.exports = {
           }
         ],
         responses: {
-          '200':{
+          200: {
             description: 'successful operation',
             content: {
               'application/json': {
@@ -308,7 +308,7 @@ module.exports = {
                     }
                   },
                   example: {
-                    '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5':{
+                    '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5': {
                       price: 0.06697809474145774,
                       lastUpdated: '2022-08-26T06:56:00.000Z'
                     }
@@ -326,7 +326,7 @@ module.exports = {
           'Dapps'
         ],
         responses: {
-          '200': {
+          200: {
             description: 'successful operation',
             content: {
               'application/json': {
@@ -341,7 +341,7 @@ module.exports = {
                       },
                       dapps: {
                         type: 'array',
-                        items:{
+                        items: {
                           type: 'object',
                           properties: {
                             title: {
@@ -358,7 +358,7 @@ module.exports = {
                                 type: 'integer',
                                 example: 31
                               }
-                              
+
                             }
                           }
                         }
@@ -439,7 +439,7 @@ module.exports = {
           }
         }
       },
-      Transaction:{
+      Transaction: {
         type: 'object',
         properties: {
           blockHash: {
