@@ -116,3 +116,6 @@ npm run start:prod
 - Documentation is located in docs directory.
 - We use PlantUML to write our class diagram.
 - You can visit https://plantuml.com/ to check more about it.
+- API documentation is in /api-docs endpoint - GET
+- WebSocket documentation is in docs/websocket.md
+  - Markdown file is generated frowm websocket.yaml using @asyncapi/markdown-template

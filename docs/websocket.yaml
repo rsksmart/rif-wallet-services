@@ -1,0 +1,260 @@
+asyncapi: '2.4.0'
+info:
+  title: RIF Wallet Services WebSocket
+  version: '1.0.0-beta.3'
+  description: |
+    RIF Wallet Services WebSocket allows you to get all updates(balances, transactions, events and prices) of a Smart Wallet.
+
+    ### Check out its awesome features:
+
+    * Get tokens balance, transactions and events of smart wallet
+    * Get prices of all tokens available in network
+servers:
+  local:
+    url: http://localhost:3000/ws
+    description: Local Server
+    protocol: http
+  test:
+    url: https://rif-wallet-services.testnet.rifcomputing.net/ws
+    description: TestNet
+    protocol: https
+
+defaultContentType: application/json
+
+channels:
+  subscribe:
+    subscribe:
+      summary: Client can send smart wallet address to subscribe profile(balances, transactions, events) and prices
+      operationId: subSmartWallet
+      message:
+        name: SmartWallet
+        payload: 
+          type: object
+          required:
+            - address
+          properties:
+            address:
+              type: string
+              example: '0xC0C9280C10E4D968394371d5b60aC5fCD1ae62e1'
+              description: Smart Wallet address
+            chainId:
+              type: string
+              example: '31'
+              description: Network Identifier
+  change:
+    subscribe:
+      summary: Client recieve profile and price updates
+      operationId: subSmartWalletProfile
+      message:
+        oneOf:
+          - $ref: '#/components/messages/balance'
+          - $ref: '#/components/messages/transaction'
+          - $ref: '#/components/messages/price'
+          - $ref: '#/components/messages/tokenTransfer'
+          
+
+
+components:
+  messages:
+    balance:
+      name: tokenBalances
+      title: Smart wallet token balances
+      summary: Token balances of smart wallet and network subscribed
+      contentType: application/json
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            example: newBalance
+          payload:
+            type: object
+            properties:
+              name:
+                type: string
+                example: 'tRIF Token'
+              symbol:
+                type: string
+                example: tRif
+              contractAddress:
+                type: string
+                example: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe'
+              decimals:
+                type: integer
+                example: 18
+              balance: 
+                type: string
+                example: '0x3fc0474948f360000'
+    transaction:
+      name: Transaction
+      title: Transaction
+      summary: Smart Wallet transactions
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            example: newTransaction
+          payload:
+            type: object
+            properties:
+              blockHash: 
+                type: string
+                example: '0x1125c50d7d86a3a1f0539bd71499f113882bb9082f03b161be18edf9acfd0183'
+              blockNumber: 
+                type: integer
+                example: 3123622
+              from: 
+                type: string
+                example: '0xc0c9280c10e4d968394371d5b60ac5fcd1ae62e1'
+              gas: 
+                type: integer
+                example: 32716
+              gasPrice: 
+                type: string
+                example: '0x3e252e0'
+              hash: 
+                type: string
+                example: '0xfb9843a4ebaef4b835dd49a7a348c7133424f8b804e9766c95fca82a13ba115e'
+              input: 
+                type: string
+                example: '0x'
+              nonce: 
+                type: integer
+                example: 9
+              r: 
+                type: string
+                example: '0x5472bad7b7dfea0a7a2f278435369b9590e1c4fb479c74fc124c92a2f32bba1f'
+              receipt: 
+                type: object
+                properties: 
+                  blockHash: 
+                    type: string
+                    example: '0x1125c50d7d86a3a1f0539bd71499f113882bb9082f03b161be18edf9acfd0183'
+                  blockNumber: 
+                    type: integer
+                    example: 3123622
+                  contractAddress: 
+                    type: string
+                    example: '0xc0c9280c10e4d968394371d5b60ac5fcd1ae62e1'
+                  cumulativeGasUsed: 
+                    type: integer
+                    example: 172204
+                  from: 
+                    type: string
+                    example: '0xc0c9280c10e4d968394371d5b60ac5fcd1ae62e1'
+                  gasUsed: 
+                    type: integer
+                    example: 21811
+                  logs: 
+                    type: array
+                    items: 
+                      type: string
+                  logBloom: 
+                    type: string
+                    example: '0x00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000'
+                  status: 
+                    type: string
+                    example: '0x1'
+                  to: 
+                    type: string
+                    example: '0x79d09327df250992865cccf37f595c59cb2fcd54'
+                  transactionHash: 
+                    type: string
+                    example: '0xfb9843a4ebaef4b835dd49a7a348c7133424f8b804e9766c95fca82a13ba115e'
+                  tranactionIndex: 
+                    type: string
+                    example: '2'
+              s: 
+                type: string
+                example: '0x12fe7d8205870a1ffff17533c0de7d30ea774a9bc706eb9c5c974520a5d6d67f'
+              timestamp: 
+                type: integer
+                example: 1661491330
+              to: 
+                type: string
+                example: '0x79d09327df250992865cccf37f595c59cb2fcd54'
+              transactionIndex: 
+                type: integer
+                example: 2
+              txId: 
+                type: string
+                example: '02fa9a6002161be18edf9acfd0183'
+              txType: 
+                type: string
+                example: 'contract call'
+              v: 
+                type: string
+                example: '0x61'
+              value: 
+                type: string
+                example: '0x38d7ea4c68000'
+              _id: 
+                type: string
+                example: '630858b2e187231ee824f4c9'
+    price:
+      name: tokenPrices
+      title: Token Prices
+      summary: Current token prices in fiat
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            example: newPrice
+          payload:
+            type: object
+            additionalProperties:
+              type: object
+              properties:
+                price:
+                  type: number
+                  example: 0.06697809474145774
+                lastUpdated:
+                  type: string
+                  format: date-time
+            example:
+              '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5':
+                price: 0.06697809474145774
+                lastUpdated: '2022-08-26T06:56:00.000Z'
+              '0x4991516df6053121121274397a8c1dad608bc95b':
+                price: 6.055157833969657,
+                lastUpdated: '2022-08-29T00:49:00.000Z'
+    tokenTransfer:
+      name: tokenTransfer
+      title: Token Transfer
+      summary: Token Transfers 
+      payload:
+        type: object
+        properties:
+          type:
+            type: string
+            example: newTokenTransfer
+          payload:
+            type: object
+            properties:
+              blockNumber:
+                type: number
+                example: 3123621
+              event:
+                type: string
+                example: Transfer
+              timestamp:
+                type: integer
+                example: 1661491300
+              topics:
+                type: array
+                items:
+                  type: string
+                  example: '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef'
+              args:
+                type: array
+                items:
+                  type: string
+                  example: '0xc0c9280c10e4d968394371d5b60ac5fcd1ae62e1'
+              transactionHash:
+                type: string
+                example: '0x61f1ad8e593e2d6f3b66107a16db9795f1f7e643f2be7074c1ef99f9d151b30a'
+              txStatus:
+                type: string
+                example: '0x1'
