@@ -4,6 +4,8 @@ import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
 import { LastPrice } from '../service/price/lastPrice'
 import { DataSource } from '../repository/DataSource'
+import swaggerUI from 'swagger-ui-express'
+import OpenApi from '../api/openapi'
 
 export class HttpsAPI {
   private app: Application
@@ -62,6 +64,8 @@ export class HttpsAPI {
           .catch(next)
       }
     )
+
+    this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(OpenApi))
 
     this.app.get('/dapps', (_: Request, res: Response) => this.responseJsonOk(res)(registeredDapps))
 
