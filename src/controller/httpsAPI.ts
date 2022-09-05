@@ -6,6 +6,7 @@ import { LastPrice } from '../service/price/lastPrice'
 import { DataSource } from '../repository/DataSource'
 import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
+import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
 
 export class HttpsAPI {
   private app: Application
@@ -66,7 +67,7 @@ export class HttpsAPI {
     )
 
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(OpenApi))
-
+    this.app.use('/bitcoin', BitcoinRouter(this))
     this.app.get('/dapps', (_: Request, res: Response) => this.responseJsonOk(res)(registeredDapps))
 
     this.app.use(errorHandler)
