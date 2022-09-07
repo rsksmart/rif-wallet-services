@@ -3,10 +3,11 @@ import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
 import { DataSource } from '../src/repository/DataSource'
 import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
+import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 
 const setupTestApi = (dataSourceMapping: Map<string, DataSource>) => {
   const app = express()
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {})
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {}, new BitcoinCore(''))
   httpsAPI.init()
   return app
 }
