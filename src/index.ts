@@ -26,7 +26,7 @@ async function main () {
     COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
     DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
     DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000,
-    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL || 'https://tbtc1.blockbook.bitaccess.net'
+    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
   const datasourceMapping = new Map<string, DataSource>()
   const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios, '31')
