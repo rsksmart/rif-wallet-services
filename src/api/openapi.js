@@ -371,6 +371,63 @@ module.exports = {
           }
         }
       }
+    },
+    '/bitcoin/getXpubInfo/{xpub}': {
+      get: {
+        summary: 'Get public key info',
+        parameters: [
+          {
+            name: 'xpub',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Public Key such as xpub, zpub, vpub'
+          }
+        ],
+        tags: ['Bitcoin', 'GetXpubInfo'],
+        responses: {
+          200: {
+            description: 'Fetched the xpub information succcessfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    page: 1,
+                    totalPages: 1,
+                    itemsOnPage: 1000,
+                    address: 'vpub5Y9pp887ENmu1P1TKY1x3g5kfV7bKEjPn8nbcHcMCwrRRbJ64s4LPFdhBBqNUUigewCi3xBrqU7kqj3PpTbL61Tyubxr4P49Z1stewu2k6W',
+                    balance: '10000',
+                    totalReceived: '10000',
+                    totalSent: '0',
+                    unconfirmedBalance: '0',
+                    unconfirmedTxs: 0,
+                    txs: 1,
+                    txids: [
+                      'c0b2b9866b0073ee8047fddfa197d98de95a2b6c551dd6c45fd8f07139725005'
+                    ],
+                    usedTokens: 1,
+                    tokens: [
+                      {
+                        type: 'XPUBAddress',
+                        name: 'tb1qq3kcw5zs2eucc879sf8a6gr9hqnzd3yjmx4zsz',
+                        path: "m/84'/1'/0'/0/0",
+                        transfers: 1,
+                        decimals: 8,
+                        balance: '10000',
+                        totalReceived: '10000',
+                        totalSent: '0'
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {
