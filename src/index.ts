@@ -11,6 +11,7 @@ import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
 import { MockPrice } from './service/price/mockPrice'
 import { DataSource } from './repository/DataSource'
+import BitcoinCore from './service/bitcoin/BitcoinCore'
 
 async function main () {
   const environment = {
@@ -24,7 +25,8 @@ async function main () {
     COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
     COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
     DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
-    DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000
+    DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000,
+    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
   const datasourceMapping = new Map<string, DataSource>()
   const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios, '31')
@@ -47,8 +49,9 @@ async function main () {
 
   await priceCollector.init()
 
+  const bitcoinCoreInstance = new BitcoinCore(environment.BLOCKBOOK_URL)
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinCoreInstance)
   httpsAPI.init()
 
   const server = http.createServer(app)

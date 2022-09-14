@@ -371,6 +371,151 @@ module.exports = {
           }
         }
       }
+    },
+    '/bitcoin/getXpubInfo/{xpub}': {
+      get: {
+        summary: 'Get public key info',
+        parameters: [
+          {
+            name: 'xpub',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Public Key such as xpub, zpub, vpub'
+          },
+          {
+            name: 'page',
+            in: 'query',
+            required: false,
+            schema: {
+              type: 'number'
+            },
+            description: 'Page Number'
+          },
+          {
+            name: 'pageSize',
+            in: 'query',
+            required: false,
+            schema: {
+              type: 'number'
+            },
+            description: 'Page Size Number'
+          },
+          {
+            name: 'from',
+            in: 'query',
+            required: false,
+            schema: {
+              type: 'number'
+            },
+            description: 'From Row Number'
+          }
+        ],
+        tags: ['Bitcoin'],
+        responses: {
+          200: {
+            description: 'Fetched the xpub information succcessfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    page: 1,
+                    totalPages: 1,
+                    itemsOnPage: 1000,
+                    address: 'vpub5Y9pp887ENmu1P1TKY1x3g5kfV7bKEjPn8nbcHcMCwrRRbJ64s4LPFdhBBqNUUigewCi3xBrqU7kqj3PpTbL61Tyubxr4P49Z1stewu2k6W',
+                    balance: '10000',
+                    totalReceived: '10000',
+                    totalSent: '0',
+                    unconfirmedBalance: '0',
+                    unconfirmedTxs: 0,
+                    txs: 1,
+                    txids: [
+                      'c0b2b9866b0073ee8047fddfa197d98de95a2b6c551dd6c45fd8f07139725005'
+                    ],
+                    usedTokens: 1,
+                    tokens: [
+                      {
+                        type: 'XPUBAddress',
+                        name: 'tb1qq3kcw5zs2eucc879sf8a6gr9hqnzd3yjmx4zsz',
+                        path: "m/84'/1'/0'/0/0",
+                        transfers: 1,
+                        decimals: 8,
+                        balance: '10000',
+                        totalReceived: '10000',
+                        totalSent: '0'
+                      }
+                    ]
+                  }
+                }
+              }
+            }
+          },
+          500: {
+            description: 'Error in the API call, possible cause is wrong public key.',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'Request failed with status code 500'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/bitcoin/getXpubBalance/{xpub}': {
+      get: {
+        summary: 'Get xPub balance',
+        parameters: [
+          {
+            name: 'xpub',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Public key such as xpub, zpub, vpub'
+          }
+        ],
+        tags: ['Bitcoin'],
+        responses: {
+          200: {
+            description: 'Fetched the xpub balance successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    address: 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K',
+                    balance: '0',
+                    totalReceived: '0',
+                    totalSent: '0',
+                    unconfirmedBalance: '0',
+                    unconfirmedTxs: 0,
+                    txs: 0,
+                    btc: 0
+                  }
+                }
+              }
+            }
+          },
+          500: {
+            description: 'Error in the API call, possible cause is wrong public key.',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'Request failed with status code 500'
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {
