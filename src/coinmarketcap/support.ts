@@ -6,12 +6,14 @@ export const addressToCoinmarketcapId = {
   '0xef213441a85df4d7acbdae0cf78004e1e486bb96': '825', // rUSDT
   '0x4991516df6053121121274397a8c1dad608bc95b': '7785', // rBUND
   '0xefc78fc7d48b64958315949279ba181c2114abbd': '8669', // SOV
+  '0xe700691da7b9851f2f35f8b8182c69c53ccad9db': '7558', // DOC
   BTC: '1',
 
   // TestNet
   '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe': '3701', // tRIF
   '0x4cfe225ce54c6609a525768b13f7d87432358c57': '825', // rKovUSDT
-  '0xe95afdfec031f7b9cd942eb7e60f053fb605dfcd': '7785' // rKovBUND
+  '0xe95afdfec031f7b9cd942eb7e60f053fb605dfcd': '7785', // rKovBUND
+  '0xcb46c0ddc60d18efeb0e586c17af6ea36452dae0': '7558' // DOC
 }
 
 export const supportedFiat = ['USD']
