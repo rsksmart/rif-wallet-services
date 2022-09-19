@@ -30,12 +30,12 @@ const main = (responseJsonOk, BitcoinCoreInstance: BitcoinCore) => {
       .catch(next)
   })
   Router.get('/getNextUnusedIndex/:xpub', async ({
-    params: { xpub }, query: { bip, accountIndex = '0', knownLastUsedIndex = '0' }
+    params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0' }
   }, res, next) => {
     BitcoinCoreInstance.getNextUnusedIndex(
       xpub as string,
       bip as 'BIP44' | 'BIP84',
-      accountIndex as string,
+      changeIndex as string,
       knownLastUsedIndex as string
     )
       .then(responseJsonOk(res))

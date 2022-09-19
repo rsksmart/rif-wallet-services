@@ -542,14 +542,14 @@ module.exports = {
             description: 'Bitcoin Improvement Proposal (BIP) used to query blockbook instance'
           },
           {
-            name: 'accountIndex',
+            name: 'changeIndex',
             in: 'query',
             required: false,
             default: 0,
             schema: {
               type: 'string'
             },
-            description: 'Account Index, defaults to 0'
+            description: 'Change Index, defaults to 0 (external)'
           },
           {
             name: 'knownLastUsedIndex',

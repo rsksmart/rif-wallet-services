@@ -43,17 +43,17 @@ export default class BitcoinCore {
   async getNextUnusedIndex (
     xpub: string,
     bip: BIPTYPES = 'BIP84',
-    accountIndex: string = '0',
+    changeIndex: string = '0',
     knownLastUsedIndex: string = '0') {
     let outputDescriptor: string
 
     switch (bip) {
       case 'BIP44':
-        outputDescriptor = `pkh(${xpub}/<${accountIndex}>/*)`
+        outputDescriptor = `pkh(${xpub}/<${changeIndex}>/*)`
         break
       case 'BIP84':
       default:
-        outputDescriptor = `wpkh(${xpub}/<${accountIndex}>/*)`
+        outputDescriptor = `wpkh(${xpub}/<${changeIndex}>/*)`
         break
     }
 
