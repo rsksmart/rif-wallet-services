@@ -7,7 +7,8 @@ jest.mock('axios')
 // const randomMnemonic = 'creek joy sea brain gravity execute month two voyage process bind coffee ecology body depend artwork erode punch episode unfair alpha amount cart clip'
 // eslint-disable-next-line max-len
 const API_URL = process.env.BLOCKBOOK_URL
-const vpub = 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K'
+const vpub = 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB' +
+  '5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K'
 
 describe('BitcoinCore unit tests', () => {
   const bitcoinCoreInstance = new BitcoinCore(API_URL, axios)
@@ -56,7 +57,7 @@ describe('BitcoinCore unit tests', () => {
     expect(xpubData).toHaveProperty('itemsOnPage', 10)
   })
 
-  test('Fetch next available index for account index 0, known used index 0', async () => {
+  test('Fetch next available index for change index 0, known used index 0', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
         tokens: [
@@ -75,7 +76,7 @@ describe('BitcoinCore unit tests', () => {
     expect(index).toEqual({ index: 2 })
   })
 
-  test('Fetch next available index for account index 1, known used index 9', async () => {
+  test('Fetch next available index for change index 1, known used index 9', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
         tokens: [
