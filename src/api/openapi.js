@@ -516,6 +516,80 @@ module.exports = {
           }
         }
       }
+    },
+    '/bitcoin/getNextUnusedIndex/{xpub}': {
+      get: {
+        summary: 'Get xPub last used index of an address',
+        parameters: [
+          {
+            name: 'xpub',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Public key such as xpub, zpub, vpub'
+          },
+          {
+            name: 'bip',
+            in: 'query',
+            required: false,
+            default: 'BIP84',
+            schema: {
+              type: 'string',
+              enum: ['BIP44', 'BIP84']
+            },
+            description: 'Bitcoin Improvement Proposal (BIP) used to query blockbook instance'
+          },
+          {
+            name: 'accountIndex',
+            in: 'query',
+            required: false,
+            default: 0,
+            schema: {
+              type: 'string'
+            },
+            description: 'Account Index, defaults to 0'
+          },
+          {
+            name: 'knownLastUsedIndex',
+            in: 'query',
+            required: false,
+            default: 0,
+            schema: {
+              type: 'string'
+            },
+            description: 'Known last used index, defaults to 0'
+          }
+        ],
+        tags: ['Bitcoin'],
+        responses: {
+          200: {
+            description: 'Fetched the index successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  example: {
+                    index: 0
+                  }
+                }
+              }
+            }
+          },
+          500: {
+            description: 'An error occurred',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'Request failed with status code 500'
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {
