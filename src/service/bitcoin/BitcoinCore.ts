@@ -61,14 +61,17 @@ export default class BitcoinCore {
       `${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`
     )
     let lastUsedIndex = Number(knownLastUsedIndex)
+    let max = -1
     const usedTokensMap = tokens?.reduce((prev, { path }) => {
       const index = Number(path.substr(path.lastIndexOf('/') + 1))
       prev[index] = true
+      max = index
       return prev
     }, {}) || {}
-
+    if (max === -1) return 0 // No addresses found - the first one can be created
+    if (lastUsedIndex >= max) return max + 1
     if (lastUsedIndex < 0) lastUsedIndex = 0 // To make sure we don't search from -XXXX... [security]
-    while (true) {
+    while (lastUsedIndex <= max) {
       if (!usedTokensMap[lastUsedIndex]) {
         break
       }
