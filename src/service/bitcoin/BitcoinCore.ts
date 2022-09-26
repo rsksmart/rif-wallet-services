@@ -68,8 +68,8 @@ export default class BitcoinCore {
       max = index
       return prev
     }, {}) || {}
-    if (max === -1) return 0 // No addresses found - the first one can be created
-    if (lastUsedIndex >= max) return max + 1
+    if (max === -1) return { index: 0 } // No addresses found - the first one can be created
+    if (lastUsedIndex >= max) return { index: max + 1 }
     if (lastUsedIndex < 0) lastUsedIndex = 0 // To make sure we don't search from -XXXX... [security]
     while (lastUsedIndex <= max) {
       if (!usedTokensMap[lastUsedIndex]) {
