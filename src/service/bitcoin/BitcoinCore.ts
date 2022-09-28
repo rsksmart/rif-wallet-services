@@ -14,7 +14,9 @@ export default class BitcoinCore {
   setBlockbookAPIS () {
     this.BLOCKBOOK_APIS = {
       getXpubInfo: `${this.BLOCKBOOK_URL}/api/v2/xpub/`,
-      getXpubBalance: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=basic`
+      getXpubBalance: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=basic`,
+      getXpubUtxos: `${this.BLOCKBOOK_URL}/api/v2/utxo/`,
+      sendTransaction: `${this.BLOCKBOOK_URL}/api/v2/sendtx/`
     }
   }
 
@@ -31,6 +33,20 @@ export default class BitcoinCore {
   async getXpubBalance (xpub: string) {
     const { data }: any = await this.axiosInstance.get(this.BLOCKBOOK_APIS.getXpubBalance(xpub))
     data.btc = this.convertSatoshiToBtc(data.balance)
+    return data
+  }
+
+  async getXpubUtxos (xpub: string) {
+    const { data }: any = await this.axiosInstance.get(this.BLOCKBOOK_APIS.getXpubUtxos + xpub)
+    return data
+  }
+
+  async sendTransaction (hextxdata: string) {
+    const data: any = await this.axiosInstance.get(this.BLOCKBOOK_APIS.sendTransaction + hextxdata)
+      .then(({ data }) => data)
+      .catch((error) => {
+        return { error: error.response.data.error || 'Unknown error' }
+      })
     return data
   }
 }
