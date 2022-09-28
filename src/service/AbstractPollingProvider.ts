@@ -8,7 +8,7 @@ export abstract class PollingProvider<T> extends EventEmitter {
   constructor (address: string, interval?: number) {
     super()
     this.address = address
-    this.interval = interval || 1000
+    this.interval = interval || 10000
   }
 
   emitWhatPoll = async (channel: string) => this.poll().then((t: T[]) => t.forEach(e => this.emit(channel, e)))
