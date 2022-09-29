@@ -29,6 +29,7 @@ const main = (responseJsonOk, BitcoinCoreInstance: BitcoinCore) => {
       .then(responseJsonOk(res))
       .catch(next)
   })
+
   Router.get('/getNextUnusedIndex/:xpub', async ({
     params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0' }
   }, res, next) => {
@@ -38,6 +39,14 @@ const main = (responseJsonOk, BitcoinCoreInstance: BitcoinCore) => {
       changeIndex as string,
       knownLastUsedIndex as string
     )
+
+  Router.get('/getXpubUtxos/:xpub', async ({ params: { xpub } }, res, next) => {
+    BitcoinCoreInstance.getXpubUtxos(xpub as string)
+      .then(responseJsonOk(res))
+      .catch(next)
+  })
+  Router.get('/sendTransaction/:txhexdata', async ({ params: { txhexdata } }, res, next) => {
+    BitcoinCoreInstance.sendTransaction(txhexdata as string)
       .then(responseJsonOk(res))
       .catch(next)
   })
