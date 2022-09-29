@@ -7,11 +7,12 @@ jest.mock('axios')
 // const randomMnemonic = 'creek joy sea brain gravity execute month two voyage process bind coffee ecology body depend artwork erode punch episode unfair alpha amount cart clip'
 // eslint-disable-next-line max-len
 const API_URL = process.env.BLOCKBOOK_URL
-const vpub = 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K'
+const vpub = 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB' +
+  '5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K'
 
 describe('BitcoinCore unit tests', () => {
   const bitcoinCoreInstance = new BitcoinCore(API_URL, axios)
-  test('Fetch a bitcoin tesnet xpub information', async () => {
+  test('Fetch a bitcoin testnet xpub information', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
         balance: 0, btc: 0, address: '', totalReceived: 0, totalSent: 0, txs: []
@@ -23,7 +24,7 @@ describe('BitcoinCore unit tests', () => {
       expect(xpubData).toHaveProperty(prop)
     }
   })
-  test('Fetch a bitcoin tesnet xpub balance', async () => {
+  test('Fetch a bitcoin testnet xpub balance', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
         balance: 0, btc: 0, address: '', totalReceived: 0, totalSent: 0
@@ -35,7 +36,7 @@ describe('BitcoinCore unit tests', () => {
       expect(xpubData).toHaveProperty(prop)
     }
   })
-  test('Fetch a bitcoin tesnet xpub information with page = 1 and pageSize = 10', async () => {
+  test('Fetch a bitcoin testnet xpub information with page = 1 and pageSize = 10', async () => {
     const queryMock = {
       page: 1,
       pageSize: 10
@@ -54,5 +55,43 @@ describe('BitcoinCore unit tests', () => {
     }
     expect(xpubData).toHaveProperty('page', 1)
     expect(xpubData).toHaveProperty('itemsOnPage', 10)
+  })
+
+  test('Fetch next available index for change index 0, known used index 0', async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({
+      data: {
+        tokens: [
+          {
+            path: "m/84'/1'/0'/0/0",
+            name: 'test'
+          },
+          {
+            path: "m/84'/1'/0'/0/1",
+            name: 'test'
+          }
+        ]
+      }
+    })
+    const index = await bitcoinCoreInstance.getNextUnusedIndex(vpub, 'BIP84', '0', '0')
+    expect(index).toEqual({ index: 2 })
+  })
+
+  test('Fetch next available index for change index 1, known used index 9', async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({
+      data: {
+        tokens: [
+          {
+            path: "m/84'/1'/0'/1/5",
+            name: 'test'
+          },
+          {
+            path: "m/84'/1'/0'/1/9",
+            name: 'test'
+          }
+        ]
+      }
+    })
+    const index = await bitcoinCoreInstance.getNextUnusedIndex(vpub, 'BIP84', '1', '9')
+    expect(index).toEqual({ index: 10 })
   })
 })
