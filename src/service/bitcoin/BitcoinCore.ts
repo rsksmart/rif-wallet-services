@@ -42,7 +42,6 @@ export default class BitcoinCore {
     return data
   }
 
-
   async getNextUnusedIndex (
     xpub: string,
     bip: BIPTYPES = 'BIP84',
@@ -60,8 +59,8 @@ export default class BitcoinCore {
         break
     }
 
-    const { data: { tokens } }: { data: { tokens: Array<TokensType>} } = await this.axiosInstance.get(
-      `${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`
+    const { data: { tokens } }: { data: { tokens: Array<TokensType> } } = await this.axiosInstance.get(
+        `${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`
     )
     let lastUsedIndex = Number(knownLastUsedIndex)
     let max = -1
@@ -84,6 +83,7 @@ export default class BitcoinCore {
       }
     }
     return { index: lastUsedIndex }
+  }
 
   async getXpubUtxos (xpub: string) {
     const { data }: any = await this.axiosInstance.get(this.BLOCKBOOK_APIS.getXpubUtxos + xpub)
@@ -97,6 +97,5 @@ export default class BitcoinCore {
         return { error: error.response.data.error || 'Unknown error' }
       })
     return data
-
   }
 }

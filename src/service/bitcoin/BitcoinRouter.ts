@@ -34,12 +34,13 @@ const main = (responseJsonOk, BitcoinCoreInstance: BitcoinCore) => {
     params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0' }
   }, res, next) => {
     BitcoinCoreInstance.getNextUnusedIndex(
-      xpub as string,
-      bip as 'BIP44' | 'BIP84',
-      changeIndex as string,
-      knownLastUsedIndex as string
-    )
-
+        xpub as string,
+        bip as 'BIP44' | 'BIP84',
+        changeIndex as string,
+        knownLastUsedIndex as string
+    ).then(responseJsonOk(res))
+      .catch(next)
+  })
   Router.get('/getXpubUtxos/:xpub', async ({ params: { xpub } }, res, next) => {
     BitcoinCoreInstance.getXpubUtxos(xpub as string)
       .then(responseJsonOk(res))
