@@ -51,6 +51,12 @@ const main = (responseJsonOk, BitcoinCoreInstance: BitcoinCore) => {
       .then(responseJsonOk(res))
       .catch(next)
   })
+  Router.get('/getXpubTransactions/:xpub', async ({ params: { xpub }, query }, res, next) => {
+    BitcoinCoreInstance.getXpubTransactions(xpub as string, query?.parsedQuery as string | undefined)
+      .then(responseJsonOk(res))
+      .catch(next)
+  })
+
   return Router
 }
 export default main

@@ -22,7 +22,8 @@ export default class BitcoinCore {
       getXpubInfo: `${this.BLOCKBOOK_URL}/api/v2/xpub/`,
       getXpubBalance: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=basic`,
       getXpubUtxos: `${this.BLOCKBOOK_URL}/api/v2/utxo/`,
-      sendTransaction: `${this.BLOCKBOOK_URL}/api/v2/sendtx/`
+      sendTransaction: `${this.BLOCKBOOK_URL}/api/v2/sendtx/`,
+      getXpubTransactions: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=txs&`
     }
   }
 
@@ -96,6 +97,14 @@ export default class BitcoinCore {
       .catch((error) => {
         return { error: error.response.data.error || 'Unknown error' }
       })
+    return data
+  }
+
+  async getXpubTransactions (xpub: string, queryParsed: string | undefined = '') {
+    const passedQueryParams = queryParsed !== '' ? queryParsed?.substring(1) : ''
+    const { data }: any = await this.axiosInstance.get(
+      this.BLOCKBOOK_APIS.getXpubTransactions(xpub) + passedQueryParams
+    )
     return data
   }
 }
