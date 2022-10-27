@@ -13,6 +13,8 @@ import { MockPrice } from './service/price/mockPrice'
 import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from './repository/DataSource'
 import BitcoinCore from './service/bitcoin/BitcoinCore'
 import { ethers } from 'ethers'
+import setupApp, { ExpressDidAuthConfig } from '@rsksmart/express-did-auth'
+import { ES256KSigner } from 'did-jwt'
 
 async function main () {
   const environment = {
@@ -41,7 +43,12 @@ async function main () {
     COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
     DEFAULT_CONVERT_FIAT: process.env.DEFAULT_CONVERT_FIAT! as string,
     DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000,
-    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
+    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL,
+    AUTH_CHALLENGE_SECRET: process.env.AUTH_CHALLENGE_SECRET || 'secret',
+    AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL || `http://localhost:${process.env.PORT}`,
+    AUTH_SERVICE_DID: process.env.AUTH_SERVICE_DID || 'did:ethr:rsk:testnet:0x45eDF63532b4dD5ee131e0530e9FB12f7DA1915c',
+    AUTH_PRIVATE_KEY: process.env.AUTH_PRIVATE_KEY || '72e7d4571572838d3e0fe7ab18ea84d183beaf3f92d6c8add8193b53c1a542a2'
+
   }
 
   const datasourceMapping: RSKDatasource = {}
@@ -71,7 +78,14 @@ async function main () {
   await priceCollector.init()
 
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping, nodeProvider)
+  const config: ExpressDidAuthConfig = {
+    challengeSecret: environment.AUTH_CHALLENGE_SECRET,
+    serviceUrl: environment.AUTH_SERVICE_URL,
+    serviceDid: environment.AUTH_SERVICE_DID,
+    serviceSigner: ES256KSigner(environment.AUTH_PRIVATE_KEY)
+  }
+  const authMiddleware = setupApp(config)(app)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping, nodeProvider, authMiddleware)
   httpsAPI.init()
 
   const server = http.createServer(app)
