@@ -31,7 +31,7 @@ export class HttpsAPI {
   }
 
   init () : void {
-    this.app.use(this.authMiddleware)
+    this.app.use(/\/((?!api-docs).)*/, this.authMiddleware)
 
     this.app.get('/tokens', ({ query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
       .dataSourceMapping[chainId as string].getTokens()
