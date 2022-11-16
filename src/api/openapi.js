@@ -24,6 +24,15 @@ module.exports = {
         ],
         parameters: [
           {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
+          {
             name: 'chainId',
             in: 'query',
             description: 'Chain Id identifies the network',
@@ -66,6 +75,15 @@ module.exports = {
           'Tokens'
         ],
         parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
           {
             name: 'address',
             in: 'path',
@@ -120,6 +138,15 @@ module.exports = {
         ],
         parameters: [
           {
+            in: 'header',
+            name: 'Authorization',
+            required:true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
+          {
             name: 'address',
             in: 'path',
             required: true,
@@ -172,6 +199,15 @@ module.exports = {
           'Transactions'
         ],
         parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
           {
             name: 'address',
             in: 'path',
@@ -277,6 +313,15 @@ module.exports = {
         ],
         parameters: [
           {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
+          {
             name: 'convert',
             in: 'query',
             description: 'Currency',
@@ -335,6 +380,17 @@ module.exports = {
         tags: [
           'Dapps'
         ],
+        parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          }
+        ],
         responses: {
           200: {
             description: 'successful operation',
@@ -386,6 +442,15 @@ module.exports = {
       get: {
         summary: 'Get public key info',
         parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
           {
             name: 'xpub',
             in: 'path',
@@ -483,6 +548,15 @@ module.exports = {
         summary: 'Get xPub balance',
         parameters: [
           {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
+          {
             name: 'xpub',
             in: 'path',
             required: true,
@@ -533,6 +607,15 @@ module.exports = {
       get: {
         summary: 'Get xPub last used index of an address',
         parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
           {
             name: 'xpub',
             in: 'path',
@@ -607,6 +690,15 @@ module.exports = {
       get: {
         summary: 'Get public key transactions',
         parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            required: true,
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          },
           {
             name: 'xpub',
             in: 'path',
@@ -847,6 +939,279 @@ module.exports = {
                 }
               }
             }
+          }
+        }
+      }
+    },
+    '/request-auth/{did}':{
+      get: {
+        summary: 'Get challenge to sign with EOA Account. Only use when you are signed up',
+        parameters: [
+          {
+            name: 'did',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Descentralized identifier',
+            example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
+          },
+        ],
+        tags: [
+          'Authentication'
+        ],
+        responses: {
+          200: {
+            description: 'successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    challenge: {
+                      type: 'string'
+                    }
+                  },
+                  example: {
+                    challenge: '27439acf4adb03fe8c2264f579c90863131897ee2d081d66a7eaeb3d3793132c'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/request-signup/{did}':{
+      get: {
+        summary: 'Get challenge to sign with EOA Account. Only use first time to sign up',
+        parameters: [
+          {
+            name: 'did',
+            in: 'path',
+            required: true,
+            schema: {
+              type: 'string'
+            },
+            description: 'Descentralized identifier',
+            example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
+          },
+        ],
+        tags: [
+          'Authentication'
+        ],
+        responses: {
+          200: {
+            description: 'successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    challenge: {
+                      type: 'string'
+                    }
+                  },
+                  example: {
+                    challenge: '27439acf4adb03fe8c2264f579c90863131897ee2d081d66a7eaeb3d3793132c'
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/signup': {
+      post: {
+        summary: 'Sign up new wallet',
+        tags: ['Authentication'],
+        requestBody: {
+          describe: 'Register new wallet after validate signed message',
+          content: {
+            'application/json':{
+              schema: {
+                type: 'object',
+                properties: {
+                  response: {
+                    type: 'object',
+                    properties: {
+                      did: {
+                        type: 'string',
+                        example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
+                      },
+                      sig: {
+                        type: 'string',
+                        example: '0x08650ca562e690db34fd6f1d5a5faab1374ee07d19994a0bf808f7a3810418c406c907a06a61f7f500486cc154a4590edd4069338ce7b0367b0094e1fe44a6db1b'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    accessToken: {
+                      type: 'string',
+                      example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NDM4NDIzIiwiZXhwIjoiMTY2ODQzOTAyMyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg0Mzg0MjMiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.jc8ENaodwOqGUy6U9Bx3zUxvm3ZMkO8qy9yN3aNcUh9UU0ffBrkFARHvPMv7-cyJtHOGJnQ_KmfYzwvoF7mthw'
+                    },
+                    refreshToken: {
+                      type: 'string',
+                      example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
+                    }
+                  },
+                }
+              }
+            }
+          },
+          401: {
+            description: 'Invalid Challenge Response',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'INVALID_CHALLENGE_RESPONSE'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/auth': {
+      post: {
+        summary: 'Login a wallet',
+        tags: ['Authentication'],
+        requestBody: {
+          describe: 'Login to get credentials after validate signed message',
+          content: {
+            'application/json':{
+              schema: {
+                type: 'object',
+                properties: {
+                  response: {
+                    type: 'object',
+                    properties: {
+                      did: {
+                        type: 'string',
+                        example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
+                      },
+                      sig: {
+                        type: 'string',
+                        example: '0x08650ca562e690db34fd6f1d5a5faab1374ee07d19994a0bf808f7a3810418c406c907a06a61f7f500486cc154a4590edd4069338ce7b0367b0094e1fe44a6db1b'
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    accessToken: {
+                      type: 'string',
+                      example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NDM4NDIzIiwiZXhwIjoiMTY2ODQzOTAyMyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg0Mzg0MjMiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.jc8ENaodwOqGUy6U9Bx3zUxvm3ZMkO8qy9yN3aNcUh9UU0ffBrkFARHvPMv7-cyJtHOGJnQ_KmfYzwvoF7mthw'
+                    },
+                    refreshToken: {
+                      type: 'string',
+                      example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
+                    }
+                  },
+                }
+              }
+            }
+          },
+          401: {
+            description: 'Invalid Challenge Response',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'INVALID_CHALLENGE_RESPONSE'
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    '/refresh-token': {
+      post: {
+        summary: 'Refresh credentials(access and refresh tokens)',
+        tags: ['Authentication'],
+        requestBody: {
+          describe: 'Get new valid credentials',
+          content: {
+            'application/json':{
+              schema: {
+                type: 'object',
+                properties: {
+                  refreshToken: {
+                    type: 'string',
+                    example: 'f61004be14b3ca2785bcadcb522caed5abd9d4bc5dd669978d3fd11cdc152261c9a3793ef481551df759ded02d14e946030bd1359c597e8d0e963b60217d19ad'
+                  }
+                }
+              }
+            }
+          }
+        },
+        responses: {
+          200: {
+            description: 'successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    accessToken: {
+                      type: 'string',
+                      example: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NDM4NDIzIiwiZXhwIjoiMTY2ODQzOTAyMyIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg0Mzg0MjMiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.jc8ENaodwOqGUy6U9Bx3zUxvm3ZMkO8qy9yN3aNcUh9UU0ffBrkFARHvPMv7-cyJtHOGJnQ_KmfYzwvoF7mthw'
+                    },
+                    refreshToken: {
+                      type: 'string',
+                      example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
+                    }
+                  },
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    'logout': {
+      post: {
+        summary: 'Logout a wallet',
+        tags: ['Authentication'],
+        parameters: [
+          {
+            in: 'header',
+            name: 'Authorization',
+            schema: {
+              type: 'string',
+              example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
+            }
+          }
+        ],
+        responses: {
+          200: {
+            description: 'successful operation'
           }
         }
       }
