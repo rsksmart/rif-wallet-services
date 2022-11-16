@@ -45,7 +45,7 @@ async function main () {
     DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000,
     BLOCKBOOK_URL: process.env.BLOCKBOOK_URL,
     AUTH_CHALLENGE_SECRET: process.env.AUTH_CHALLENGE_SECRET || 'secret',
-    AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL || `http://localhost:3000`,
+    AUTH_SERVICE_URL: process.env.AUTH_SERVICE_URL || 'http://localhost:3000',
     AUTH_SERVICE_DID: process.env.AUTH_SERVICE_DID || 'did:ethr:rsk:testnet:0x45eDF63532b4dD5ee131e0530e9FB12f7DA1915c',
     AUTH_PRIVATE_KEY: process.env.AUTH_PRIVATE_KEY || '72e7d4571572838d3e0fe7ab18ea84d183beaf3f92d6c8add8193b53c1a542a2'
 

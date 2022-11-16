@@ -140,7 +140,7 @@ module.exports = {
           {
             in: 'header',
             name: 'Authorization',
-            required:true,
+            required: true,
             schema: {
               type: 'string',
               example: 'DIDAuth eyJ0eXAiOiJKV1QiLCJhbGciOiJFUzI1NksifQ.eyJpYXQiOiIxNjY4NTY1Mzc5IiwiZXhwIjoiMTY2ODU2NTk3OSIsImF1ZCI6Imh0dHA6Ly9sb2NhbGhvc3Q6MzAwMCIsInN1YiI6ImRpZDpldGhyOnJzazp0ZXN0bmV0OjB4YTUzQjBEY0RCRTMwOERGRTg2NkNDQTJBMGNjRGEzNENDNWI0QTBlMiIsIm5iZiI6IjE2Njg1NjUzNzkiLCJpc3MiOiJkaWQ6ZXRocjpyc2s6dGVzdG5ldDoweDQ1ZURGNjM1MzJiNGRENWVlMTMxZTA1MzBlOUZCMTJmN0RBMTkxNWMifQ.5-IOi09bwr0PrROBNBPmksNLiYYdOmhFAkJj6q-9RwzK1Uw9kb_WflMCHJntogSTcc7ihXP346vPvX86-2RUOA'
@@ -943,7 +943,7 @@ module.exports = {
         }
       }
     },
-    '/request-auth/{did}':{
+    '/request-auth/{did}': {
       get: {
         summary: 'Get challenge to sign with EOA Account. Only use when you are signed up',
         parameters: [
@@ -956,7 +956,7 @@ module.exports = {
             },
             description: 'Descentralized identifier',
             example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
-          },
+          }
         ],
         tags: [
           'Authentication'
@@ -983,7 +983,7 @@ module.exports = {
         }
       }
     },
-    '/request-signup/{did}':{
+    '/request-signup/{did}': {
       get: {
         summary: 'Get challenge to sign with EOA Account. Only use first time to sign up',
         parameters: [
@@ -996,7 +996,7 @@ module.exports = {
             },
             description: 'Descentralized identifier',
             example: 'did:ethr:rsk:testnet:0xa53B0DcDBE308DFE866CCA2A0ccDa34CC5b4A0e2'
-          },
+          }
         ],
         tags: [
           'Authentication'
@@ -1030,7 +1030,7 @@ module.exports = {
         requestBody: {
           describe: 'Register new wallet after validate signed message',
           content: {
-            'application/json':{
+            'application/json': {
               schema: {
                 type: 'object',
                 properties: {
@@ -1068,7 +1068,7 @@ module.exports = {
                       type: 'string',
                       example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
                     }
-                  },
+                  }
                 }
               }
             }
@@ -1094,7 +1094,7 @@ module.exports = {
         requestBody: {
           describe: 'Login to get credentials after validate signed message',
           content: {
-            'application/json':{
+            'application/json': {
               schema: {
                 type: 'object',
                 properties: {
@@ -1132,7 +1132,7 @@ module.exports = {
                       type: 'string',
                       example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
                     }
-                  },
+                  }
                 }
               }
             }
@@ -1158,7 +1158,7 @@ module.exports = {
         requestBody: {
           describe: 'Get new valid credentials',
           content: {
-            'application/json':{
+            'application/json': {
               schema: {
                 type: 'object',
                 properties: {
@@ -1187,7 +1187,7 @@ module.exports = {
                       type: 'string',
                       example: '4c86c31baf3420653012ac3eb0fc08ab2eb64d66c062dbc8c751fe1b3ecdb003373e15441f8ce8259358eaaab079050def7a3b9ba322332eeb0b497b3eed603f'
                     }
-                  },
+                  }
                 }
               }
             }
@@ -1195,7 +1195,7 @@ module.exports = {
         }
       }
     },
-    'logout': {
+    logout: {
       post: {
         summary: 'Logout a wallet',
         tags: ['Authentication'],
