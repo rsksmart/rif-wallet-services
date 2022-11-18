@@ -86,7 +86,8 @@ export class RSKExplorerAPI extends DataSource {
       address:string,
       limit?: string | undefined,
       prev?: string | undefined,
-      next?: string | undefined
+      next?: string | undefined,
+      blockNumber: string = '0'
     ) {
       const params = {
         module: 'transactions',
@@ -96,14 +97,14 @@ export class RSKExplorerAPI extends DataSource {
         prev,
         next
       }
-      const response = await this.axios!.get<TransactionsServerResponse>(this.url, { params })
+      const { data: response } = await this.axios!.get<TransactionsServerResponse>(this.url, { params })
 
-      const pagesInfo = (response.data as any).pages
+      const pagesInfo = (response as any).pages
 
       return {
         prev: pagesInfo.prev,
         next: pagesInfo.next,
-        data: response.data.data
+        data: response.data.filter(tx => tx.blockNumber >= +blockNumber)
       }
     }
 }
