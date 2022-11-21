@@ -77,6 +77,12 @@ For ERC 20 Token indicate the smart contract address
 
 ## Run for development
 
+### API Keys
+
+Get a API key from CoinMarketCap and put it in the `.env` file.
+
+### Install
+
 Install dependencies:
 
 ```
