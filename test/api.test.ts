@@ -42,7 +42,7 @@ describe('coin market cap', () => {
       '0x0000000000000000000000000000000000000000',
       '0x2acc95758f8b5f583470ba265eb685a8f45fc9d5'
     ]
-    const { res: { text } } = await request(app)
+    const { text } = await request(app)
       .get(`/price?convert=USD&addresses=${addresses.join(',')}`)
       .expect('Content-Type', /json/)
       .expect(200)

@@ -210,6 +210,16 @@ module.exports = {
             }
           },
           {
+            name: 'blockNumber',
+            in: 'query',
+            description: 'Block Number filter',
+            required: false,
+            schema: {
+              type: 'string',
+              default: '0'
+            }
+          },
+          {
             name: 'prev',
             in: 'query',
             description: 'Chain Id identifies the network',

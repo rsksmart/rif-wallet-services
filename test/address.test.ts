@@ -27,12 +27,12 @@ describe('transactions', () => {
   test('get transactions', async () => {
     const app = setupTestApi(dataSourceMapping)
 
-    const { res: { text } } = await request(app)
+    const { text } = await request(app)
       .get(`/address/${mockAddress}/transactions?limit=50`)
       .expect('Content-Type', /json/)
       .expect(200)
     expect(JSON.parse(text)).toEqual(transactionResponse)
-    expect(getTransactionsByAddressMock).toHaveBeenCalledWith(mockAddress, '50', undefined, undefined)
+    expect(getTransactionsByAddressMock).toHaveBeenCalledWith(mockAddress, '50', undefined, undefined, '0')
   })
 })
 
@@ -40,7 +40,7 @@ describe('tokens', () => {
   test('get tokens', async () => {
     const app = setupTestApi(dataSourceMapping)
 
-    const { res: { text } } = await request(app)
+    const { text } = await request(app)
       .get(`/address/${mockAddress}/tokens`)
       .expect('Content-Type', /json/)
       .expect(200)
@@ -54,7 +54,7 @@ describe('events', () => {
   test('get events', async () => {
     const app = setupTestApi(dataSourceMapping)
 
-    const { res: { text } } = await request(app)
+    const { text } = await request(app)
       .get(`/address/${mockAddress}/events`)
       .expect('Content-Type', /json/)
       .expect(200)

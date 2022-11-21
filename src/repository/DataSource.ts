@@ -19,5 +19,6 @@ export abstract class DataSource {
   abstract getTransactionsByAddress(address:string,
     limit?: string,
     prev?: string,
-    next?: string);
+    next?: string,
+    blockNumber?: string);
 }

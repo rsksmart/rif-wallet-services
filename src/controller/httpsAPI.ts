@@ -50,10 +50,10 @@ export class HttpsAPI {
 
     this.app.get(
       '/address/:address/transactions',
-      ({ params: { address }, query: { limit, prev, next, chainId = '31' } }: Request,
+      ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
         res: Response, nextFunction: NextFunction) =>
         this.dataSourceMapping.get(chainId as string)
-          ?.getTransactionsByAddress(address, limit as string, prev as string, next as string)
+          ?.getTransactionsByAddress(address, limit as string, prev as string, next as string, blockNumber as string)
           .then(this.responseJsonOk(res))
           .catch(nextFunction)
     )
