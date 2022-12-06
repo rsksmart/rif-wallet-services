@@ -16,6 +16,20 @@ import BitcoinCore from './service/bitcoin/BitcoinCore'
 async function main () {
   const environment = {
     // TODO: remove these defaults
+    NETWORKS: [
+      {
+        ID: '31',
+        API_URL: (process.env.API_URL as string) ||
+        'https://backend.explorer.testnet.rsk.co/api',
+        CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
+      },
+      {
+        ID: '30',
+        API_URL: (process.env.API_MAINNET_URL as string) ||
+        'https://backend.explorer.rsk.co/api',
+        CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30,
+      }
+    ],
     API_URL:
       (process.env.API_URL as string) ||
       'https://backend.explorer.testnet.rsk.co/api',
@@ -29,8 +43,9 @@ async function main () {
     BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
   const datasourceMapping = new Map<string, DataSource>()
-  const rskExplorerApi = new RSKExplorerAPI(environment.API_URL, environment.CHAIN_ID, axios, '31')
-  datasourceMapping.set('31', rskExplorerApi)
+  environment.NETWORKS.forEach(network => {
+    datasourceMapping.set(network.ID, new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID))
+  })
   const coinMarketCapApi = new CoinMarketCapAPI(
     environment.COIN_MARKET_CAP_URL,
     environment.COIN_MARKET_CAP_VERSION,
