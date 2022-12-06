@@ -21,20 +21,16 @@ async function main () {
         ID: '31',
         API_URL: (process.env.API_URL as string) ||
         'https://backend.explorer.testnet.rsk.co/api',
-        CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
+        CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31
       },
       {
         ID: '30',
         API_URL: (process.env.API_MAINNET_URL as string) ||
         'https://backend.explorer.rsk.co/api',
-        CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30,
+        CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30
       }
     ],
-    API_URL:
-      (process.env.API_URL as string) ||
-      'https://backend.explorer.testnet.rsk.co/api',
     PORT: parseInt(process.env.PORT as string) || 3000,
-    CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
     COIN_MARKET_CAP_URL: process.env.COIN_MARKET_CAP_URL as string || 'https://pro-api.coinmarketcap.com',
     COIN_MARKET_CAP_VERSION: process.env.COIN_MARKET_CAP_VERSION as string || 'v1',
     COIN_MARKET_CAP_KEY: process.env.COIN_MARKET_CAP_KEY! as string,
