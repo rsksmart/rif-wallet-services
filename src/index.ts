@@ -21,13 +21,15 @@ async function main () {
         ID: '31',
         API_URL: (process.env.API_URL as string) ||
         'https://backend.explorer.testnet.rsk.co/api',
-        CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31
+        CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
+        BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
       },
       {
         ID: '30',
         API_URL: (process.env.API_MAINNET_URL as string) ||
         'https://backend.explorer.rsk.co/api',
-        CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30
+        CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30,
+        BLOCKBOOK_URL: process.env.BLOCKBOOK_MAINNET_URL
       }
     ],
     PORT: parseInt(process.env.PORT as string) || 3000,
@@ -39,8 +41,10 @@ async function main () {
     BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
   const datasourceMapping = new Map<string, DataSource>()
+  const bitcoinMapping = new Map<string, BitcoinCore>()
   environment.NETWORKS.forEach(network => {
     datasourceMapping.set(network.ID, new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID))
+    bitcoinMapping.set(network.ID, new BitcoinCore(network.BLOCKBOOK_URL))
   })
   const coinMarketCapApi = new CoinMarketCapAPI(
     environment.COIN_MARKET_CAP_URL,
@@ -60,9 +64,8 @@ async function main () {
 
   await priceCollector.init()
 
-  const bitcoinCoreInstance = new BitcoinCore(environment.BLOCKBOOK_URL)
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinCoreInstance)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping)
   httpsAPI.init()
 
   const server = http.createServer(app)

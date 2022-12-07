@@ -13,12 +13,12 @@ export class HttpsAPI {
   private app: Application
   private dataSourceMapping: Map<string, DataSource>
   private lastPrice: LastPrice
-  private bitcoinCoreInstance: BitcoinCore
-  constructor (app: Application, dataSourceMapping: Map<string, DataSource>, lastPrice, bitcoinCoreInstance) {
+  private bitcoinMapping: Map<string, BitcoinCore>
+  constructor (app: Application, dataSourceMapping: Map<string, DataSource>, lastPrice, bitcoinMapping) {
     this.app = app
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
-    this.bitcoinCoreInstance = bitcoinCoreInstance
+    this.bitcoinMapping = bitcoinMapping
   }
 
   responseJsonOk (res: Response) {
@@ -69,7 +69,7 @@ export class HttpsAPI {
     )
 
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(OpenApi))
-    this.app.use('/bitcoin', BitcoinRouter(this.responseJsonOk, this.bitcoinCoreInstance))
+    this.app.use('/bitcoin', BitcoinRouter(this.responseJsonOk, this.bitcoinMapping))
     this.app.get('/dapps', (_: Request, res: Response) => this.responseJsonOk(res)(registeredDapps))
 
     this.app.use(errorHandler)
