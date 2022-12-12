@@ -45,8 +45,8 @@ describe('web socket', () => {
     })
 
     priceCollector.init()
-    const dataSourceMapping = new Map<string, DataSource>()
-    dataSourceMapping.set('31', rskExplorerApiMock as any)
+    const dataSourceMapping = {}
+    dataSourceMapping['31'] =  rskExplorerApiMock as any
     const webSocketAPI = new WebSocketAPI(server, dataSourceMapping, lastPrice)
     serverSocket = new Server(server, {
       // cors: {

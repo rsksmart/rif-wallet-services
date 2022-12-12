@@ -21,7 +21,9 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
     lastPrice.save(prices)
   })
   priceCollector.init()
-  const httpsAPI = new HttpsAPI(app, {} as any, lastPrice, new BitcoinCore(''))
+  const bitcoinMapping = {}
+  bitcoinMapping['31'] = new BitcoinCore('')
+  const httpsAPI = new HttpsAPI(app, {} as any, lastPrice, bitcoinMapping)
   httpsAPI.init()
   return app
 }
