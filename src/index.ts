@@ -10,7 +10,7 @@ import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
 import { MockPrice } from './service/price/mockPrice'
-import { BitcoinDatasource, DataSource, RSKDatasource } from './repository/DataSource'
+import { BitcoinDatasource, RSKDatasource } from './repository/DataSource'
 import BitcoinCore from './service/bitcoin/BitcoinCore'
 
 async function main () {

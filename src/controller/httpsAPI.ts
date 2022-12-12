@@ -3,11 +3,10 @@ import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
 import { LastPrice } from '../service/price/lastPrice'
-import { BitcoinDatasource, DataSource, RSKDatasource } from '../repository/DataSource'
+import { BitcoinDatasource, RSKDatasource } from '../repository/DataSource'
 import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
-import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export class HttpsAPI {
   private app: Application

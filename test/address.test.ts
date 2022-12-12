@@ -1,7 +1,7 @@
 import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
-import { DataSource, RSKDatasource } from '../src/repository/DataSource'
+import { RSKDatasource } from '../src/repository/DataSource'
 import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 

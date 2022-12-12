@@ -1,6 +1,5 @@
 import express from 'express'
 import { BitcoinDatasource } from '../../repository/DataSource'
-import BitcoinCore from './BitcoinCore'
 const Router = express.Router()
 
 export const parseQueryString = (query: any) => {

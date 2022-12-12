@@ -1,7 +1,7 @@
 import http from 'http'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
-import { DataSource, RSKDatasource } from '../repository/DataSource'
+import { RSKDatasource } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
 
 export class WebSocketAPI {

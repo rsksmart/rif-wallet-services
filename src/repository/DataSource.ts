@@ -1,5 +1,5 @@
 import _axios from 'axios'
-import BitcoinCore from '../service/bitcoin/BitcoinCore';
+import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export abstract class DataSource {
   readonly url: string;
