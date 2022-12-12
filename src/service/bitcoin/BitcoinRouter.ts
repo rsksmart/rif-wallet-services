@@ -1,4 +1,5 @@
 import express from 'express'
+import { BitcoinDatasource } from '../../repository/DataSource'
 import BitcoinCore from './BitcoinCore'
 const Router = express.Router()
 
@@ -13,19 +14,19 @@ export const parseQueryString = (query: any) => {
   return parsed
 }
 
-const main = (responseJsonOk, bitcoinMapping: Map<string, BitcoinCore>) => {
+const main = (responseJsonOk, bitcoinMapping: BitcoinDatasource) => {
   // Parse query for blockbook api
   Router.use((req, res, next) => {
     if (req.query) req.query.parsedQuery = parseQueryString(req.query)
     next()
   })
   Router.get('/getXpubInfo/:xpub', async ({ params: { xpub }, query: { parsedQuery, chainId = '31' } }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.getXpubInfo(xpub as string, parsedQuery as string | undefined)
+    bitcoinMapping[chainId as string].getXpubInfo(xpub as string, parsedQuery as string | undefined)
       .then(responseJsonOk(res))
       .catch(next)
   })
   Router.get('/getXpubBalance/:xpub', async ({ params: { xpub }, query: { chainId = '31' } }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.getXpubBalance(xpub as string)
+    bitcoinMapping[chainId as string].getXpubBalance(xpub as string)
       .then(responseJsonOk(res))
       .catch(next)
   })
@@ -33,7 +34,7 @@ const main = (responseJsonOk, bitcoinMapping: Map<string, BitcoinCore>) => {
   Router.get('/getNextUnusedIndex/:xpub', async ({
     params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0', chainId = '31' }
   }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.getNextUnusedIndex(
+    bitcoinMapping[chainId as string].getNextUnusedIndex(
         xpub as string,
         bip as 'BIP44' | 'BIP84',
         changeIndex as string,
@@ -42,12 +43,12 @@ const main = (responseJsonOk, bitcoinMapping: Map<string, BitcoinCore>) => {
       .catch(next)
   })
   Router.get('/getXpubUtxos/:xpub', async ({ params: { xpub }, query: { chainId = '31' } }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.getXpubUtxos(xpub as string)
+    bitcoinMapping[chainId as string].getXpubUtxos(xpub as string)
       .then(responseJsonOk(res))
       .catch(next)
   })
   Router.get('/sendTransaction/:txhexdata', async ({ params: { txhexdata }, query: { chainId = '31' } }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.sendTransaction(txhexdata as string)
+    bitcoinMapping[chainId as string].sendTransaction(txhexdata as string)
       .then(responseJsonOk(res))
       .catch(next)
   })
@@ -55,7 +56,7 @@ const main = (responseJsonOk, bitcoinMapping: Map<string, BitcoinCore>) => {
     params: { xpub },
     query: { parsedQuery, chainId = '31' }
   }, res, next) => {
-    bitcoinMapping.get(chainId as string)?.getXpubTransactions(xpub as string, parsedQuery as string | undefined)
+    bitcoinMapping[chainId as string].getXpubTransactions(xpub as string, parsedQuery as string | undefined)
       .then(responseJsonOk(res))
       .catch(next)
   })

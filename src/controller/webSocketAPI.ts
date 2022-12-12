@@ -1,16 +1,16 @@
 import http from 'http'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
-import { DataSource } from '../repository/DataSource'
+import { DataSource, RSKDatasource } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
 
 export class WebSocketAPI {
   private server: http.Server
   // private rskExplorerApi: RSKExplorerAPI
-  private dataSourceMapping: Map<string, DataSource>
+  private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
 
-  constructor (server: http.Server, dataSourceMapping: Map<string, DataSource>, lastPrice: LastPrice) {
+  constructor (server: http.Server, dataSourceMapping: RSKDatasource, lastPrice: LastPrice) {
     this.server = server
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
@@ -22,7 +22,7 @@ export class WebSocketAPI {
 
       socket.on('subscribe', async ({ address, chainId = '31' }: { address: string, chainId: string }) => {
         console.log('new subscription with address: ', address)
-        const dataSource = this.dataSourceMapping.get(chainId)
+        const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) socket.emit('error', `Can not connect with dataSource for ${chainId}`)
         const profiler = new Profiler(address, dataSource!, this.lastPrice)
 

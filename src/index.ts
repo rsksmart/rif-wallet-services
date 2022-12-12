@@ -10,7 +10,7 @@ import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
 import { MockPrice } from './service/price/mockPrice'
-import { DataSource } from './repository/DataSource'
+import { BitcoinDatasource, DataSource, RSKDatasource } from './repository/DataSource'
 import BitcoinCore from './service/bitcoin/BitcoinCore'
 
 async function main () {
@@ -40,11 +40,12 @@ async function main () {
     DEFAULT_PRICE_POLLING_TIME: parseInt(process.env.DEFAULT_PRICE_POLLING_TIME as string) || 5 * 60 * 1000,
     BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
-  const datasourceMapping = new Map<string, DataSource>()
-  const bitcoinMapping = new Map<string, BitcoinCore>()
+
+  const datasourceMapping: RSKDatasource = {}
+  const bitcoinMapping: BitcoinDatasource = {}
   environment.NETWORKS.forEach(network => {
-    datasourceMapping.set(network.ID, new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID))
-    bitcoinMapping.set(network.ID, new BitcoinCore(network.BLOCKBOOK_URL))
+    datasourceMapping[network.ID] = new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID)
+    bitcoinMapping[network.ID] = new BitcoinCore(network.BLOCKBOOK_URL)
   })
   const coinMarketCapApi = new CoinMarketCapAPI(
     environment.COIN_MARKET_CAP_URL,
