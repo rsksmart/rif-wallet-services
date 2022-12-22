@@ -17,10 +17,12 @@ const setupTestApi = (dataSourceMapping: RSKDatasource) => {
 const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
+const ggetRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve([]))
 const rskExplorerApiMock = {
   getEventsByAddress: getEventsByAddressMock,
   getTransactionsByAddress: getTransactionsByAddressMock,
-  getTokensByAddress: getTokensByAddressMock
+  getTokensByAddress: getTokensByAddressMock,
+  getRbtcBalanceByAddress: ggetRbtcBalanceByAddressMock
 } as any
 const dataSourceMapping = {}
 dataSourceMapping['31'] = rskExplorerApiMock

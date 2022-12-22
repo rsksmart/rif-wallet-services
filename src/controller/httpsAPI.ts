@@ -33,10 +33,13 @@ export class HttpsAPI {
 
     this.app.get(
       '/address/:address/tokens',
-      ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
-        .dataSourceMapping[chainId as string].getTokensByAddress(address)
-        .then(this.responseJsonOk(res))
-        .catch(next)
+      ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) =>
+        Promise.all([
+          this.dataSourceMapping[chainId as string].getTokensByAddress(address),
+          this.dataSourceMapping[chainId as string].getRbtcBalanceByAddress(address)])
+          .then(balances => [...balances[0], ...balances[1]])
+          .then(this.responseJsonOk(res))
+          .catch(next)
     )
 
     this.app.get(
