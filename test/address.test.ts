@@ -2,7 +2,7 @@ import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
 import { RSKDatasource } from '../src/repository/DataSource'
-import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
+import { eventResponse, mockAddress, rbtcBalanceResponse, tokenResponse, transactionResponse } from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
@@ -17,12 +17,12 @@ const setupTestApi = (dataSourceMapping: RSKDatasource) => {
 const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
-const ggetRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve([]))
+const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
 const rskExplorerApiMock = {
   getEventsByAddress: getEventsByAddressMock,
   getTransactionsByAddress: getTransactionsByAddressMock,
   getTokensByAddress: getTokensByAddressMock,
-  getRbtcBalanceByAddress: ggetRbtcBalanceByAddressMock
+  getRbtcBalanceByAddress: getRbtcBalanceByAddressMock
 } as any
 const dataSourceMapping = {}
 dataSourceMapping['31'] = rskExplorerApiMock
@@ -49,7 +49,7 @@ describe('tokens', () => {
       .expect('Content-Type', /json/)
       .expect(200)
 
-    expect(JSON.parse(text)).toEqual(tokenResponse)
+    expect(JSON.parse(text)).toEqual([...tokenResponse, ...rbtcBalanceResponse])
     expect(getTokensByAddressMock).toHaveBeenCalledWith(mockAddress)
   })
 })
