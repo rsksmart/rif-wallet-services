@@ -64,7 +64,7 @@ export class RSKExplorerAPI extends DataSource {
       const response = await this.axios!.get<RbtcBalancesServerResponse>(this.url, { params })
       const apiRbtcBalancesByBlocks:IApiRbtcBalance[] = response.data.data
 
-      if(apiRbtcBalancesByBlocks.length === 0) return []
+      if (apiRbtcBalancesByBlocks.length === 0) return []
 
       const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce(
         (prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)

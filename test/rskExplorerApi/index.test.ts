@@ -1,12 +1,12 @@
-import axios from "axios"
+import axios from 'axios'
 import { RSKExplorerAPI } from '../../src/rskExplorerApi'
 
 jest.mock('axios')
 
-const rskExplorerApiMock = new RSKExplorerAPI('url', 31, axios, '31');
+const rskExplorerApiMock = new RSKExplorerAPI('url', 31, axios, '31')
 
 describe('balances', () => {
-  test('should not return rbtc balance a new wallet', async () => { 
+  test('should not return rbtc balance a new wallet', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
         data: []
@@ -23,7 +23,7 @@ describe('balances', () => {
     })
     expect(balance).toEqual([])
   })
-  
+
   test('should return rbtc balance', async () => {
     const address = '0xc0c9280c10e4d968394371d5b60ac5fcd1ae62e1';
     (axios.get as jest.Mock).mockResolvedValueOnce({
@@ -68,11 +68,11 @@ describe('balances', () => {
       }
     })
     expect(balance).toEqual([{
-      "name": "RBTC",
-      "symbol": "RBTC",
-      "contractAddress": "0x0000000000000000000000000000000000000000",
-      "decimals": 18,
-      "balance": "0x98a156b222f262"
+      name: 'RBTC',
+      symbol: 'RBTC',
+      contractAddress: '0x0000000000000000000000000000000000000000',
+      decimals: 18,
+      balance: '0x98a156b222f262'
     }])
   })
 })

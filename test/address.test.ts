@@ -2,7 +2,10 @@ import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
 import { RSKDatasource } from '../src/repository/DataSource'
-import { eventResponse, mockAddress, rbtcBalanceResponse, tokenResponse, transactionResponse } from './mockAddressResponses'
+import {
+  eventResponse, mockAddress, rbtcBalanceResponse,
+  tokenResponse, transactionResponse
+} from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
