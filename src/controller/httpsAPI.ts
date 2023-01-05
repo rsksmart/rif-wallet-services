@@ -9,6 +9,7 @@ import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
 import { fromApiToRtbcBalance } from '../rskExplorerApi/utils'
 import { isIncomingTransaction } from '../service/transaction/utils'
+import { IEvent } from '../rskExplorerApi/types'
 
 export class HttpsAPI {
   private app: Application
@@ -63,15 +64,16 @@ export class HttpsAPI {
       async ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
         res: Response, nextFunction: NextFunction) => {
         const dataSource = this.dataSourceMapping[chainId as string]
-        const eventsTx = await dataSource?.getEventsByAddress(address.toLowerCase())
-          .then(events => events.filter(event => isIncomingTransaction(event, address)))
+        const events: IEvent[] = await dataSource.getEventsByAddress(address.toLowerCase())
+          .then(events => events.filter(
+            (event: IEvent) => isIncomingTransaction(event, address) && event.blockNumber >= +blockNumber)
+          )
           .catch(() => [])
-
-        const eventTxs = eventsTx
-          .map(event => dataSource?.getTransaction(event.transactionHash))
-        const result = await Promise.all(eventTxs)
+        const result = await Promise.all(
+          events.map((event: IEvent) =>  dataSource.getTransaction(event.transactionHash))
+        )
         return await
-        dataSource?.getTransactionsByAddress(address, limit as string,
+        dataSource.getTransactionsByAddress(address, limit as string,
           prev as string, next as string, blockNumber as string)
           .then(transactions => {
             return {
