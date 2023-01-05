@@ -1,4 +1,5 @@
 import _axios from 'axios'
+import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export abstract class DataSource {
   readonly url: string;
@@ -21,4 +22,12 @@ export abstract class DataSource {
     prev?: string,
     next?: string,
     blockNumber?: string);
+}
+
+export type RSKDatasource = {
+  [key: string] : DataSource
+}
+
+export type BitcoinDatasource = {
+  [key: string] : BitcoinCore
 }

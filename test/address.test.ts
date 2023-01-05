@@ -1,13 +1,15 @@
 import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
-import { DataSource } from '../src/repository/DataSource'
+import { RSKDatasource } from '../src/repository/DataSource'
 import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 
-const setupTestApi = (dataSourceMapping: Map<string, DataSource>) => {
+const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   const app = express()
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {}, new BitcoinCore(''))
+  const bitcoinMapping = {}
+  bitcoinMapping['31'] = new BitcoinCore('')
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {}, bitcoinMapping)
   httpsAPI.init()
   return app
 }
@@ -20,8 +22,8 @@ const rskExplorerApiMock = {
   getTransactionsByAddress: getTransactionsByAddressMock,
   getTokensByAddress: getTokensByAddressMock
 } as any
-const dataSourceMapping = new Map<string, DataSource>()
-dataSourceMapping.set('31', rskExplorerApiMock)
+const dataSourceMapping = {}
+dataSourceMapping['31'] = rskExplorerApiMock
 
 describe('transactions', () => {
   test('get transactions', async () => {

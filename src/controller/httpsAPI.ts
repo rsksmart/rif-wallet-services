@@ -3,22 +3,21 @@ import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
 import { LastPrice } from '../service/price/lastPrice'
-import { DataSource } from '../repository/DataSource'
+import { BitcoinDatasource, RSKDatasource } from '../repository/DataSource'
 import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
-import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export class HttpsAPI {
   private app: Application
-  private dataSourceMapping: Map<string, DataSource>
+  private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
-  private bitcoinCoreInstance: BitcoinCore
-  constructor (app: Application, dataSourceMapping: Map<string, DataSource>, lastPrice, bitcoinCoreInstance) {
+  private bitcoinMapping: BitcoinDatasource
+  constructor (app: Application, dataSourceMapping: RSKDatasource, lastPrice, bitcoinMapping: BitcoinDatasource) {
     this.app = app
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
-    this.bitcoinCoreInstance = bitcoinCoreInstance
+    this.bitcoinMapping = bitcoinMapping
   }
 
   responseJsonOk (res: Response) {
@@ -27,7 +26,7 @@ export class HttpsAPI {
 
   init () : void {
     this.app.get('/tokens', ({ query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
-      .dataSourceMapping.get(chainId as string)?.getTokens()
+      .dataSourceMapping[chainId as string].getTokens()
       .then(this.responseJsonOk(res))
       .catch(next)
     )
@@ -35,7 +34,7 @@ export class HttpsAPI {
     this.app.get(
       '/address/:address/tokens',
       ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
-        .dataSourceMapping.get(chainId as string)?.getTokensByAddress(address)
+        .dataSourceMapping[chainId as string].getTokensByAddress(address)
         .then(this.responseJsonOk(res))
         .catch(next)
     )
@@ -43,7 +42,7 @@ export class HttpsAPI {
     this.app.get(
       '/address/:address/events',
       ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
-        .dataSourceMapping.get(chainId as string)?.getEventsByAddress(address)
+        .dataSourceMapping[chainId as string].getEventsByAddress(address)
         .then(this.responseJsonOk(res))
         .catch(next)
     )
@@ -52,7 +51,7 @@ export class HttpsAPI {
       '/address/:address/transactions',
       ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
         res: Response, nextFunction: NextFunction) =>
-        this.dataSourceMapping.get(chainId as string)
+        this.dataSourceMapping[chainId as string]
           ?.getTransactionsByAddress(address, limit as string, prev as string, next as string, blockNumber as string)
           .then(this.responseJsonOk(res))
           .catch(nextFunction)
@@ -69,7 +68,7 @@ export class HttpsAPI {
     )
 
     this.app.use('/api-docs', swaggerUI.serve, swaggerUI.setup(OpenApi))
-    this.app.use('/bitcoin', BitcoinRouter(this.responseJsonOk, this.bitcoinCoreInstance))
+    this.app.use('/bitcoin', BitcoinRouter(this.responseJsonOk, this.bitcoinMapping))
     this.app.get('/dapps', (_: Request, res: Response) => this.responseJsonOk(res)(registeredDapps))
 
     this.app.use(errorHandler)
