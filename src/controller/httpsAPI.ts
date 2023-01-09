@@ -3,21 +3,25 @@ import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
 import { LastPrice } from '../service/price/lastPrice'
-import { BitcoinDatasource, RSKDatasource } from '../repository/DataSource'
+import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
 import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
+import { fromApiToRtbcBalance } from '../rskExplorerApi/utils'
 
 export class HttpsAPI {
   private app: Application
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
   private bitcoinMapping: BitcoinDatasource
-  constructor (app: Application, dataSourceMapping: RSKDatasource, lastPrice, bitcoinMapping: BitcoinDatasource) {
+  private providerMapping: RSKNodeProvider
+  constructor (app: Application, dataSourceMapping: RSKDatasource,
+    lastPrice: LastPrice, bitcoinMapping: BitcoinDatasource, providerMapping: RSKNodeProvider) {
     this.app = app
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.bitcoinMapping = bitcoinMapping
+    this.providerMapping = providerMapping
   }
 
   responseJsonOk (res: Response) {
@@ -33,13 +37,16 @@ export class HttpsAPI {
 
     this.app.get(
       '/address/:address/tokens',
-      ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) =>
+      async ({ params: { address }, query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => {
+        const balance = await this.providerMapping[chainId as string].getBalance(address.toLowerCase())
         Promise.all([
           this.dataSourceMapping[chainId as string].getTokensByAddress(address),
-          this.dataSourceMapping[chainId as string].getRbtcBalanceByAddress(address)])
-          .then(balances => [...balances[0], ...balances[1]])
+          fromApiToRtbcBalance(balance.toHexString(), parseInt(chainId as string))
+        ])
+          .then(balances => [...balances[0], balances[1]])
           .then(this.responseJsonOk(res))
           .catch(next)
+      }
     )
 
     this.app.get(

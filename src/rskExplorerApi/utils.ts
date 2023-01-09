@@ -1,5 +1,5 @@
 import {
-  IApiEvents, IApiRbtcBalance,
+  IApiEvents,
   IApiTokens,
   IEvent,
   IToken,
@@ -31,14 +31,14 @@ export const fromApiToTokenWithBalance = (apiToken:IApiTokens, chainId: number):
     balance: apiToken.balance
   })
 
-export const fromApiToRtbcBalance = (apiBalance:IApiRbtcBalance, chainId: number): ITokenWithBalance =>
+export const fromApiToRtbcBalance = (balance:string, chainId: number): ITokenWithBalance =>
   ({
     name: 'RBTC',
     logo: getLogo('0x0000000000000000000000000000000000000000', chainId),
     symbol: 'RBTC',
     contractAddress: '0x0000000000000000000000000000000000000000',
     decimals: parseInt('18'),
-    balance: apiBalance.balance
+    balance
   })
 
 export const fromApiToTEvents = (apiEvent:IApiEvents): IEvent =>

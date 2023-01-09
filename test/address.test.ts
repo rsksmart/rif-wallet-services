@@ -7,12 +7,16 @@ import {
   tokenResponse, transactionResponse
 } from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
+import { LastPrice } from '../src/service/price/lastPrice'
+import { MockProvider } from './MockProvider'
 
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   const app = express()
   const bitcoinMapping = {}
   bitcoinMapping['31'] = new BitcoinCore('')
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {}, bitcoinMapping)
+  const providerMapping = {}
+  providerMapping['31'] = new MockProvider(31)
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(), bitcoinMapping, providerMapping)
   httpsAPI.init()
   return app
 }
@@ -20,12 +24,10 @@ const setupTestApi = (dataSourceMapping: RSKDatasource) => {
 const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
-const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
 const rskExplorerApiMock = {
   getEventsByAddress: getEventsByAddressMock,
   getTransactionsByAddress: getTransactionsByAddressMock,
-  getTokensByAddress: getTokensByAddressMock,
-  getRbtcBalanceByAddress: getRbtcBalanceByAddressMock
+  getTokensByAddress: getTokensByAddressMock
 } as any
 const dataSourceMapping = {}
 dataSourceMapping['31'] = rskExplorerApiMock

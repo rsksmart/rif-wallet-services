@@ -69,7 +69,7 @@ export class RSKExplorerAPI extends DataSource {
       const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce(
         (prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
 
-      return [fromApiToRtbcBalance(balanceInLatestBlock, this.chainId)]
+      return [fromApiToRtbcBalance(balanceInLatestBlock.balance, this.chainId)]
     }
 
     async getTransaction (hash: string) {
