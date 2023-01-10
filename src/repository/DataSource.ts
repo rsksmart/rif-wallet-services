@@ -1,4 +1,5 @@
 import _axios from 'axios'
+import { ethers } from 'ethers'
 import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export abstract class DataSource {
@@ -26,6 +27,10 @@ export abstract class DataSource {
 
 export type RSKDatasource = {
   [key: string] : DataSource
+}
+
+export type RSKNodeProvider = {
+  [key: string] : ethers.providers.JsonRpcProvider
 }
 
 export type BitcoinDatasource = {

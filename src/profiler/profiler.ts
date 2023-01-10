@@ -6,6 +6,7 @@ import { LastPrice } from '../service/price/lastPrice'
 import { TokenTransferProfiler } from './TokenTransferProfiler'
 import { RbtcBalanceProfiler } from './RbtcBalanceProfiler'
 import { DataSource } from '../repository/DataSource'
+import { ethers } from 'ethers'
 
 export class Profiler extends Emitter {
   balanceProfiler: BalanceProfiler;
@@ -16,13 +17,14 @@ export class Profiler extends Emitter {
   address: string
   tokenTransferProfiler: TokenTransferProfiler;
 
-  constructor (address: string, dataSource: DataSource, lastPrice: LastPrice) {
+  constructor (address: string, dataSource: DataSource,
+    lastPrice: LastPrice, provider: ethers.providers.JsonRpcProvider) {
     super()
     this.address = address
     this.lastPrice = lastPrice
 
     this.balanceProfiler = new BalanceProfiler(address, dataSource)
-    this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, dataSource)
+    this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, dataSource, provider)
 
     this.transactionProfiler = new TransactionProfiler(address, dataSource)
     this.tokenTransferProfiler = new TokenTransferProfiler(address, dataSource)

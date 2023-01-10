@@ -64,10 +64,12 @@ export class RSKExplorerAPI extends DataSource {
       const response = await this.axios!.get<RbtcBalancesServerResponse>(this.url, { params })
       const apiRbtcBalancesByBlocks:IApiRbtcBalance[] = response.data.data
 
-      // eslint-disable-next-line max-len
-      const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce((prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
+      if (apiRbtcBalancesByBlocks.length === 0) return []
 
-      return [fromApiToRtbcBalance(balanceInLatestBlock, this.chainId)]
+      const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce(
+        (prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
+
+      return [fromApiToRtbcBalance(balanceInLatestBlock.balance, this.chainId)]
     }
 
     async getTransaction (hash: string) {

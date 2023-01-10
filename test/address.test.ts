@@ -2,14 +2,21 @@ import express from 'express'
 import request from 'supertest'
 import { HttpsAPI } from '../src/controller/httpsAPI'
 import { RSKDatasource } from '../src/repository/DataSource'
-import { eventResponse, mockAddress, tokenResponse, transactionResponse } from './mockAddressResponses'
+import {
+  eventResponse, mockAddress, rbtcBalanceResponse,
+  tokenResponse, transactionResponse
+} from './mockAddressResponses'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
+import { LastPrice } from '../src/service/price/lastPrice'
+import { MockProvider } from './MockProvider'
 
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   const app = express()
   const bitcoinMapping = {}
   bitcoinMapping['31'] = new BitcoinCore('')
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, {}, bitcoinMapping)
+  const providerMapping = {}
+  providerMapping['31'] = new MockProvider(31)
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(), bitcoinMapping, providerMapping)
   httpsAPI.init()
   return app
 }
@@ -47,7 +54,7 @@ describe('tokens', () => {
       .expect('Content-Type', /json/)
       .expect(200)
 
-    expect(JSON.parse(text)).toEqual(tokenResponse)
+    expect(JSON.parse(text)).toEqual([...tokenResponse, ...rbtcBalanceResponse])
     expect(getTokensByAddressMock).toHaveBeenCalledWith(mockAddress)
   })
 })

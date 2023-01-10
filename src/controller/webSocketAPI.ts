@@ -1,7 +1,7 @@
 import http from 'http'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
-import { RSKDatasource } from '../repository/DataSource'
+import { RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
 
 export class WebSocketAPI {
@@ -9,11 +9,14 @@ export class WebSocketAPI {
   // private rskExplorerApi: RSKExplorerAPI
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
+  private providerMapping: RSKNodeProvider
 
-  constructor (server: http.Server, dataSourceMapping: RSKDatasource, lastPrice: LastPrice) {
+  constructor (server: http.Server, dataSourceMapping: RSKDatasource,
+    lastPrice: LastPrice, providerMapping: RSKNodeProvider) {
     this.server = server
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
+    this.providerMapping = providerMapping
   }
 
   init (io: Server) {
@@ -24,7 +27,8 @@ export class WebSocketAPI {
         console.log('new subscription with address: ', address)
         const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) socket.emit('error', `Can not connect with dataSource for ${chainId}`)
-        const profiler = new Profiler(address, dataSource!, this.lastPrice)
+        const provider = this.providerMapping[chainId as string]
+        const profiler = new Profiler(address, dataSource!, this.lastPrice, provider)
 
         profiler.on('balances', (data) => {
           console.log(data)

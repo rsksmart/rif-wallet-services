@@ -10,8 +10,9 @@ import { PriceCollector } from './service/price/priceCollector'
 import { LastPrice } from './service/price/lastPrice'
 import { Server } from 'socket.io'
 import { MockPrice } from './service/price/mockPrice'
-import { BitcoinDatasource, RSKDatasource } from './repository/DataSource'
+import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from './repository/DataSource'
 import BitcoinCore from './service/bitcoin/BitcoinCore'
+import { ethers } from 'ethers'
 
 async function main () {
   const environment = {
@@ -22,14 +23,16 @@ async function main () {
         API_URL: (process.env.API_URL as string) ||
         'https://backend.explorer.testnet.rsk.co/api',
         CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
-        BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
+        BLOCKBOOK_URL: process.env.BLOCKBOOK_URL,
+        NODE_URL: process.env.NODE_URL
       },
       {
         ID: '30',
         API_URL: (process.env.API_MAINNET_URL as string) ||
         'https://backend.explorer.rsk.co/api',
         CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30,
-        BLOCKBOOK_URL: process.env.BLOCKBOOK_MAINNET_URL
+        BLOCKBOOK_URL: process.env.BLOCKBOOK_MAINNET_URL,
+        NODE_URL: process.env.NODE_MAINNET_URL
       }
     ],
     PORT: parseInt(process.env.PORT as string) || 3000,
@@ -43,9 +46,11 @@ async function main () {
 
   const datasourceMapping: RSKDatasource = {}
   const bitcoinMapping: BitcoinDatasource = {}
+  const nodeProvider: RSKNodeProvider = {}
   environment.NETWORKS.forEach(network => {
     datasourceMapping[network.ID] = new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID)
     bitcoinMapping[network.ID] = new BitcoinCore(network.BLOCKBOOK_URL)
+    nodeProvider[network.ID] = new ethers.providers.JsonRpcProvider(network.NODE_URL)
   })
   const coinMarketCapApi = new CoinMarketCapAPI(
     environment.COIN_MARKET_CAP_URL,
@@ -66,11 +71,11 @@ async function main () {
   await priceCollector.init()
 
   const app = express()
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping, nodeProvider)
   httpsAPI.init()
 
   const server = http.createServer(app)
-  const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice)
+  const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice, nodeProvider)
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'

@@ -195,10 +195,9 @@ export const eventResponse = [{
 export const rbtcBalanceResponse = [
   {
     name: 'RBTC',
-    logo: 'loco',
     symbol: 'RBTC',
     contractAddress: '0x0000000000000000000000000000000000000000',
     decimals: 18,
-    balance: '0x56900d33ca7fc0000'
+    balance: '0x056900d33ca7fc0000'
 
   }]
