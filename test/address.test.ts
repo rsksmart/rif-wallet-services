@@ -16,7 +16,8 @@ const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   bitcoinMapping['31'] = new BitcoinCore('')
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(), bitcoinMapping, providerMapping, (req, res, next) => { next() })
+  const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(),
+    bitcoinMapping, providerMapping, (req, res, next) => { next() })
   httpsAPI.init()
   return app
 }

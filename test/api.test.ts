@@ -26,7 +26,8 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   bitcoinMapping['31'] = new BitcoinCore('')
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
-  const httpsAPI = new HttpsAPI(app, {} as any, lastPrice, bitcoinMapping, providerMapping,  (req, res, next) => { next() })
+  const httpsAPI = new HttpsAPI(app, {} as any, lastPrice,
+    bitcoinMapping, providerMapping, (req, res, next) => { next() })
   httpsAPI.init()
   return app
 }

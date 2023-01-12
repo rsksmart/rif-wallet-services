@@ -85,7 +85,8 @@ async function main () {
     serviceSigner: ES256KSigner(environment.AUTH_PRIVATE_KEY)
   }
   const authMiddleware = setupApp(config)(app)
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice, bitcoinMapping, nodeProvider, authMiddleware)
+  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice,
+    bitcoinMapping, nodeProvider, authMiddleware)
   httpsAPI.init()
 
   const server = http.createServer(app)

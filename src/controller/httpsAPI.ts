@@ -17,7 +17,7 @@ export class HttpsAPI {
   private providerMapping: RSKNodeProvider
   private authMiddleware;
   constructor (app: Express, dataSourceMapping: RSKDatasource, lastPrice: LastPrice,
-    bitcoinMapping: BitcoinDatasource,providerMapping: RSKNodeProvider, authMiddleware) {
+    bitcoinMapping: BitcoinDatasource, providerMapping: RSKNodeProvider, authMiddleware) {
     this.app = app
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
