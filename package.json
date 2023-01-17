@@ -28,6 +28,7 @@
   },
   "homepage": "https://github.com/rsksmart/rif-wallet-services#readme",
   "devDependencies": {
+    "@types/crypto-js": "^4.1.1",
     "@types/dotenv": "^8.2.0",
     "@types/express": "^4.17.13",
     "@types/jest": "^27.0.2",
@@ -58,6 +59,7 @@
     "@rsksmart/rsk-contract-metadata": "^1.0.15",
     "@rsksmart/rsk-utils": "^1.1.0",
     "axios": "^0.22.0",
+    "crypto-js": "^4.1.1",
     "dotenv": "^10.0.0",
     "ethers": "^5.7.2",
     "express": "^4.17.1",
