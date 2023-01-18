@@ -70,7 +70,7 @@ export class HttpsAPI {
           )
           .catch(() => [])
         const result = await Promise.all(
-          events.map((event: IEvent) =>  dataSource.getTransaction(event.transactionHash))
+          events.map((event: IEvent) => dataSource.getTransaction(event.transactionHash))
         )
         return await
         dataSource.getTransactionsByAddress(address, limit as string,

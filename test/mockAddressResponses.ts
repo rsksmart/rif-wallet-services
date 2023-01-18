@@ -95,6 +95,99 @@ export const transactionSecondResponse = {
   ]
 }
 
+export const transactionFromEventResponse = {
+  _id: '61eef1b5e13e1554d70c0c3a',
+  hash: '0xcb08a5c3417c4d25956f7fa70d1da0f558568ad91979580664176281cfa037e9',
+  nonce: 10,
+  blockHash: '0xc2965eaf240f1870c17083e685239c0368acd72c2524e8bf67108400de040cc1',
+  blockNumber: 2525443,
+  transactionIndex: 1,
+  from: '0xdf3f858032e370ae039417b278403ba90ab8bb64',
+  to: '0x248b320687ebf655f9ee7f62f0388c79fbb7b2f4',
+  gas: 111261,
+  gasPrice: '0x3e252e1',
+  value: '0x0',
+  input: '0x5f746233000000000000000000000000df3f858032e370ae039417b278403ba90ab8bb64',
+  v: '0x61',
+  r: '0xfe654fc91996a3ca0b032030397caf1e041c33660054359938c1ea602e0087fa',
+  s: '0x2fc43289ebdd0727ac4657d4f288883b0154ebda2b8f90c296b8ef5b08380022',
+  timestamp: 1643049374,
+  receipt: {
+    transactionHash: '0xcb08a5c3417c4d25956f7fa70d1da0f558568ad91979580664176281cfa037e9',
+    transactionIndex: 1,
+    blockHash: '0xc2965eaf240f1870c17083e685239c0368acd72c2524e8bf67108400de040cc1',
+    blockNumber: 2525443,
+    cumulativeGasUsed: 116163,
+    gasUsed: 74174,
+    contractAddress: null,
+    logs: [
+      {
+        logIndex: 0,
+        blockNumber: 2525443,
+        blockHash: '0xc2965eaf240f1870c17083e685239c0368acd72c2524e8bf67108400de040cc1',
+        transactionHash: '0xcb08a5c3417c4d25956f7fa70d1da0f558568ad91979580664176281cfa037e9',
+        transactionIndex: 1,
+        address: '0x19f64674d8a5b4e652319f5e239efd3bc969a1fe',
+        data: '0x0000000000000000000000000000000000000000000000056bc75e2d63100000',
+        topics: [
+          '0xddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+          '0x000000000000000000000000248b320687ebf655f9ee7f62f0388c79fbb7b2f4',
+          '0x000000000000000000000000df3f858032e370ae039417b278403ba90ab8bb64'
+        ],
+        event: 'Transfer',
+        args: [
+          '0x248b320687ebf655f9ee7f62f0388c79fbb7b2f4',
+          '0xdf3f858032e370ae039417b278403ba90ab8bb64',
+          '0x56bc75e2d63100000'
+        ],
+        abi: {
+          anonymous: false,
+          inputs: [
+            {
+              indexed: true,
+              name: 'from',
+              type: 'address'
+            },
+            {
+              indexed: true,
+              name: 'to',
+              type: 'address'
+            },
+            {
+              indexed: false,
+              name: 'value',
+              type: 'uint256'
+            }
+          ],
+          name: 'Transfer',
+          type: 'event'
+        },
+        signature: 'ddf252ad1be2c89b69c2b068fc378daa952ba7f163c4a11628f55a4df523b3ef',
+        _addresses: [
+          '0x248b320687ebf655f9ee7f62f0388c79fbb7b2f4',
+          '0xdf3f858032e370ae039417b278403ba90ab8bb64'
+        ],
+        eventId: '02689030010008bf67108400de040cc1',
+        timestamp: 1643049374,
+        txStatus: '0x1'
+      }
+    ],
+    from: '0xdf3f858032e370ae039417b278403ba90ab8bb64',
+    to: '0x248b320687ebf655f9ee7f62f0388c79fbb7b2f4',
+    status: '0x1',
+    logsBloom: '0x00000000000000000000000000000000000000000000000000000' +
+    '1000000000000000000000000000000000000000100000000000000000000000000' +
+    '00000000000000000000000000000008000000000000000000000000000000000000' +
+    '0000000002000000000000000000000000000000000000000800000000100000000' +
+    '0000000000000000000000000000000000000000100000000000000000000400000' +
+    '0000000000000008000000000000000000000400000000000000000000000000000' +
+    '0020000000000000000000000000000000000000000000000000000000000000000' +
+    '04000000000000000000000000000000000000000000000000000000'
+  },
+  txType: 'contract call',
+  txId: '02689030018bf67108400de040cc1'
+}
+
 export const transactionResponse = {
   prev: null,
   next: null,
@@ -133,6 +226,15 @@ export const transactionResponse = {
       txType: 'contract call',
       txId: '0268cdf000ae1a107721eb830b92a'
     }
+  ]
+}
+
+export const transactionWithEventResponse = {
+  prev: null,
+  next: null,
+  data: [
+    ...transactionResponse.data,
+    transactionFromEventResponse
   ]
 }
 
