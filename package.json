@@ -45,7 +45,7 @@
     "eslint-plugin-standard": "^5.0.0",
     "jest": "^27.4.5",
     "jest-junit": "^12.0.0",
-    "nodemon": "^2.0.7",
+    "nodemon": "^2.0.20",
     "rimraf": "^3.0.2",
     "socket.io-client": "^4.4.1",
     "supertest": "^6.1.6",
