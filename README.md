@@ -119,3 +119,14 @@ npm run start:prod
 - API documentation is in /api-docs endpoint - GET
 - WebSocket documentation is in docs/websocket.md
   - Markdown file is generated frowm websocket.yaml using @asyncapi/markdown-template
+
+
+### Authentication
+For authenticate a wallet, we need:
+- Sign up (first time)
+<img src="./docs/did_auth_sign_up.png" alt="Sign up flow" />
+- Authenticate
+<img src="./docs/did_auth_login.png" alt="Authenticate flow" />
+- Refresh Credentials
+<img src="./docs/did_auth_access.png" alt="Access resources and refresh credentials"/>
+- Logout
