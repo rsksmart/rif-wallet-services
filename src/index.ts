@@ -93,6 +93,11 @@ async function main () {
       return Promise.resolve(environment.AUTH_CLIENT_TEXT === text)
     }
   }
+
+  app.get('/health', (req, res) => {
+    res.status(200).end('OK')
+  })
+
   const authMiddleware = setupApp(config)(app)
   const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice,
     bitcoinMapping, nodeProvider, authMiddleware)
