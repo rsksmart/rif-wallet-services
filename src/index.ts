@@ -95,7 +95,7 @@ async function main () {
   }
 
   app.get('/health', (req, res) => {
-    res.status(200).end('OK')
+    res.status(200).end(`OK ${environment.AUTH_SERVICE_URL}`)
   })
 
   const authMiddleware = setupApp(config)(app)
