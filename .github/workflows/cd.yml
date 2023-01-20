@@ -5,7 +5,9 @@ on:
     branches:
       - develop 
       - fix/devops
-  pull_request
+  pull_request:
+    branches:
+      - develop
 
 env:
   AWS_REGION: us-east-1                
