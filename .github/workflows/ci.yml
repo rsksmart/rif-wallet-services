@@ -28,6 +28,10 @@ jobs:
       run: echo "Hello $process.env.AUTH_SERVICE_URL"
     - name: Print test 3
       run: echo "${{ env.AUTH_SERVICE_URL }}"
+    - name: print test 4 (secrets)
+      run: echo "${{ secrets.AUTH_SERVICE_URL }}"
+    - name: print test 5 (variables)
+      run: echo "${{ variables.AUTH_SERVICE_URL }}"
     # - name: Coveralls
       # uses: coverallsapp/github-action@master
       # with:
