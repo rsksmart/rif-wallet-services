@@ -15,7 +15,7 @@ import BitcoinCore from './service/bitcoin/BitcoinCore'
 import { ethers } from 'ethers'
 import setupApp, { ExpressDidAuthConfig } from '@rsksmart/express-did-auth'
 import { ES256KSigner } from 'did-jwt'
-import CryptoJS from 'crypto-js'
+// import CryptoJS from 'crypto-js'
 
 async function main () {
   const environment = {
