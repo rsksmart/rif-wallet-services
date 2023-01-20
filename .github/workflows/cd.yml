@@ -18,6 +18,7 @@ env:
                                                  # file, e.g. .aws/task-definition.json
   CONTAINER_NAME: rif-wallet-services-testnet            # set this to the name of the container in the
                                                  # containerDefinitions section of your task definition
+  AUTH_SERVICE_URL: ${{ secrets.AUTH_SERVICE_URL }}
 
 jobs:
   deploy:
