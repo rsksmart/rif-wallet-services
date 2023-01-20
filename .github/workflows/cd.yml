@@ -5,22 +5,22 @@ on:
     branches:
       - develop 
       - fix/devops
+  pull_request:
+    branches:
+      - develop
 
 env:
   AWS_REGION: us-east-1                
   ECR_REPOSITORY: rif-wallet-services-testnet
-  ECS_SERVICE: wallet-services-testnet                 # set this to your Amazon ECS service name
-  ECS_CLUSTER: rif-wallet-services-testnet                # set this to your Amazon ECS cluster name
-  ECS_TASK_DEFINITION: .aws/task-definition.json # set this to the path to your Amazon ECS task definition
-                                                 # file, e.g. .aws/task-definition.json
-  CONTAINER_NAME: rif-wallet-services-testnet            # set this to the name of the container in the
-                                                 # containerDefinitions section of your task definition
+  ECS_SERVICE: wallet-services-testnet
+  ECS_CLUSTER: rif-wallet-services-testnet
+  ECS_TASK_DEFINITION: rif-wallet-services-dev
+  CONTAINER_NAME: rif-wallet-services-testnet
 
 jobs:
   deploy:
     name: Deploy
     runs-on: ubuntu-latest
-    
 
     steps:
       - name: Checkout
@@ -49,12 +49,15 @@ jobs:
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG --no-cache .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+      
+      - name: Download task definition
+        run: aws ecs describe-task-definition --task-definition ${{ env.ECS_TASK_DEFINITION }} --query taskDefinition > task-definition.json
 
       - name: Fill in the new image ID in the Amazon ECS task definition
         id: task-def
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
-          task-definition: ${{ env.ECS_TASK_DEFINITION }}
+          task-definition: task-definition.json
           container-name: ${{ env.CONTAINER_NAME }}
           image: ${{ steps.build-image.outputs.image }}
 
