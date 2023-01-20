@@ -5,9 +5,8 @@ on:
     branches:
       - develop 
       - fix/devops
-on:
   pull_request
-  
+
 env:
   AWS_REGION: us-east-1                
   ECR_REPOSITORY: rif-wallet-services-testnet
