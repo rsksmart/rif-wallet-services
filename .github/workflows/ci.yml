@@ -22,6 +22,7 @@ jobs:
     - run: npm run build
 
     - name: Print AUTH_SERVICE_URL
+      run: echo "$AUTH_SERVICE_URL"
       run: echo "Hello $process.env.AUTH_SERVICE_URL"
     # - name: Coveralls
       # uses: coverallsapp/github-action@master
