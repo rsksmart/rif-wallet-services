@@ -18,6 +18,9 @@ jobs:
     - run: npm run test:ci
     - run: npm run lint
     - run: npm run build
+
+    - name: Print AUTH_SERVICE_URL
+      run: echo "Hello $AUTH_SERVICE_URL"
     # - name: Coveralls
       # uses: coverallsapp/github-action@master
       # with:
