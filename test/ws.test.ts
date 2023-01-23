@@ -57,7 +57,7 @@ describe('web socket', () => {
       path: '/ws'
     })
     const port = 3000
-    webSocketAPI.init(serverSocket, { serviceUrl: `http://localhost:${port}`, serviceDid: ''})
+    webSocketAPI.init(serverSocket, { serviceUrl: `http://localhost:${port}`, serviceDid: '' })
     server.listen(port, () => {
       console.log(`RIF Wallet services running on ${port}.`)
     })
