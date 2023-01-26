@@ -11,7 +11,7 @@ env:
   ECR_REPOSITORY: rif-wallet-services-testnet
   ECS_SERVICE: wallet-services-testnet
   ECS_CLUSTER: rif-wallet-services-testnet
-  ECS_TASK_DEFINITION: rif-wallet-services-dev
+  ECS_TASK_DEFINITION: rif-wallet-services-testnet
   CONTAINER_NAME: rif-wallet-services-testnet
 
 jobs:
