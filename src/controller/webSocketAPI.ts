@@ -1,3 +1,4 @@
+import { TokenValidationConfig, verifyReceivedJwt } from '@rsksmart/express-did-auth'
 import http from 'http'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
@@ -19,11 +20,21 @@ export class WebSocketAPI {
     this.providerMapping = providerMapping
   }
 
-  init (io: Server) {
+  init (io: Server, config: TokenValidationConfig) {
     io.on('connection', (socket) => {
       console.log('new user connected')
 
-      socket.on('subscribe', async ({ address, chainId = '31' }: { address: string, chainId: string }) => {
+      socket.on('subscribe', async ({ address, chainId = '31', accessToken }
+        : { address: string, chainId: string, accessToken: string }) => {
+        if (!accessToken) {
+          socket.emit('error', 'Access token is required')
+          return
+        }
+        const verified = await verifyReceivedJwt(accessToken, config)
+        if (verified.issuer !== config.serviceDid) {
+          socket.emit('error', 'Invalid access token')
+          return
+        }
         console.log('new subscription with address: ', address)
         const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) socket.emit('error', `Can not connect with dataSource for ${chainId}`)

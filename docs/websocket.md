@@ -54,13 +54,15 @@ TestNet
 | (root) | object | - | - | - | **additional properties are allowed** |
 | address | string | Smart Wallet address | - | - | **required** |
 | chainId | string | Network Identifier | - | - | - |
+| accessToken | string | Access token to subscribe | - | - | - |
 
 > Examples of payload _(generated)_
 
 ```json
 {
   "address": "0xC0C9280C10E4D968394371d5b60aC5fCD1ae62e1",
-  "chainId": "31"
+  "chainId": "31",
+  "accessToken": "string"
 }
 ```
 

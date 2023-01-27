@@ -111,7 +111,7 @@ async function main () {
     // },
     path: '/ws'
   })
-  webSocketAPI.init(io)
+  webSocketAPI.init(io, { serviceUrl: environment.AUTH_SERVICE_URL, serviceDid: environment.AUTH_SERVICE_DID })
 
   server.listen(environment.PORT, () => {
     console.log(`RIF Wallet services running on port ${environment.PORT}.`)

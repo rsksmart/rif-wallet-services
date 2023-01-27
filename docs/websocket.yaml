@@ -41,6 +41,9 @@ channels:
               type: string
               example: '31'
               description: Network Identifier
+            accessToken:
+              type: string
+              description: Access token to subscribe
   change:
     subscribe:
       summary: Client recieve profile and price updates
