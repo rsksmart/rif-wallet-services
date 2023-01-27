@@ -3,8 +3,8 @@ import { ethers } from 'ethers'
 import BitcoinCore from '../service/bitcoin/BitcoinCore'
 
 export abstract class DataSource {
-  readonly url: string;
-  readonly id: string;
+  readonly url: string
+  readonly id: string
   readonly axios?: typeof _axios
 
   constructor (url: string, id: string, axios?: typeof _axios) {
