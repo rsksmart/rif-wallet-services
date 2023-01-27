@@ -8,6 +8,8 @@ import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
 import { fromApiToRtbcBalance } from '../rskExplorerApi/utils'
+import { isIncomingTransaction } from '../service/transaction/utils'
+import { IEvent } from '../rskExplorerApi/types'
 
 export class HttpsAPI {
   private app: Application
@@ -63,12 +65,31 @@ export class HttpsAPI {
 
     this.app.get(
       '/address/:address/transactions',
-      ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
-        res: Response, nextFunction: NextFunction) =>
-        this.dataSourceMapping[chainId as string]
-          ?.getTransactionsByAddress(address, limit as string, prev as string, next as string, blockNumber as string)
+      async ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
+        res: Response, nextFunction: NextFunction) => {
+        const dataSource = this.dataSourceMapping[chainId as string]
+        const events: IEvent[] = await dataSource.getEventsByAddress(address.toLowerCase())
+          .then(events => events.filter(
+            (event: IEvent) => isIncomingTransaction(event, address) && event.blockNumber >= +blockNumber)
+          )
+          .catch(() => [])
+        const result = await Promise.all(
+          events.map((event: IEvent) => dataSource.getTransaction(event.transactionHash))
+        )
+        return await
+        dataSource.getTransactionsByAddress(address, limit as string,
+          prev as string, next as string, blockNumber as string)
+          .then(transactions => {
+            return {
+              prev: transactions.prev,
+              next: transactions.next,
+              data: [...transactions.data, ...result]
+            }
+          })
           .then(this.responseJsonOk(res))
           .catch(nextFunction)
+      }
+
     )
 
     this.app.get(
