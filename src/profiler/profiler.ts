@@ -9,13 +9,13 @@ import { DataSource } from '../repository/DataSource'
 import { ethers } from 'ethers'
 
 export class Profiler extends Emitter {
-  balanceProfiler: BalanceProfiler;
-  rbtBalanceProfiler: RbtcBalanceProfiler;
-  transactionProfiler: TransactionProfiler;
-  priceProfiler: PriceProfiler;
-  lastPrice: LastPrice;
+  balanceProfiler: BalanceProfiler
+  rbtBalanceProfiler: RbtcBalanceProfiler
+  transactionProfiler: TransactionProfiler
+  priceProfiler: PriceProfiler
+  lastPrice: LastPrice
   address: string
-  tokenTransferProfiler: TokenTransferProfiler;
+  tokenTransferProfiler: TokenTransferProfiler
 
   constructor (address: string, dataSource: DataSource,
     lastPrice: LastPrice, provider: ethers.providers.JsonRpcProvider) {

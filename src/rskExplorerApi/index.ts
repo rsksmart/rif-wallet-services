@@ -11,102 +11,102 @@ import {
 import { fromApiToRtbcBalance, fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
 export class RSKExplorerAPI extends DataSource {
-    private chainId: number;
+  private chainId: number
 
-    constructor (apiURL: string, chainId: number, axios: typeof _axios, id: string) {
-      super(apiURL, id, axios)
-      this.chainId = chainId
+  constructor (apiURL: string, chainId: number, axios: typeof _axios, id: string) {
+    super(apiURL, id, axios)
+    this.chainId = chainId
+  }
+
+  async getEventsByAddress (address:string) {
+    const params = {
+      module: 'events',
+      action: 'getAllEventsByAddress',
+      address: address.toLowerCase()
     }
 
-    async getEventsByAddress (address:string) {
-      const params = {
-        module: 'events',
-        action: 'getAllEventsByAddress',
-        address: address.toLowerCase()
-      }
+    const response = await this.axios!.get<EventsServerResponse>(this.url, { params })
+    return response.data.data.map(ev => fromApiToTEvents(ev))
+  }
 
-      const response = await this.axios!.get<EventsServerResponse>(this.url, { params })
-      return response.data.data.map(ev => fromApiToTEvents(ev))
+  async getTokens () {
+    const params = {
+      module: 'addresses',
+      action: 'getTokens'
     }
 
-    async getTokens () {
-      const params = {
-        module: 'addresses',
-        action: 'getTokens'
-      }
+    const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
+    return response.data.data
+      .filter(t => t.name != null)
+      .map(t => fromApiToTokens(t, this.chainId))
+  }
 
-      const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
-      return response.data.data
-        .filter(t => t.name != null)
-        .map(t => fromApiToTokens(t, this.chainId))
+  async getTokensByAddress (address:string) {
+    const params = {
+      module: 'tokens',
+      action: 'getTokensByAddress',
+      address: address.toLowerCase()
     }
 
-    async getTokensByAddress (address:string) {
-      const params = {
-        module: 'tokens',
-        action: 'getTokensByAddress',
-        address: address.toLowerCase()
-      }
+    const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
+    return response.data.data
+      .filter(t => t.name != null)
+      .map(t => fromApiToTokenWithBalance(t, this.chainId))
+  }
 
-      const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
-      return response.data.data
-        .filter(t => t.name != null)
-        .map(t => fromApiToTokenWithBalance(t, this.chainId))
+  async getRbtcBalanceByAddress (address:string) {
+    const params = {
+      module: 'balances',
+      action: 'getBalances',
+      address: address.toLowerCase()
     }
 
-    async getRbtcBalanceByAddress (address:string) {
-      const params = {
-        module: 'balances',
-        action: 'getBalances',
-        address: address.toLowerCase()
-      }
+    const response = await this.axios!.get<RbtcBalancesServerResponse>(this.url, { params })
+    const apiRbtcBalancesByBlocks:IApiRbtcBalance[] = response.data.data
 
-      const response = await this.axios!.get<RbtcBalancesServerResponse>(this.url, { params })
-      const apiRbtcBalancesByBlocks:IApiRbtcBalance[] = response.data.data
+    if (apiRbtcBalancesByBlocks.length === 0) return []
 
-      if (apiRbtcBalancesByBlocks.length === 0) return []
+    const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce(
+      (prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
 
-      const balanceInLatestBlock = apiRbtcBalancesByBlocks.reduce(
-        (prev, current) => (prev.blockNumber > current.blockNumber) ? prev : current)
+    return [fromApiToRtbcBalance(balanceInLatestBlock.balance, this.chainId)]
+  }
 
-      return [fromApiToRtbcBalance(balanceInLatestBlock.balance, this.chainId)]
+  async getTransaction (hash: string) {
+    const params = {
+      module: 'transactions',
+      action: 'getTransaction',
+      hash
     }
 
-    async getTransaction (hash: string) {
-      const params = {
-        module: 'transactions',
-        action: 'getTransaction',
-        hash
-      }
+    const response = await this.axios!.get<TransactionServerResponse>(this.url, { params })
 
-      const response = await this.axios!.get<TransactionServerResponse>(this.url, { params })
+    return response.data.data
+  }
 
-      return response.data.data
+  async getTransactionsByAddress (
+    address:string,
+    limit?: string | undefined,
+    prev?: string | undefined,
+    next?: string | undefined,
+    blockNumber: string = '0'
+  ) {
+    const params = {
+      module: 'transactions',
+      action: 'getTransactionsByAddress',
+      address: address.toLowerCase(),
+      limit,
+      prev,
+      next
     }
+    const { data: response } = await this.axios!.get<TransactionsServerResponse>(this.url, { params })
 
-    async getTransactionsByAddress (
-      address:string,
-      limit?: string | undefined,
-      prev?: string | undefined,
-      next?: string | undefined,
-      blockNumber: string = '0'
-    ) {
-      const params = {
-        module: 'transactions',
-        action: 'getTransactionsByAddress',
-        address: address.toLowerCase(),
-        limit,
-        prev,
-        next
-      }
-      const { data: response } = await this.axios!.get<TransactionsServerResponse>(this.url, { params })
+    const pagesInfo = (response as any).pages
 
-      const pagesInfo = (response as any).pages
-
-      return {
-        prev: pagesInfo.prev,
-        next: pagesInfo.next,
-        data: response.data.filter(tx => tx.blockNumber >= +blockNumber)
-      }
+    return {
+      prev: pagesInfo.prev,
+      next: pagesInfo.next,
+      data: response.data.filter(tx => tx.blockNumber >= +blockNumber)
     }
+  }
 }
