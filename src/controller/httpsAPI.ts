@@ -76,19 +76,14 @@ export class HttpsAPI {
         const result = await Promise.all(
           events.map((event: IEvent) => dataSource.getTransaction(event.transactionHash))
         )
-        return dataSource.getTransactionsByAddress(address, limit as string,
+        return await
+        dataSource.getTransactionsByAddress(address, limit as string,
           prev as string, next as string, blockNumber as string)
-          .then(async (transactions) => {
-            const trxs = [...transactions.data, ...result]
-            await Promise.all(trxs.map(async (trx) => {
-              const response = await dataSource.getInternalTransactionsByTxHash(trx.hash)
-              trx['internalTransactions'] = response
-              return trx;
-            }))
+          .then(transactions => {
             return {
               prev: transactions.prev,
               next: transactions.next,
-              data: trxs
+              data: [...transactions.data, ...result]
             }
           })
           .then(this.responseJsonOk(res))

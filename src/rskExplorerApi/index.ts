@@ -13,55 +13,55 @@ import { fromApiToRtbcBalance, fromApiToTEvents, fromApiToTokens, fromApiToToken
 
 export class RSKExplorerAPI extends DataSource {
   private chainId: number
-  
+
   constructor (apiURL: string, chainId: number, axios: typeof _axios, id: string) {
     super(apiURL, id, axios)
     this.chainId = chainId
   }
-  
+
   async getEventsByAddress (address:string) {
     const params = {
       module: 'events',
       action: 'getAllEventsByAddress',
       address: address.toLowerCase()
     }
-    
+
     const response = await this.axios!.get<EventsServerResponse>(this.url, { params })
     return response.data.data.map(ev => fromApiToTEvents(ev))
   }
-  
+
   async getTokens () {
     const params = {
       module: 'addresses',
       action: 'getTokens'
     }
-    
+
     const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
     return response.data.data
-    .filter(t => t.name != null)
-    .map(t => fromApiToTokens(t, this.chainId))
+      .filter(t => t.name != null)
+      .map(t => fromApiToTokens(t, this.chainId))
   }
-  
+
   async getTokensByAddress (address:string) {
     const params = {
       module: 'tokens',
       action: 'getTokensByAddress',
       address: address.toLowerCase()
     }
-    
+
     const response = await this.axios!.get<TokensServerResponse>(this.url, { params })
     return response.data.data
-    .filter(t => t.name != null)
-    .map(t => fromApiToTokenWithBalance(t, this.chainId))
+      .filter(t => t.name != null)
+      .map(t => fromApiToTokenWithBalance(t, this.chainId))
   }
-  
-  async getInternalTransactionsByTxHash(hash: string) {
+
+  async getInternalTransactionsByTxHash (hash: string) {
     const params = {
       module: 'internalTransactions',
       action: 'getInternalTransactionsByTxHash',
       hash
     }
-    const response = await this.axios!.get<InternalTransactionServerResponse>(this.url, {params})
+    const response = await this.axios!.get<InternalTransactionServerResponse>(this.url, { params })
     return response.data.data
   }
 

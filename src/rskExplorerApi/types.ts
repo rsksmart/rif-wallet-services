@@ -88,34 +88,34 @@ export interface IApiTransactions {
   txId: string;
 }
 
-export interface IInternalTransaction {
-  _id:                 string;
-  action:              IAction;
-  blockHash:           string;
-  blockNumber:         number;
-  transactionHash:     string;
-  transactionPosition: number;
-  type:                string;
-  subtraces:           number;
-  traceAddress:        number[];
-  result:              IResult;
-  _index:              number;
-  timestamp:           number;
-  internalTxId:        string;
-}
-
 export interface IAction {
   callType: string;
-  from:     string;
-  to:       string;
-  gas:      string;
-  input:    string;
-  value:    string;
+  from: string;
+  to: string;
+  gas: string;
+  input: string;
+  value: string;
 }
 
 export interface IResult {
   gasUsed: string;
-  output:  string;
+  output: string;
+}
+
+export interface IInternalTransaction {
+  _id: string;
+  action: IAction;
+  blockHash: string;
+  blockNumber: number;
+  transactionHash: string;
+  transactionPosition: number;
+  type: string;
+  subtraces: number;
+  traceAddress: number[];
+  result: IResult;
+  _index: number;
+  timestamp: number;
+  internalTxId: string;
 }
 
 export interface InternalTransactionServerResponse {
