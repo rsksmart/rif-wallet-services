@@ -13,6 +13,7 @@ import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
 import { MockProvider } from './MockProvider'
+import { logger } from '../src/util/logger'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -59,14 +60,14 @@ describe('web socket', () => {
     const port = 3000
     webSocketAPI.init(serverSocket, { serviceUrl: `http://localhost:${port}`, serviceDid: '' })
     server.listen(port, () => {
-      console.log(`RIF Wallet services running on ${port}.`)
+      logger.debug(`RIF Wallet services running on ${port}.`)
     })
     clientSocket = io(`http://localhost:${port}`, {
       path: '/ws'
     })
 
     clientSocket.on('connect', () => {
-      console.log('connected')
+      logger.debug('connected')
       done()
     })
   })

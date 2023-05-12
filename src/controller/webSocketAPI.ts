@@ -1,9 +1,11 @@
 import { TokenValidationConfig, verifyReceivedJwt } from '@rsksmart/express-did-auth'
 import http from 'http'
+import log from 'loglevel'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
 import { RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
+import { logger } from '../util/logger'
 
 export class WebSocketAPI {
   private server: http.Server
@@ -22,7 +24,7 @@ export class WebSocketAPI {
 
   init (io: Server, config: TokenValidationConfig) {
     io.on('connection', (socket) => {
-      console.log('new user connected')
+      logger.info('new user connected')
 
       socket.on('subscribe', async ({ address, chainId = '31', accessToken }
         : { address: string, chainId: string, accessToken: string }) => {
@@ -35,34 +37,34 @@ export class WebSocketAPI {
           socket.emit('error', 'Invalid access token')
           return
         }
-        console.log('new subscription with address: ', address)
+        logger.info('new subscription with address: ', address)
         const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) socket.emit('error', `Can not connect with dataSource for ${chainId}`)
         const provider = this.providerMapping[chainId as string]
         const profiler = new Profiler(address, dataSource!, this.lastPrice, provider)
 
         profiler.on('balances', (data) => {
-          console.log(data)
+          logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('rbtcBalance', (data) => {
-          console.log(data)
+          logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('transactions', (data) => {
-          console.log(data)
+          logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('prices', (newPrices) => {
-          console.log(newPrices)
+          logger.info(newPrices)
           socket.emit('change', newPrices)
         })
 
         profiler.on('tokenTransfers', (newTokenTranfers) => {
-          console.log(newTokenTranfers)
+          logger.info(newTokenTranfers)
           socket.emit('change', newTokenTranfers)
         })
 

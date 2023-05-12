@@ -16,6 +16,7 @@ import { ethers } from 'ethers'
 import setupApp, { ExpressDidAuthConfig } from '@rsksmart/express-did-auth'
 import { ES256KSigner } from 'did-jwt'
 import CryptoJS from 'crypto-js'
+import { logger } from './util/logger'
 
 async function main () {
   const environment = {
@@ -114,8 +115,8 @@ async function main () {
   webSocketAPI.init(io, { serviceUrl: environment.AUTH_SERVICE_URL, serviceDid: environment.AUTH_SERVICE_DID })
 
   server.listen(environment.PORT, () => {
-    console.log(`RIF Wallet services running on port ${environment.PORT}.`)
+    logger.info(`RIF Wallet services running on port ${environment.PORT}.`)
   })
 }
 
-main().catch(e => { console.error(e); process.exit(1) })
+main().catch(e => { logger.error(e); process.exit(1) })
