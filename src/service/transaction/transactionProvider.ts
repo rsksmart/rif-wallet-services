@@ -1,7 +1,7 @@
 import { DataSource } from '../../repository/DataSource'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
-import { isIncomingTransaction } from './utils'
+import { isMyTransaction } from './utils'
 
 export class TransactionProvider extends PollingProvider<Event> {
   private dataSource: DataSource
@@ -13,7 +13,7 @@ export class TransactionProvider extends PollingProvider<Event> {
 
   async getIncomingTransactions (address: string) {
     const events = await this.dataSource.getEventsByAddress(this.address.toLowerCase())
-      .then(events => events.filter(event => isIncomingTransaction(event, address)))
+      .then(events => events.filter(event => isMyTransaction(event, address)))
       .catch(() => [])
 
     const txs = events
