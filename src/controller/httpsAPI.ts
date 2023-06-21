@@ -9,7 +9,7 @@ import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
 import { fromApiToRtbcBalance } from '../rskExplorerApi/utils'
 import { isMyTransaction } from '../service/transaction/utils'
-import { IEvent } from '../rskExplorerApi/types'
+import { IApiTransactions, IEvent, IInternalTransaction } from '../rskExplorerApi/types'
 
 export class HttpsAPI {
   private app: Application
@@ -34,7 +34,7 @@ export class HttpsAPI {
 
   init () : void {
     this.app.use(/\/((?!api-docs).)*/, this.authMiddleware)
-
+    
     this.app.get('/tokens', ({ query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
       .dataSourceMapping[chainId as string].getTokens()
       .then(this.responseJsonOk(res))
@@ -68,26 +68,42 @@ export class HttpsAPI {
       async ({ params: { address }, query: { limit, prev, next, chainId = '31', blockNumber = '0' } }: Request,
         res: Response, nextFunction: NextFunction) => {
         const dataSource = this.dataSourceMapping[chainId as string]
-        const events: IEvent[] = await dataSource.getEventsByAddress(address.toLowerCase())
-          .then(events => events.filter(
-            (event: IEvent) => isMyTransaction(event, address) && event.blockNumber >= +blockNumber)
+        /* A transaction has the following structure { to: string, from: string }
+        * and to or from params should be our address when we send or receive a cryptocurrency
+        * (such as RBTC).
+        */
+        const transactions: {data: IApiTransactions[], prev: string, next: string} = 
+        await dataSource.getTransactionsByAddress(address, limit as string,
+          prev as string, next as string, blockNumber as string)
+        .catch(( () => {[]} ))
+        /* We query events to find transactions when we send or receive a token(ERC20)
+        * such as RIF,RDOC
+        * Additionally, we query internal transactions because we could send or receive a cryptocurrency
+        * invoking a smart contract.
+        * Finally, we filter by blocknumber and duplicates
+        */
+        const hashes: string[] = await Promise.all([dataSource.getEventsByAddress(address, limit as string), 
+          dataSource.getInternalTransactionByAddress(address, limit as string)])
+          .then((promises) => 
+            promises.flat()
+            .filter((value: IEvent | IInternalTransaction) => 
+              isMyTransaction(value, address) && value.blockNumber >= + blockNumber)
+            .filter((value: IEvent | IInternalTransaction) => !transactions.data.map(tx => tx.hash)
+              .includes(value.transactionHash))
+            .map((value: IEvent | IInternalTransaction) => value.transactionHash)
           )
+          .then((hashes: string[]) => Array.from(new Set(hashes)))
           .catch(() => [])
         const result = await Promise.all(
-          events.map((event: IEvent) => dataSource.getTransaction(event.transactionHash))
+          hashes.map((hash: string) => dataSource.getTransaction(hash))
         )
-        return await
-        dataSource.getTransactionsByAddress(address, limit as string,
-          prev as string, next as string, blockNumber as string)
-          .then(transactions => {
-            return {
-              prev: transactions.prev,
-              next: transactions.next,
-              data: [...transactions.data, ...result]
-            }
-          })
-          .then(this.responseJsonOk(res))
-          .catch(nextFunction)
+        return Promise.resolve({
+          prev: transactions.prev,
+          next: transactions.next,
+          data: [...transactions.data, ...result]
+        })
+        .then(this.responseJsonOk(res))
+        .catch(nextFunction)
       }
 
     )
