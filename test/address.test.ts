@@ -26,11 +26,13 @@ const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
 const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
 const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
 const getTransactionMock = jest.fn(() => Promise.resolve(transactionFromEventResponse))
+const getInternalTransactionByAddressMock = jest.fn(() => Promise.resolve({ data: [] }))
 const rskExplorerApiMock = {
   getEventsByAddress: getEventsByAddressMock,
   getTransactionsByAddress: getTransactionsByAddressMock,
   getTokensByAddress: getTokensByAddressMock,
-  getTransaction: getTransactionMock
+  getTransaction: getTransactionMock,
+  getInternalTransactionByAddress: getInternalTransactionByAddressMock
 } as any
 const dataSourceMapping = {}
 dataSourceMapping['31'] = rskExplorerApiMock

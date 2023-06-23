@@ -1,5 +1,4 @@
 import { DataSource } from '../../repository/DataSource'
-import { IEvent } from '../../rskExplorerApi/types'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 import { isMyTransaction } from './utils'
@@ -17,18 +16,16 @@ export class TransactionProvider extends PollingProvider<Event> {
       this.dataSource.getEventsByAddress(this.address.toLowerCase()),
       this.dataSource.getInternalTransactionByAddress(this.address.toLowerCase())
     ])
-    .then(promises => 
+      .then(promises =>
         promises.flat()
-        .filter(transaction => isMyTransaction(transaction, address))
-        .map(transaction => transaction.transactionHash)
-    )
-    .then((hashes: string[]) => Array.from(new Set(hashes)))
-    .catch(() => [])
+          .filter(transaction => isMyTransaction(transaction, address))
+          .map(transaction => transaction.transactionHash)
+      )
+      .then((hashes: string[]) => Array.from(new Set(hashes)))
+      .catch(() => [])
 
-    
     return await Promise.all(hashes
       .map(hash => this.dataSource.getTransaction(hash)))
-
   }
 
   async getTransactionsPaginated (address: string, limit?: string, prev?: string, next?: string) {

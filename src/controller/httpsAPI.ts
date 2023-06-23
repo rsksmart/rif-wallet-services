@@ -72,25 +72,25 @@ export class HttpsAPI {
         * and to or from params should be our address when we send or receive a cryptocurrency
         * (such as RBTC).
         */
-        const transactions: {data: IApiTransactions[], prev: string, next: string} = 
+        const transactions: {data: IApiTransactions[], prev: string, next: string} =
         await dataSource.getTransactionsByAddress(address, limit as string,
           prev as string, next as string, blockNumber as string)
-        .catch(( () => {[]} ))
+          .catch(nextFunction)
         /* We query events to find transactions when we send or receive a token(ERC20)
         * such as RIF,RDOC
         * Additionally, we query internal transactions because we could send or receive a cryptocurrency
         * invoking a smart contract.
         * Finally, we filter by blocknumber and duplicates
         */
-        const hashes: string[] = await Promise.all([dataSource.getEventsByAddress(address, limit as string), 
+        const hashes: string[] = await Promise.all([dataSource.getEventsByAddress(address, limit as string),
           dataSource.getInternalTransactionByAddress(address, limit as string)])
-          .then((promises) => 
+          .then((promises) =>
             promises.flat()
-            .filter((value: IEvent | IInternalTransaction) => 
-              isMyTransaction(value, address) && value.blockNumber >= + blockNumber)
-            .filter((value: IEvent | IInternalTransaction) => !transactions.data.map(tx => tx.hash)
-              .includes(value.transactionHash))
-            .map((value: IEvent | IInternalTransaction) => value.transactionHash)
+              .filter((value: IEvent | IInternalTransaction) =>
+                isMyTransaction(value, address) && value.blockNumber >= +blockNumber)
+              .filter((value: IEvent | IInternalTransaction) => !transactions.data.map(tx => tx.hash)
+                .includes(value.transactionHash))
+              .map((value: IEvent | IInternalTransaction) => value.transactionHash)
           )
           .then((hashes: string[]) => Array.from(new Set(hashes)))
           .catch(() => [])
@@ -102,8 +102,8 @@ export class HttpsAPI {
           next: transactions.next,
           data: [...transactions.data, ...result]
         })
-        .then(this.responseJsonOk(res))
-        .catch(nextFunction)
+          .then(this.responseJsonOk(res))
+          .catch(nextFunction)
       }
 
     )
