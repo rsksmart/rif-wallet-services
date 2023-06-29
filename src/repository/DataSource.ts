@@ -16,8 +16,9 @@ export abstract class DataSource {
   abstract getTokens();
   abstract getTokensByAddress(address: string);
   abstract getRbtcBalanceByAddress(address: string);
-  abstract getEventsByAddress(address: string);
+  abstract getEventsByAddress(address: string, limit?: string);
   abstract getTransaction(hash: string);
+  abstract getInternalTransactionByAddress(address: string, limit?: string);
   abstract getTransactionsByAddress(address:string,
     limit?: string,
     prev?: string,

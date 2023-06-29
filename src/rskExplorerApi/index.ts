@@ -6,7 +6,8 @@ import {
   TokensServerResponse,
   IApiRbtcBalance,
   RbtcBalancesServerResponse,
-  TransactionServerResponse
+  TransactionServerResponse,
+  InternalTransactionServerResponse
 } from './types'
 import { fromApiToRtbcBalance, fromApiToTEvents, fromApiToTokens, fromApiToTokenWithBalance } from './utils'
 
@@ -18,15 +19,27 @@ export class RSKExplorerAPI extends DataSource {
     this.chainId = chainId
   }
 
-  async getEventsByAddress (address:string) {
+  async getEventsByAddress (address:string, limit?: string) {
     const params = {
       module: 'events',
       action: 'getAllEventsByAddress',
-      address: address.toLowerCase()
+      address: address.toLowerCase(),
+      limit
     }
 
     const response = await this.axios!.get<EventsServerResponse>(this.url, { params })
     return response.data.data.map(ev => fromApiToTEvents(ev))
+  }
+
+  async getInternalTransactionByAddress (address: string, limit?: string) {
+    const params = {
+      module: 'internalTransactions',
+      action: 'getInternalTransactionsByAddress',
+      address,
+      limit
+    }
+    const response = await this.axios!.get<InternalTransactionServerResponse>(this.url, { params })
+    return response.data.data
   }
 
   async getTokens () {

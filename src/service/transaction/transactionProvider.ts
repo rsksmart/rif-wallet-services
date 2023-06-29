@@ -12,15 +12,20 @@ export class TransactionProvider extends PollingProvider<Event> {
   }
 
   async getIncomingTransactions (address: string) {
-    const events = await this.dataSource.getEventsByAddress(this.address.toLowerCase())
-      .then(events => events.filter(event => isMyTransaction(event, address)))
+    const hashes: string[] = await Promise.all([
+      this.dataSource.getEventsByAddress(this.address.toLowerCase()),
+      this.dataSource.getInternalTransactionByAddress(this.address.toLowerCase())
+    ])
+      .then(promises =>
+        promises.flat()
+          .filter(transaction => isMyTransaction(transaction, address))
+          .map(transaction => transaction.transactionHash)
+      )
+      .then((hashes: string[]) => Array.from(new Set(hashes)))
       .catch(() => [])
 
-    const txs = events
-      .map(event => this.dataSource.getTransaction(event.transactionHash))
-
-    const result = await Promise.all(txs)
-    return result
+    return await Promise.all(hashes
+      .map(hash => this.dataSource.getTransaction(hash)))
   }
 
   async getTransactionsPaginated (address: string, limit?: string, prev?: string, next?: string) {
