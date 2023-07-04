@@ -17,15 +17,13 @@ export class HttpsAPI {
   private lastPrice: LastPrice
   private bitcoinMapping: BitcoinDatasource
   private providerMapping: RSKNodeProvider
-  private authMiddleware
   constructor (app: Express, dataSourceMapping: RSKDatasource, lastPrice: LastPrice,
-    bitcoinMapping: BitcoinDatasource, providerMapping: RSKNodeProvider, authMiddleware) {
+    bitcoinMapping: BitcoinDatasource, providerMapping: RSKNodeProvider) {
     this.app = app
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.bitcoinMapping = bitcoinMapping
     this.providerMapping = providerMapping
-    this.authMiddleware = authMiddleware
   }
 
   responseJsonOk (res: Response) {
@@ -33,8 +31,6 @@ export class HttpsAPI {
   }
 
   init () : void {
-    this.app.use(/\/((?!api-docs).)*/, this.authMiddleware)
-
     this.app.get('/tokens', ({ query: { chainId = '31' } }: Request, res: Response, next: NextFunction) => this
       .dataSourceMapping[chainId as string].getTokens()
       .then(this.responseJsonOk(res))
