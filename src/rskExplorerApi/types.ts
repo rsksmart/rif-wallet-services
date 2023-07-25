@@ -88,8 +88,13 @@ export interface IApiTransactions {
   txId: string;
 }
 
+export interface Page {
+  next: string | null
+  prev: string | null
+}
 export interface TransactionsServerResponse {
   data: IApiTransactions[];
+  pages: Page;
 }
 
 export interface ChannelServerResponse {
