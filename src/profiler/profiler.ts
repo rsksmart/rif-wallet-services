@@ -51,12 +51,6 @@ export class Profiler extends Emitter {
     })
     await this.transactionProfiler.subscribe(transactionChannel)
 
-    const tokenTransferChannel = 'tokenTransfers'
-    this.tokenTransferProfiler.on(tokenTransferChannel, (newTokenTransfer) => {
-      this.emit(tokenTransferChannel, newTokenTransfer)
-    })
-    await this.tokenTransferProfiler.subscribe(tokenTransferChannel)
-
     const rbtcBalanceChannel = 'rbtcBalance'
     this.rbtBalanceProfiler.on(balanceChannel, (newBalance) => {
       this.emit(rbtcBalanceChannel, newBalance)
