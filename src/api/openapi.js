@@ -574,6 +574,16 @@ module.exports = {
               type: 'string'
             },
             description: 'Known last used index, defaults to 0'
+          },
+          {
+            name: 'maxIndexesToFetch',
+            in: 'query',
+            required: false,
+            default: 5,
+            schema: {
+              type: 'string'
+            },
+            description: 'Max indexes to fetch, defaults to 5'
           }
         ],
         tags: ['Bitcoin'],
@@ -585,7 +595,8 @@ module.exports = {
                 schema: {
                   type: 'object',
                   example: {
-                    index: 0
+                    index: 0,
+                    availableIndexes: [0, 1, 2, 3, 4]
                   }
                 }
               }
