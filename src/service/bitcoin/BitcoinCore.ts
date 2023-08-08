@@ -47,7 +47,9 @@ export default class BitcoinCore {
     xpub: string,
     bip: BIPTYPES = 'BIP84',
     changeIndex: string = '0',
-    knownLastUsedIndex: string = '0') {
+    knownLastUsedIndex: string = '0',
+    maxIndexesToFetch: string = '5'
+  ) {
     let outputDescriptor: string
 
     switch (bip) {
@@ -71,8 +73,14 @@ export default class BitcoinCore {
       max = index
       return prev
     }, {}) || {}
-    if (max === -1) return { index: 0 } // No addresses found - the first one can be created
-    if (lastUsedIndex >= max) return { index: max + 1 }
+    if (max === -1) {
+      // No addresses found - the first one can be created
+      lastUsedIndex = 0
+    }
+    if (lastUsedIndex >= max) {
+      // The index should be the latest index + 1
+      lastUsedIndex = max + 1
+    }
     if (lastUsedIndex < 0) lastUsedIndex = 0 // To make sure we don't search from -XXXX... [security]
     while (lastUsedIndex <= max) {
       if (!usedTokensMap[lastUsedIndex]) {
@@ -83,7 +91,19 @@ export default class BitcoinCore {
         break
       }
     }
-    return { index: lastUsedIndex }
+    const availableIndexes: number[] = [lastUsedIndex]
+    let availableIndex = lastUsedIndex
+
+    while (availableIndexes.length < (Number(maxIndexesToFetch) > 20 ? 10 : Number(maxIndexesToFetch))) {
+      availableIndex++
+      if (!usedTokensMap[availableIndex]) {
+        availableIndexes.push(availableIndex)
+      }
+      if (availableIndex > 2000) {
+        break
+      }
+    }
+    return { index: lastUsedIndex, availableIndexes }
   }
 
   async getXpubUtxos (xpub: string) {
