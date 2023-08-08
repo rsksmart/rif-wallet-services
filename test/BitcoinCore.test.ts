@@ -73,7 +73,7 @@ describe('BitcoinCore unit tests', () => {
       }
     })
     const index = await bitcoinCoreInstance.getNextUnusedIndex(vpub, 'BIP84', '0', '0')
-    expect(index).toEqual({ index: 2 })
+    expect(index).toEqual({ index: 2, availableIndexes: [2, 3, 4, 5, 6] })
   })
 
   test('Fetch next available index for change index 1, known used index 9', async () => {
@@ -92,6 +92,6 @@ describe('BitcoinCore unit tests', () => {
       }
     })
     const index = await bitcoinCoreInstance.getNextUnusedIndex(vpub, 'BIP84', '1', '9')
-    expect(index).toEqual({ index: 10 })
+    expect(index).toEqual({ index: 10, availableIndexes: [10, 11, 12, 13, 14] })
   })
 })
