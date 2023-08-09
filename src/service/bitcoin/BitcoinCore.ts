@@ -6,6 +6,10 @@ type TokensType = {
   path: string
   name: string
 }
+
+const LOOP_MAX_ITERATIONS = 2000
+const DEFAULT_ADDRESS_INDEXES_TO_RETURN = 10
+
 export default class BitcoinCore {
   BLOCKBOOK_URL: string
   BLOCKBOOK_APIS
@@ -87,19 +91,19 @@ export default class BitcoinCore {
         break
       }
       lastUsedIndex++
-      if (lastUsedIndex > 2000) { // Loop breaker - security
+      if (lastUsedIndex > LOOP_MAX_ITERATIONS) { // Loop breaker - security
         break
       }
     }
     const availableIndexes: number[] = [lastUsedIndex]
     let availableIndex = lastUsedIndex
 
-    while (availableIndexes.length < (Number(maxIndexesToFetch) > 20 ? 10 : Number(maxIndexesToFetch))) {
+    while (availableIndexes.length < Math.min(Number(maxIndexesToFetch), DEFAULT_ADDRESS_INDEXES_TO_RETURN)) {
       availableIndex++
       if (!usedTokensMap[availableIndex]) {
         availableIndexes.push(availableIndex)
       }
-      if (availableIndex > 2000) {
+      if (availableIndex > LOOP_MAX_ITERATIONS) {
         break
       }
     }
