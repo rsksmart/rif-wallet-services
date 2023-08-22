@@ -7,7 +7,11 @@ export class MockPrice extends PriceSupplier {
     // MainNet
     '0x2d919f19d4892381d58edebeca66d5642cef1a1f', // RDOC
     // TestNet
-    '0xc3de9f38581f83e281f260d0ddbaac0e102ff9f8' // RDOC
+    '0xc3de9f38581f83e281f260d0ddbaac0e102ff9f8', // RDOC
+    // MainNet - To confirm
+    '0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482', //USDRIF
+    // TestNet
+    '0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482' // USDRIF
   ]
 
   getQuotesLatest ():Promise<Prices> {
