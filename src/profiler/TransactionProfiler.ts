@@ -14,8 +14,8 @@ export class TransactionProfiler extends Emitter {
   }
 
   async subscribe (channel: string): Promise<void> {
-    await this.transactionProvider.getTransactionsPaginated(this.address.toLowerCase()).then(({ data }) => {
-      this.lastReceivedTransactionBlockNumber = data.length ? data[0].blockNumber : -1
+    await this.transactionProvider.getLastBlockNumber().then((lastBlockNumber) => {
+      this.lastReceivedTransactionBlockNumber = lastBlockNumber
     })
     this.transactionProvider.on(channel, (data) => {
       const { payload: transaction } = data

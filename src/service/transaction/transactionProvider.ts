@@ -28,8 +28,21 @@ export class TransactionProvider extends PollingProvider<Event> {
       .map(hash => this.dataSource.getTransaction(hash)))
   }
 
-  async getTransactionsPaginated (address: string, limit?: string, prev?: string, next?: string) {
+  async getTransactions (address: string, limit?: string, prev?: string, next?: string) {
     return this.dataSource.getTransactionsByAddress(address, limit, prev, next)
+  }
+
+  async getLastBlockNumber () : Promise<number> {
+    return await Promise.all([
+      this.dataSource.getEventsByAddress(this.address.toLowerCase()),
+      this.dataSource.getInternalTransactionByAddress(this.address.toLowerCase()),
+      this.dataSource.getTransactionsByAddress(this.address.toLowerCase())
+    ])
+      .then(([events, internalTransactions, { data: transactions }]) => [events, internalTransactions, transactions]
+        .flat()
+        .map(tx => tx.blockNumber)
+        .reduce((a, b) => Math.max(a, b)))
+      .catch(() => -1)
   }
 
   async poll () {
@@ -37,7 +50,7 @@ export class TransactionProvider extends PollingProvider<Event> {
       .then(transactions => transactions)
       .catch(() => [])
 
-    const events = await this.getTransactionsPaginated(this.address)
+    const events = await this.getTransactions(this.address)
       .then(transactions => [...transactions.data, ...txs]
         .sort((txA, txB) => txA.timestamp - txB.timestamp)
         .map(transaction => ({ type: 'newTransaction', payload: transaction }))
