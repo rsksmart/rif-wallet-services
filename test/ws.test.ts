@@ -21,6 +21,7 @@ describe('web socket', () => {
   const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
   const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
   const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
+  const getInternalTransactionByAddressMock = jest.fn(() => Promise.resolve([]))
 
   beforeAll((done) => {
     const server = http.createServer()
@@ -28,7 +29,8 @@ describe('web socket', () => {
       getTransactionsByAddress: getTransactionsByAddressMock,
       getTokensByAddress: getTokensByAddressMock,
       getEventsByAddress: getEventsByAddressMock,
-      getRbtcBalanceByAddress: getRbtcBalanceByAddressMock
+      getRbtcBalanceByAddress: getRbtcBalanceByAddressMock,
+      getInternalTransactionByAddress: getInternalTransactionByAddressMock
     }
     const coinMarketCapApiMock = {
       getQuotesLatest: getQuotesLatestMock
