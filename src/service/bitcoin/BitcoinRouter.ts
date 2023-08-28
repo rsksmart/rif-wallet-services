@@ -31,13 +31,14 @@ const main = (responseJsonOk, bitcoinMapping: BitcoinDatasource) => {
   })
 
   Router.get('/getNextUnusedIndex/:xpub', async ({
-    params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0', chainId = '31' }
+    params: { xpub }, query: { bip, changeIndex = '0', knownLastUsedIndex = '0', chainId = '31', maxIndexesToFetch = '5' }
   }, res, next) => {
     bitcoinMapping[chainId as string].getNextUnusedIndex(
         xpub as string,
         bip as 'BIP44' | 'BIP84',
         changeIndex as string,
-        knownLastUsedIndex as string
+        knownLastUsedIndex as string,
+        maxIndexesToFetch as string
     ).then(responseJsonOk(res))
       .catch(next)
   })

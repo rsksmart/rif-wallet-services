@@ -6,6 +6,10 @@ type TokensType = {
   path: string
   name: string
 }
+
+const LOOP_MAX_ITERATIONS = 2000
+const DEFAULT_ADDRESS_INDEXES_TO_RETURN = 10
+
 export default class BitcoinCore {
   BLOCKBOOK_URL: string
   BLOCKBOOK_APIS
@@ -47,7 +51,9 @@ export default class BitcoinCore {
     xpub: string,
     bip: BIPTYPES = 'BIP84',
     changeIndex: string = '0',
-    knownLastUsedIndex: string = '0') {
+    knownLastUsedIndex: string = '0',
+    maxIndexesToFetch: string = '5'
+  ) {
     let outputDescriptor: string
 
     switch (bip) {
@@ -71,19 +77,37 @@ export default class BitcoinCore {
       max = index
       return prev
     }, {}) || {}
-    if (max === -1) return { index: 0 } // No addresses found - the first one can be created
-    if (lastUsedIndex >= max) return { index: max + 1 }
+    if (max === -1) {
+      // No addresses found - the first one can be created
+      lastUsedIndex = 0
+    }
+    if (lastUsedIndex >= max) {
+      // The index should be the latest index + 1
+      lastUsedIndex = max + 1
+    }
     if (lastUsedIndex < 0) lastUsedIndex = 0 // To make sure we don't search from -XXXX... [security]
     while (lastUsedIndex <= max) {
       if (!usedTokensMap[lastUsedIndex]) {
         break
       }
       lastUsedIndex++
-      if (lastUsedIndex > 2000) { // Loop breaker - security
+      if (lastUsedIndex > LOOP_MAX_ITERATIONS) { // Loop breaker - security
         break
       }
     }
-    return { index: lastUsedIndex }
+    const availableIndexes: number[] = [lastUsedIndex]
+    let availableIndex = lastUsedIndex
+
+    while (availableIndexes.length < Math.min(Number(maxIndexesToFetch), DEFAULT_ADDRESS_INDEXES_TO_RETURN)) {
+      availableIndex++
+      if (!usedTokensMap[availableIndex]) {
+        availableIndexes.push(availableIndex)
+      }
+      if (availableIndex > LOOP_MAX_ITERATIONS) {
+        break
+      }
+    }
+    return { index: lastUsedIndex, availableIndexes }
   }
 
   async getXpubUtxos (xpub: string) {
