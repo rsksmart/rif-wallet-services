@@ -15,8 +15,9 @@ export class RbtcBalanceProvider extends PollingProvider<Event> {
   }
 
   async poll () {
-    const balance = await this.provider.getBalance(this.address.toLowerCase())
-    const rbtcBalance = fromApiToRtbcBalance(balance.toHexString(), parseInt(this.dataSource.id))
-    return [{ type: 'newBalance', payload: rbtcBalance }]
+    return await this.provider.getBalance(this.address.toLowerCase())
+      .then(balance => fromApiToRtbcBalance(balance.toHexString(), parseInt(this.dataSource.id)))
+      .then(rbtcBalance => [{ type: 'newBalance', payload: rbtcBalance }])
+      .catch(() => [])
   }
 }
