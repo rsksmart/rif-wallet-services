@@ -26,7 +26,7 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   bitcoinMapping['31'] = new BitcoinCore('')
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
-  const httpsAPI = new HttpsAPI(app, {} as any, lastPrice,
+  const httpsAPI = new HttpsAPI(app, { 31: {} } as any, lastPrice,
     bitcoinMapping, providerMapping)
   httpsAPI.init()
   return app
@@ -101,5 +101,47 @@ describe('coin market cap', () => {
       expect(res.text).toEqual('{}')
       expect(axiosMock.get).toHaveBeenCalledTimes(1)
     })
+  })
+})
+
+describe(' Rest API', () => {
+  test('invalid chainId', async () => {
+    const { coinMarketCapApi } = mockCoinMarketCap()
+    const app = setupTestApi(coinMarketCapApi)
+    const res = await request(app)
+      .get('/tokens?chainId=30')
+      .expect(400)
+
+    expect(res.text).toContain('errors')
+  })
+
+  test('invalid chainId', async () => {
+    const { coinMarketCapApi } = mockCoinMarketCap()
+    const app = setupTestApi(coinMarketCapApi)
+    const res = await request(app)
+      .get('/tokens?chainId=30\n\t')
+      .expect(400)
+
+    expect(res.text).toContain('errors')
+  })
+
+  test('invalid address', async () => {
+    const { coinMarketCapApi } = mockCoinMarketCap()
+    const app = setupTestApi(coinMarketCapApi)
+    const res = await request(app)
+      .get('/address/address/tokens')
+      .expect(400)
+
+    expect(res.text).toContain('errors')
+  })
+
+  test('invalid address', async () => {
+    const { coinMarketCapApi } = mockCoinMarketCap()
+    const app = setupTestApi(coinMarketCapApi)
+    const res = await request(app)
+      .get('/address/0x32438/tokens')
+      .expect(400)
+
+    expect(res.text).toContain('errors')
   })
 })
