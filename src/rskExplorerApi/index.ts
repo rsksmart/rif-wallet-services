@@ -38,7 +38,7 @@ export class RSKExplorerAPI extends DataSource {
     const params = {
       module: 'internalTransactions',
       action: 'getInternalTransactionsByAddress',
-      address,
+      address: address.toLowerCase(),
       limit
     }
     return this.axios!.get<InternalTransactionServerResponse>(this.url, { params })
