@@ -1,22 +1,21 @@
-import http from 'http'
 import { Server } from 'socket.io'
 import { Profiler } from '../profiler/profiler'
-import { RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
+import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
+import { BtcProfiler } from '../profiler/BtcProfiler'
 
 export class WebSocketAPI {
-  private server: http.Server
-  // private rskExplorerApi: RSKExplorerAPI
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
   private providerMapping: RSKNodeProvider
+  private bitcoinMapping: BitcoinDatasource
 
-  constructor (server: http.Server, dataSourceMapping: RSKDatasource,
-    lastPrice: LastPrice, providerMapping: RSKNodeProvider) {
-    this.server = server
+  constructor (dataSourceMapping: RSKDatasource,
+    lastPrice: LastPrice, providerMapping: RSKNodeProvider, bitcoinMapping: BitcoinDatasource) {
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.providerMapping = providerMapping
+    this.bitcoinMapping = bitcoinMapping
   }
 
   init (io: Server) {
@@ -55,6 +54,32 @@ export class WebSocketAPI {
         socket.on('disconnect', () => {
           profiler.unsubscribe()
         })
+      })
+
+      // BITCOIN
+      socket.on('subscribe_bitcoin', async ({ xpub, chainId = '31' }) => {
+        console.log('new subscription with xpub: ', xpub)
+        const dataSource = this.bitcoinMapping[chainId as string]
+        if (!dataSource) {
+          socket.emit('error', `Can not connect with dataSource for ${chainId}`)
+          socket.disconnect()
+        }
+        if (!xpub) {
+          socket.emit('error', 'No xpub received. Please make sure you send a xpub.')
+          socket.disconnect()
+        }
+        const profiler = new BtcProfiler(xpub, dataSource)
+        profiler.on('balances', (data) => {
+          console.log(data)
+          socket.emit('change', data)
+        })
+
+        profiler.on('transactions', (data) => {
+          console.log(data)
+          socket.emit('change', data)
+        })
+
+        await profiler.subscribe()
       })
     })
 

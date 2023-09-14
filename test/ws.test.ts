@@ -51,7 +51,8 @@ describe('web socket', () => {
     dataSourceMapping['31'] = rskExplorerApiMock as any
     const providerMapping = {}
     providerMapping['31'] = new MockProvider(31)
-    const webSocketAPI = new WebSocketAPI(server, dataSourceMapping, lastPrice, providerMapping)
+    const bitcoinMapping = {}
+    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping)
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'
