@@ -9,7 +9,7 @@ export class MockPrice extends PriceSupplier {
     // TestNet
     '0xc3de9f38581f83e281f260d0ddbaac0e102ff9f8', // RDOC
     // MainNet
-    '0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482', // USDRIF
+    '0x3a15461d8ae0f0fb5fa2629e9da7d66a794a6e37', // USDRIF
     // TestNet
     '0x8dbf326e12a9ff37ed6ddf75ada548c2640a6482' // USDRIF
   ]
