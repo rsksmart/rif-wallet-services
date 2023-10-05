@@ -81,7 +81,7 @@ async function main () {
   httpsAPI.init()
 
   const server = http.createServer(app)
-  const webSocketAPI : WebSocketAPI = new WebSocketAPI(server, datasourceMapping, lastPrice, nodeProvider)
+  const webSocketAPI : WebSocketAPI = new WebSocketAPI(datasourceMapping, lastPrice, nodeProvider, bitcoinMapping)
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'
