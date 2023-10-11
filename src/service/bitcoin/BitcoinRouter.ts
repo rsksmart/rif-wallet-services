@@ -19,6 +19,9 @@ const main = (responseJsonOk, bitcoinMapping: BitcoinDatasource) => {
     if (req.query) req.query.parsedQuery = parseQueryString(req.query)
     next()
   })
+  // Use json
+  Router.use(express.json())
+
   Router.get('/getXpubInfo/:xpub', async ({ params: { xpub }, query: { parsedQuery, chainId = '31' } }, res, next) => {
     bitcoinMapping[chainId as string].getXpubInfo(xpub as string, parsedQuery as string | undefined)
       .then(responseJsonOk(res))
@@ -48,6 +51,14 @@ const main = (responseJsonOk, bitcoinMapping: BitcoinDatasource) => {
       .catch(next)
   })
   Router.get('/sendTransaction/:txhexdata', async ({ params: { txhexdata }, query: { chainId = '31' } }, res, next) => {
+    bitcoinMapping[chainId as string].sendTransaction(txhexdata as string)
+      .then(responseJsonOk(res))
+      .catch(next)
+  })
+  Router.post('/sendTransaction', async ({ body: { txhexdata = '' }, query: { chainId = '31' } }, res, next) => {
+    if (!txhexdata) {
+      return res.status(400).json({ error: 'txhexdata is required' })
+    }
     bitcoinMapping[chainId as string].sendTransaction(txhexdata as string)
       .then(responseJsonOk(res))
       .catch(next)
