@@ -863,6 +863,116 @@ module.exports = {
           }
         }
       }
+    },
+    '/bitcoin/estimateFee': {
+      get: {
+        summary: 'Estimate the fee for a given number of blocks or through BlockCypher',
+        parameters: [
+          {
+            name: 'chainId',
+            in: 'query',
+            required: false,
+            default: '31',
+            schema: {
+              type: 'string'
+            },
+            description: 'Chain ID for the network'
+          },
+          {
+            name: 'numberOfBlocks',
+            in: 'query',
+            required: false,
+            default: 6,
+            schema: {
+              type: 'integer',
+              format: 'int32'
+            },
+            description: 'Number of blocks for fee estimation'
+          },
+          {
+            name: 'apiType',
+            in: 'query',
+            required: false,
+            default: 'blockbook',
+            schema: {
+              type: 'string',
+              enum: ['blockbook', 'cypher']
+            },
+            description: 'API type for fee estimation'
+          }
+        ],
+        tags: ['Bitcoin'],
+        responses: {
+          200: {
+            description: 'Fetched the fee estimate successfully',
+            content: {
+              'application/json': {
+                schema: {
+                  oneOf: [
+                    {
+                      type: 'object',
+                      properties: {
+                        name: { type: 'string' },
+                        height: { type: 'integer' },
+                        hash: { type: 'string' },
+                        time: { type: 'string', format: 'date-time' },
+                        latest_url: { type: 'string', format: 'uri' },
+                        previous_hash: { type: 'string' },
+                        previous_url: { type: 'string', format: 'uri' },
+                        peer_count: { type: 'integer' },
+                        unconfirmed_count: { type: 'integer' },
+                        high_fee_per_kb: { type: 'integer' },
+                        medium_fee_per_kb: { type: 'integer' },
+                        low_fee_per_kb: { type: 'integer' },
+                        last_fork_height: { type: 'integer' },
+                        last_fork_hash: { type: 'string' },
+                        timeCached: { type: 'integer' }
+                      },
+                      example: {
+                        name: 'BTC.test3',
+                        height: 2536239,
+                        hash: '00000000765093d95aa41e8d3d1eb9e94785b0ca6572dec35d0ee5d5d1350140',
+                        time: '2023-10-31T15:55:39.532796472Z',
+                        latest_url: 'https://api.blockcypher.com/v1/btc/test3/blocks/00000000765093d95aa41e8d3d1eb9e94785b0ca6572dec35d0ee5d5d1350140',
+                        previous_hash: '0000000000000016a40a3c554b2f80e8237dcf3329a2d8aadf2fd0edc906aba9',
+                        previous_url: 'https://api.blockcypher.com/v1/btc/test3/blocks/0000000000000016a40a3c554b2f80e8237dcf3329a2d8aadf2fd0edc906aba9',
+                        peer_count: 312,
+                        unconfirmed_count: 23,
+                        high_fee_per_kb: 41697,
+                        medium_fee_per_kb: 28007,
+                        low_fee_per_kb: 15239,
+                        last_fork_height: 2534940,
+                        last_fork_hash: '00000000000019e94edd38aaca984579a3f00567664f4f815a15d7c0dc3961ab',
+                        timeCached: 1698768100416
+                      }
+                    },
+                    {
+                      type: 'object',
+                      properties: {
+                        result: { type: 'string' }
+                      },
+                      example: {
+                        result: '0.001'
+                      }
+                    }
+                  ]
+                }
+              }
+            }
+          },
+          500: {
+            description: 'An error occurred',
+            content: {
+              'text/html': {
+                schema: {
+                  type: 'string',
+                  example: 'Request failed with status code 500'
+                }
+              }
+            }
+          }
+        }
+      }
     }
   },
   components: {
