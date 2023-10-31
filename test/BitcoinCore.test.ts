@@ -7,11 +7,16 @@ jest.mock('axios')
 // const randomMnemonic = 'creek joy sea brain gravity execute month two voyage process bind coffee ecology body depend artwork erode punch episode unfair alpha amount cart clip'
 // eslint-disable-next-line max-len
 const API_URL = process.env.BLOCKBOOK_URL
+const CYPHER_ESTIMATE_FEE_URL = process.env.CYPHER_ESTIMATE_FEE_URL
 const vpub = 'vpub5Y3owbd2JX4bzwgH4XS5RSRzSnRMX6NYjqkd31sJEB' +
   '5UGzqkq1v7iASC8R6vbxCWQ1xDDCm63jecwx3fkmv8FWHH5KeQeUyesrdJithe54K'
 
 describe('BitcoinCore unit tests', () => {
-  const bitcoinCoreInstance = new BitcoinCore(API_URL, axios)
+  const bitcoinCoreInstance = new BitcoinCore({
+    BLOCKBOOK_URL: API_URL,
+    axiosInstance: axios,
+    CYPHER_ESTIMATE_FEE_URL
+  })
   test('Fetch a bitcoin testnet xpub information', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {

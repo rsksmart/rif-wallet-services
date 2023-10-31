@@ -24,7 +24,8 @@ async function main () {
         'https://backend.explorer.testnet.rsk.co/api',
         CHAIN_ID: parseInt(process.env.CHAIN_ID as string) || 31,
         BLOCKBOOK_URL: process.env.BLOCKBOOK_URL,
-        NODE_URL: process.env.NODE_URL
+        NODE_URL: process.env.NODE_URL,
+        CYPHER_ESTIMATE_FEE_URL: process.env.CYPHER_ESTIMATE_FEE_URL
       },
       {
         ID: '30',
@@ -32,7 +33,8 @@ async function main () {
         'https://backend.explorer.rsk.co/api',
         CHAIN_ID: parseInt(process.env.CHAIN_MAINNET_ID as string) || 30,
         BLOCKBOOK_URL: process.env.BLOCKBOOK_MAINNET_URL,
-        NODE_URL: process.env.NODE_MAINNET_URL
+        NODE_URL: process.env.NODE_MAINNET_URL,
+        CYPHER_ESTIMATE_FEE_URL: process.env.CYPHER_ESTIMATE_FEE_MAINNET_URL
       }
     ],
     PORT: parseInt(process.env.PORT as string) || 3000,
@@ -49,7 +51,10 @@ async function main () {
   const nodeProvider: RSKNodeProvider = {}
   environment.NETWORKS.forEach(network => {
     datasourceMapping[network.ID] = new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID)
-    bitcoinMapping[network.ID] = new BitcoinCore(network.BLOCKBOOK_URL)
+    bitcoinMapping[network.ID] = new BitcoinCore({
+      BLOCKBOOK_URL: network.BLOCKBOOK_URL,
+      CYPHER_ESTIMATE_FEE_URL: network.CYPHER_ESTIMATE_FEE_URL
+    })
     nodeProvider[network.ID] = new ethers.providers.JsonRpcProvider(network.NODE_URL)
   })
   const coinMarketCapApi = new CoinMarketCapAPI(

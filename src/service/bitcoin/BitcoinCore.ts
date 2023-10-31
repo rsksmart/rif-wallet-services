@@ -1,4 +1,5 @@
 import axios from 'axios'
+import { CypherFeeEstimationResult } from './types'
 
 type BIPTYPES = 'BIP44' | 'BIP84'
 
@@ -9,16 +10,28 @@ type TokensType = {
 
 const LOOP_MAX_ITERATIONS = 2000
 const DEFAULT_ADDRESS_INDEXES_TO_RETURN = 10
+const DEFAULT_BIP = 'BIP84'
+
+// BlockCypher Limit: 600 request per hour - which equals to aprox 10 requests per minute
+// This is being limited to 3 request per minute
+const CYPHER_CACHE_EXPIRATION_TIME = 20 * 1000 // 20 seconds in milliseconds
 
 export default class BitcoinCore {
   BLOCKBOOK_URL: string
+  CYPHER_ESTIMATE_URL: string
   BLOCKBOOK_APIS
   axiosInstance: typeof axios
+  currentCypherResult: CypherFeeEstimationResult & { timeCached: number } | null = null
 
-  constructor (BLOCKBOOK_URL, axiosInstance = axios) {
+  constructor ({
+    BLOCKBOOK_URL,
+    axiosInstance = axios,
+    CYPHER_ESTIMATE_FEE_URL
+  }) {
     this.BLOCKBOOK_URL = BLOCKBOOK_URL
     this.axiosInstance = axiosInstance
     this.setBlockbookAPIS()
+    this.CYPHER_ESTIMATE_URL = CYPHER_ESTIMATE_FEE_URL
   }
 
   setBlockbookAPIS () {
@@ -27,7 +40,8 @@ export default class BitcoinCore {
       getXpubBalance: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=basic`,
       getXpubUtxos: `${this.BLOCKBOOK_URL}/api/v2/utxo/`,
       sendTransaction: `${this.BLOCKBOOK_URL}/api/v2/sendtx/`,
-      getXpubTransactions: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=txs&`
+      getXpubTransactions: (xpub: string) => `${this.BLOCKBOOK_URL}/api/v2/xpub/${xpub}?details=txs&`,
+      estimateFee: `${this.BLOCKBOOK_URL}/api/v1/estimatefee/`
     }
   }
 
@@ -49,65 +63,43 @@ export default class BitcoinCore {
 
   async getNextUnusedIndex (
     xpub: string,
-    bip: BIPTYPES = 'BIP84',
+    bip: BIPTYPES = DEFAULT_BIP,
     changeIndex: string = '0',
     knownLastUsedIndex: string = '0',
     maxIndexesToFetch: string = '5'
   ) {
-    let outputDescriptor: string
+    const outputDescriptor = bip === 'BIP44' ? `pkh(${xpub}/<${changeIndex}>/*)` : `wpkh(${xpub}/<${changeIndex}>/*)`
 
-    switch (bip) {
-      case 'BIP44':
-        outputDescriptor = `pkh(${xpub}/<${changeIndex}>/*)`
-        break
-      case 'BIP84':
-      default:
-        outputDescriptor = `wpkh(${xpub}/<${changeIndex}>/*)`
-        break
-    }
+    const { data: { tokens } } = await this
+      .axiosInstance
+      .get<{ tokens: TokensType[] }>(`${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`)
 
-    const { data: { tokens } }: { data: { tokens: Array<TokensType> } } = await this.axiosInstance.get(
-        `${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`
-    )
     let lastUsedIndex = Number(knownLastUsedIndex)
+
     let max = -1
-    const usedTokensMap = tokens?.reduce((prev, { path }) => {
+    const usedTokensSet = new Set<number>()
+
+    for (const { path } of tokens) {
       const index = Number(path.substr(path.lastIndexOf('/') + 1))
-      prev[index] = true
-      max = index
-      return prev
-    }, {}) || {}
-    if (max === -1) {
-      // No addresses found - the first one can be created
-      lastUsedIndex = 0
+      usedTokensSet.add(index)
+      max = Math.max(max, index)
     }
-    if (lastUsedIndex >= max) {
-      // The index should be the latest index + 1
-      lastUsedIndex = max + 1
+
+    if (lastUsedIndex > max || lastUsedIndex < 0) {
+      lastUsedIndex = Math.max(0, max + 1)
     }
-    if (lastUsedIndex < 0) lastUsedIndex = 0 // To make sure we don't search from -XXXX... [security]
-    while (lastUsedIndex <= max) {
-      if (!usedTokensMap[lastUsedIndex]) {
-        break
+
+    const availableIndexes: number[] = []
+    const maxToFetch = Math.min(Number(maxIndexesToFetch), DEFAULT_ADDRESS_INDEXES_TO_RETURN)
+
+    while (availableIndexes.length < maxToFetch && lastUsedIndex <= LOOP_MAX_ITERATIONS) {
+      if (!usedTokensSet.has(lastUsedIndex)) {
+        availableIndexes.push(lastUsedIndex)
       }
       lastUsedIndex++
-      if (lastUsedIndex > LOOP_MAX_ITERATIONS) { // Loop breaker - security
-        break
-      }
     }
-    const availableIndexes: number[] = [lastUsedIndex]
-    let availableIndex = lastUsedIndex
 
-    while (availableIndexes.length < Math.min(Number(maxIndexesToFetch), DEFAULT_ADDRESS_INDEXES_TO_RETURN)) {
-      availableIndex++
-      if (!usedTokensMap[availableIndex]) {
-        availableIndexes.push(availableIndex)
-      }
-      if (availableIndex > LOOP_MAX_ITERATIONS) {
-        break
-      }
-    }
-    return { index: lastUsedIndex, availableIndexes }
+    return { index: availableIndexes[0], availableIndexes }
   }
 
   async getXpubUtxos (xpub: string) {
@@ -129,6 +121,38 @@ export default class BitcoinCore {
     const { data }: any = await this.axiosInstance.get(
       this.BLOCKBOOK_APIS.getXpubTransactions(xpub) + passedQueryParams
     )
+    return data
+  }
+
+  async estimateFee (apiType = 'blockbook', numberOfBlocks = 6) {
+    let data
+
+    if (apiType === 'blockbook') {
+      const response = await this
+        .axiosInstance
+        .get<{ result: string }>(`${this.BLOCKBOOK_APIS.estimateFee}${numberOfBlocks}`)
+      data = response.data
+    } else if (apiType === 'cypher') {
+      const currentTime = Date.now()
+      if (
+        this.currentCypherResult &&
+        this.currentCypherResult.timeCached &&
+        currentTime - this.currentCypherResult.timeCached < CYPHER_CACHE_EXPIRATION_TIME) {
+        data = this.currentCypherResult
+      } else {
+        const response = await this
+          .axiosInstance
+          .get<CypherFeeEstimationResult>(this.CYPHER_ESTIMATE_URL)
+        data = {
+          ...response.data,
+          timeCached: currentTime
+        }
+        this.currentCypherResult = data
+      }
+    } else {
+      throw new Error('Invalid API type specified')
+    }
+
     return data
   }
 }

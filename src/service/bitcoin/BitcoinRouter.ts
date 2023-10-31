@@ -72,6 +72,14 @@ const main = (responseJsonOk, bitcoinMapping: BitcoinDatasource) => {
       .catch(next)
   })
 
+  Router.get('/estimateFee', async ({
+    query: { chainId = '31', numberOfBlocks = 6, apiType = 'blockbook' }
+  }, res, next) => {
+    bitcoinMapping[chainId as string].estimateFee(apiType as string, numberOfBlocks as number)
+      .then(responseJsonOk(res))
+      .catch(next)
+  })
+
   return Router
 }
 export default main

@@ -13,7 +13,10 @@ import { MockProvider } from './MockProvider'
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   const app = express()
   const bitcoinMapping = {}
-  bitcoinMapping['31'] = new BitcoinCore('')
+  bitcoinMapping['31'] = new BitcoinCore({
+    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL || '',
+    CYPHER_ESTIMATE_FEE_URL: process.env.CYPHER_ESTIMATE_FEE_URL || ''
+  })
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
   const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(),
