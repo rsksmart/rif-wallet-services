@@ -99,4 +99,64 @@ describe('BitcoinCore unit tests', () => {
     const index = await bitcoinCoreInstance.getNextUnusedIndex(vpub, 'BIP84', '1', '9')
     expect(index).toEqual({ index: 10, availableIndexes: [10, 11, 12, 13, 14] })
   })
+
+  test('Should estimate fee from blockbook API', async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({
+      data: { result: 'feeRate' }
+    })
+
+    const feeEstimation = await bitcoinCoreInstance.estimateFee('blockbook', 6)
+
+    // Validate the response format
+    expect(feeEstimation).toHaveProperty('result', 'feeRate')
+    expect(feeEstimation).toEqual({ result: 'feeRate' })
+  })
+
+  test('Should estimate fee from cypher API when not cached', async () => {
+    (axios.get as jest.Mock).mockResolvedValueOnce({
+      data: { fee: 'estimatedFee', timeCached: Date.now() }
+    })
+
+    const feeEstimation = await bitcoinCoreInstance.estimateFee('cypher')
+
+    // Check if the timeCached property is set correctly
+    expect(feeEstimation).toHaveProperty('fee', 'estimatedFee')
+    expect(feeEstimation).toHaveProperty('timeCached')
+  })
+
+  test('Should return cached fee from cypher API if still valid', async () => {
+    // Set a cached result that would still be valid
+    bitcoinCoreInstance.currentCypherResult = {
+      timeCached: Date.now() + 10000,
+      name: 'test',
+      height: 100,
+      hash: 'asd',
+      time: Date.now().toString(),
+      latest_url: 'test',
+      previous_hash: 'test',
+      previous_url: 'test',
+      peer_count: 1,
+      unconfirmed_count: 1,
+      high_fee_per_kb: 1,
+      medium_fee_per_kb: 1,
+      low_fee_per_kb: 1,
+      last_fork_height: 1,
+      last_fork_hash: 'test'
+    }
+
+    const feeEstimation = await bitcoinCoreInstance.estimateFee('cypher')
+    jest.clearAllMocks()
+    // Ensure axios.get was not called since we expect a cached result
+    expect(axios.get).not.toBeCalled()
+
+    // Validate the cached data is returned without modification
+    expect(feeEstimation).toEqual(bitcoinCoreInstance.currentCypherResult)
+  })
+
+  test('Should throw an error for invalid API type', async () => {
+    // No axios mocking needed here, as we are testing the error throw directly
+    await expect(bitcoinCoreInstance.estimateFee('invalid_api'))
+      .rejects
+      .toThrow('Invalid API type specified')
+  })
 })

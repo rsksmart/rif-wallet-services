@@ -890,7 +890,7 @@ module.exports = {
             description: 'Number of blocks for fee estimation'
           },
           {
-            name: 'apiType',
+            name: 'apiSource',
             in: 'query',
             required: false,
             default: 'blockbook',
@@ -898,7 +898,7 @@ module.exports = {
               type: 'string',
               enum: ['blockbook', 'cypher']
             },
-            description: 'API type for fee estimation'
+            description: 'API source for fee estimation'
           }
         ],
         tags: ['Bitcoin'],

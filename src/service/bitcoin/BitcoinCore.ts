@@ -124,15 +124,15 @@ export default class BitcoinCore {
     return data
   }
 
-  async estimateFee (apiType = 'blockbook', numberOfBlocks = 6) {
+  async estimateFee (apiSource = 'blockbook', numberOfBlocks = 6) {
     let data
 
-    if (apiType === 'blockbook') {
+    if (apiSource === 'blockbook') {
       const response = await this
         .axiosInstance
         .get<{ result: string }>(`${this.BLOCKBOOK_APIS.estimateFee}${numberOfBlocks}`)
       data = response.data
-    } else if (apiType === 'cypher') {
+    } else if (apiSource === 'cypher') {
       const currentTime = Date.now()
       if (
         this.currentCypherResult &&
