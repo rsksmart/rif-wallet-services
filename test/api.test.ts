@@ -23,7 +23,10 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   })
   priceCollector.init()
   const bitcoinMapping = {}
-  bitcoinMapping['31'] = new BitcoinCore('')
+  bitcoinMapping['31'] = new BitcoinCore({
+    BLOCKBOOK_URL: process.env.BLOCKBOOK_URL || '',
+    CYPHER_ESTIMATE_FEE_URL: process.env.CYPHER_ESTIMATE_FEE_URL || ''
+  })
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
   const httpsAPI = new HttpsAPI(app, { 31: {} } as any, lastPrice,
