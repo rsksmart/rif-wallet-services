@@ -14,6 +14,11 @@ export class BalanceProfiler extends Emitter {
   }
 
   async subscribe (channel: string) {
+    // Get current balance to only emit changes after this
+    const tokens = await this.balanceProvider.getCurrentBalance()
+    tokens.forEach(token => {
+      this.currentBalance[token.contractAddress] = token.balance
+    })
     this.balanceProvider.on(channel, (data) => {
       const { payload: token } = data
       if (this.currentBalance[token.contractAddress] !== token.balance) {

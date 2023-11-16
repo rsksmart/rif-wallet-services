@@ -16,4 +16,9 @@ export class BalanceProvider extends PollingProvider<Event> {
       .catch(() => [])
     return events
   }
+
+  public async getCurrentBalance () {
+    return await this.dataSource.getTokensByAddress(this.address.toLowerCase())
+      .catch(() => [])
+  }
 }

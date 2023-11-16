@@ -15,6 +15,8 @@ export class RbtcBalanceProfiler extends Emitter {
   }
 
   async subscribe (channel: string) {
+    const rbtc = await this.rbtcBalanceProvider.getCurrentBalance()
+    this.currentBalance[rbtc.contractAddress] = rbtc.balance
     this.rbtcBalanceProvider.on(channel, (data) => {
       const { payload: token } = data
       if (this.currentBalance[token.contractAddress] !== token.balance) {

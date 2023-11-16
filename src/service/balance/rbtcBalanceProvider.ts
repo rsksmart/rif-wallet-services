@@ -20,4 +20,10 @@ export class RbtcBalanceProvider extends PollingProvider<Event> {
       .then(rbtcBalance => [{ type: 'newBalance', payload: rbtcBalance }])
       .catch(() => [])
   }
+
+  public async getCurrentBalance () {
+    return await this.provider.getBalance(this.address.toLowerCase())
+      .then(balance => fromApiToRtbcBalance(balance.toHexString(), parseInt(this.dataSource.id)))
+      .catch(() => fromApiToRtbcBalance('0', parseInt(this.dataSource.id)))
+  }
 }
