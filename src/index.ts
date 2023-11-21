@@ -81,8 +81,13 @@ async function main () {
     res.status(200).end(`OK: ${environment.PORT}`)
   })
 
-  const httpsAPI : HttpsAPI = new HttpsAPI(app, datasourceMapping, lastPrice,
-    bitcoinMapping, nodeProvider)
+  const httpsAPI : HttpsAPI = new HttpsAPI({
+    app,
+    dataSourceMapping: datasourceMapping,
+    lastPrice,
+    bitcoinMapping,
+    providerMapping: nodeProvider
+  })
   httpsAPI.init()
 
   const server = http.createServer(app)
