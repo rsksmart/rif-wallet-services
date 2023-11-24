@@ -20,7 +20,7 @@ export class PriceProfiler extends Emitter {
 
   subscribe (): void {
     this.lastPrice.on(this.channelName, this.emitPrice)
-    this.lastPrice.emitLastPrice(this.channelName)
+    // this.lastPrice.emitLastPrice(this.channelName) // REMOVED for now - see US-2023
   }
 
   unsubscribe (): void {
