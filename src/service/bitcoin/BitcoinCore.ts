@@ -70,7 +70,7 @@ export default class BitcoinCore {
   ) {
     const outputDescriptor = bip === 'BIP44' ? `pkh(${xpub}/<${changeIndex}>/*)` : `wpkh(${xpub}/<${changeIndex}>/*)`
 
-    const { data: { tokens } } = await this
+    const { data: { tokens = [] } } = await this
       .axiosInstance
       .get<{ tokens: TokensType[] }>(`${this.BLOCKBOOK_APIS.getXpubInfo}${outputDescriptor}?tokens=used`)
 
