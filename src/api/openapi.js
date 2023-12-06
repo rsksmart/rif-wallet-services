@@ -59,6 +59,82 @@ module.exports = {
         }
       }
     },
+    '/address/{address}': {
+      get: {
+        summary: 'Get balances, transactions and prices by address',
+        tags: ['Address'],
+        parameters: [
+          {
+            name: 'address',
+            in: 'path',
+            description: 'Smart Wallet address',
+            required: true,
+            schema: { type: 'string' }
+          },
+          {
+            name: 'chainId',
+            in: 'query',
+            description: 'Chain Id identifies the network',
+            required: false,
+            schema: { type: 'string' }
+          },
+          {
+            name: 'blockNumber',
+            in: 'query',
+            description: 'Specific block number to query',
+            required: false,
+            schema: { type: 'string' }
+          },
+          {
+            name: 'limit',
+            in: 'query',
+            description: 'Limit for the number of records to return',
+            required: false,
+            schema: { type: 'integer' }
+          },
+          {
+            name: 'prev',
+            in: 'query',
+            description: 'Previous page cursor',
+            required: false,
+            schema: { type: 'string' }
+          },
+          {
+            name: 'next',
+            in: 'query',
+            description: 'Next page cursor',
+            required: false,
+            schema: { type: 'string' }
+          }
+        ],
+        responses: {
+          200: {
+            description: 'Successful operation',
+            content: {
+              'application/json': {
+                schema: {
+                  type: 'object',
+                  properties: {
+                    prices: {
+                      $ref: '#/components/schemas/Prices'
+                    },
+                    tokens: {
+                      type: 'array',
+                      items: {
+                        $ref: '#/components/schemas/Token'
+                      }
+                    },
+                    transactions: {
+                      $ref: '#/components/schemas/Transactions'
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     '/address/{address}/tokens': {
       get: {
         summary: 'Get all tokens available by smart wallet address in network identified by chainId',
@@ -1178,6 +1254,29 @@ module.exports = {
           _id: {
             type: 'string',
             example: '630858b2e187231ee824f4c9'
+          }
+        }
+      },
+      Transactions: {
+        type: 'object',
+        properties: {
+          prev: { type: 'string', nullable: true },
+          next: { type: 'string', nullable: true },
+          data: {
+            type: 'array',
+            items: {
+              $ref: '#/components/schemas/Transaction'
+            }
+          }
+        }
+      },
+      Prices: {
+        type: 'object',
+        additionalProperties: {
+          type: 'object',
+          properties: {
+            price: { type: 'number' },
+            lastUpdated: { type: 'string', format: 'date-time' }
           }
         }
       }
