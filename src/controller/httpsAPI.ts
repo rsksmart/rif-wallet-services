@@ -9,7 +9,7 @@ import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
 import { ValidationError, object, string } from 'yup'
 import { utils } from 'ethers'
-import { HttpsAPIService } from './httpsAPIService'
+import { AddressService } from '../service/address/AddressService'
 
 interface HttpsAPIDependencies {
   app: Express,
@@ -25,14 +25,14 @@ export class HttpsAPI {
   private lastPrice: LastPrice
   private bitcoinMapping: BitcoinDatasource
   private providerMapping: RSKNodeProvider
-  private service: HttpsAPIService
+  private addressService: AddressService
   constructor (dependencies: HttpsAPIDependencies) {
     this.app = dependencies.app
     this.dataSourceMapping = dependencies.dataSourceMapping
     this.lastPrice = dependencies.lastPrice
     this.bitcoinMapping = dependencies.bitcoinMapping
     this.providerMapping = dependencies.providerMapping
-    this.service = new HttpsAPIService({
+    this.addressService = new AddressService({
       dataSourceMapping: dependencies.dataSourceMapping,
       lastPrice: dependencies.lastPrice,
       providerMapping: dependencies.providerMapping
@@ -81,7 +81,7 @@ export class HttpsAPI {
         try {
           chainIdSchema.validateSync({ chainId })
           addressSchema.validateSync({ address })
-          const balance = await this.service.getTokensByAddress({
+          const balance = await this.addressService.getTokensByAddress({
             chainId: chainId as string,
             address: address as string
           }).catch(next)
@@ -116,7 +116,7 @@ export class HttpsAPI {
           chainIdSchema.validateSync({ chainId })
           addressSchema.validateSync({ address })
 
-          const transactions = await this.service.getTransactionsByAddress({
+          const transactions = await this.addressService.getTransactionsByAddress({
             address: address as string,
             chainId: chainId as string,
             limit: limit as string,
@@ -135,7 +135,7 @@ export class HttpsAPI {
       '/price',
       async (req: Request<{}, {}, {}, PricesQueryParams>, res: Response, next: NextFunction) => {
         try {
-          const prices = await this.service.getPrices({
+          const prices = await this.addressService.getPrices({
             addresses: req.query.addresses || '',
             convert: req.query.convert || 'USD'
           })
@@ -150,7 +150,7 @@ export class HttpsAPI {
       '/latestPrices',
       async (req, res, next: NextFunction) => {
         try {
-          const prices = await this.service.getLatestPrices()
+          const prices = await this.addressService.getLatestPrices()
           return this.responseJsonOk(res)(prices)
         } catch (error) {
           next(error)
@@ -159,12 +159,12 @@ export class HttpsAPI {
     )
 
     this.app.get(
-      '/address/:address/all',
+      '/address/:address',
       async (req, res, next: NextFunction) => {
         try {
           const { limit, prev, next, chainId = '31', blockNumber = '0' } = req.query
           const { address } = req.params
-          const data = await this.service.getBalancesTransactionsPricesByAddress({
+          const data = await this.addressService.getBalancesTransactionsPricesByAddress({
             chainId: chainId as string,
             address,
             blockNumber: blockNumber as string,

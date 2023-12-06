@@ -1,10 +1,10 @@
-import { RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
-import { isMyTransaction } from '../service/transaction/utils'
-import { IApiTransactions, IEvent, IInternalTransaction } from '../rskExplorerApi/types'
-import { LastPrice } from '../service/price/lastPrice'
-import { fromApiToRtbcBalance } from '../rskExplorerApi/utils'
+import { RSKDatasource, RSKNodeProvider } from '../../repository/DataSource'
+import { isMyTransaction } from '../transaction/utils'
+import { IApiTransactions, IEvent, IInternalTransaction } from '../../rskExplorerApi/types'
+import { LastPrice } from '../price/lastPrice'
+import { fromApiToRtbcBalance } from '../../rskExplorerApi/utils'
 
-interface HttpsAPIServiceDependencies {
+interface AddressServiceDependencies {
   dataSourceMapping: RSKDatasource
   lastPrice: LastPrice
   providerMapping: RSKNodeProvider
@@ -36,12 +36,12 @@ type GetBalancesTransactionsPricesByAddress = {
 
 type InternalTransactionOrEvent = IEvent | IInternalTransaction
 
-export class HttpsAPIService {
-  private dataSourceMapping: HttpsAPIServiceDependencies['dataSourceMapping']
-  private lastPrice: HttpsAPIServiceDependencies['lastPrice']
-  private providerMapping: HttpsAPIServiceDependencies['providerMapping']
+export class AddressService {
+  private dataSourceMapping: AddressServiceDependencies['dataSourceMapping']
+  private lastPrice: AddressServiceDependencies['lastPrice']
+  private providerMapping: AddressServiceDependencies['providerMapping']
 
-  constructor (dependencies: HttpsAPIServiceDependencies) {
+  constructor (dependencies: AddressServiceDependencies) {
     this.dataSourceMapping = dependencies.dataSourceMapping
     this.lastPrice = dependencies.lastPrice
     this.providerMapping = dependencies.providerMapping
