@@ -106,7 +106,7 @@ export class AddressService {
     return this.lastPrice.prices
   }
 
-  async getBalancesTransactionsPricesByAddress ({
+  async getAddressDetails ({
     chainId,
     address,
     blockNumber,

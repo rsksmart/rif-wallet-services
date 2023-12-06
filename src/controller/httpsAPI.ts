@@ -164,7 +164,7 @@ export class HttpsAPI {
         try {
           const { limit, prev, next, chainId = '31', blockNumber = '0' } = req.query
           const { address } = req.params
-          const data = await this.addressService.getBalancesTransactionsPricesByAddress({
+          const data = await this.addressService.getAddressDetails({
             chainId: chainId as string,
             address,
             blockNumber: blockNumber as string,
