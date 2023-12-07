@@ -1,6 +1,6 @@
 {
   "name": "rif-wallet-services",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "RIF Wallet Services",
   "main": "lib/index.js",
   "scripts": {
