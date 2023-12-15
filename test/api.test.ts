@@ -11,6 +11,7 @@ import { PriceCollector } from '../src/service/price/priceCollector'
 import { MockPrice } from '../src/service/price/mockPrice'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 import { MockProvider } from './MockProvider'
+import { AddressService } from '../src/service/address/AddressService'
 let priceCollector
 
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
@@ -29,12 +30,17 @@ const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   })
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
+  const dataSourceMapping = { 31: {} } as any
+  const addressService = new AddressService({
+    dataSourceMapping,
+    lastPrice,
+    providerMapping
+  })
   const httpsAPI = new HttpsAPI({
     app,
-    dataSourceMapping: { 31: {} } as any,
-    lastPrice,
+    dataSourceMapping,
     bitcoinMapping,
-    providerMapping
+    addressService
   })
   httpsAPI.init()
   return app

@@ -3,19 +3,23 @@ import { Profiler } from '../profiler/profiler'
 import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
 import { LastPrice } from '../service/price/lastPrice'
 import { BtcProfiler } from '../profiler/BtcProfiler'
+import { AddressService } from '../service/address/AddressService'
 
 export class WebSocketAPI {
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
   private providerMapping: RSKNodeProvider
   private bitcoinMapping: BitcoinDatasource
+  private addressService: AddressService
 
   constructor (dataSourceMapping: RSKDatasource,
-    lastPrice: LastPrice, providerMapping: RSKNodeProvider, bitcoinMapping: BitcoinDatasource) {
+    lastPrice: LastPrice, providerMapping: RSKNodeProvider,
+    bitcoinMapping: BitcoinDatasource, addressService: AddressService) {
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.providerMapping = providerMapping
     this.bitcoinMapping = bitcoinMapping
+    this.addressService = addressService
   }
 
   init (io: Server) {
@@ -25,9 +29,15 @@ export class WebSocketAPI {
       socket.on('subscribe', async ({ address, chainId = '31' }: { address: string, chainId: string}) => {
         console.log('new subscription with address: ', address)
         const dataSource = this.dataSourceMapping[chainId as string]
-        if (!dataSource) socket.emit('error', `Can not connect with dataSource for ${chainId}`)
+        if (!dataSource) {
+          socket.emit('error', `Can not connect with dataSource for ${chainId}`)
+          socket.disconnect()
+        }
         const provider = this.providerMapping[chainId as string]
-        const profiler = new Profiler(address, dataSource!, this.lastPrice, provider)
+        const profiler = new Profiler(address, dataSource, this.lastPrice, provider)
+
+        const data = await this.addressService.getAddressDetails({ chainId, address, blockNumber: '0', limit: '' })
+        socket.emit('init', data)
 
         profiler.on('balances', (data) => {
           console.log(data)

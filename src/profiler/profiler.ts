@@ -13,7 +13,6 @@ export class Profiler extends Emitter {
   rbtBalanceProfiler: RbtcBalanceProfiler
   transactionProfiler: TransactionProfiler
   priceProfiler: PriceProfiler
-  lastPrice: LastPrice
   address: string
   tokenTransferProfiler: TokenTransferProfiler
 
@@ -21,7 +20,6 @@ export class Profiler extends Emitter {
     lastPrice: LastPrice, provider: ethers.providers.JsonRpcProvider) {
     super()
     this.address = address
-    this.lastPrice = lastPrice
 
     this.balanceProfiler = new BalanceProfiler(address, dataSource)
     this.rbtBalanceProfiler = new RbtcBalanceProfiler(address, dataSource, provider)

@@ -2,8 +2,7 @@ import { Application, NextFunction, Request, Response, Express } from 'express'
 import { PricesQueryParams } from '../api/types'
 import { registeredDapps } from '../registered_dapps'
 import { errorHandler } from '../middleware'
-import { LastPrice } from '../service/price/lastPrice'
-import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from '../repository/DataSource'
+import { BitcoinDatasource, RSKDatasource } from '../repository/DataSource'
 import swaggerUI from 'swagger-ui-express'
 import OpenApi from '../api/openapi'
 import BitcoinRouter from '../service/bitcoin/BitcoinRouter'
@@ -14,29 +13,20 @@ import { AddressService } from '../service/address/AddressService'
 interface HttpsAPIDependencies {
   app: Express,
   dataSourceMapping: RSKDatasource,
-  lastPrice: LastPrice,
   bitcoinMapping: BitcoinDatasource,
-  providerMapping: RSKNodeProvider
+  addressService: AddressService
 }
 
 export class HttpsAPI {
   private app: Application
   private dataSourceMapping: RSKDatasource
-  private lastPrice: LastPrice
   private bitcoinMapping: BitcoinDatasource
-  private providerMapping: RSKNodeProvider
   private addressService: AddressService
   constructor (dependencies: HttpsAPIDependencies) {
     this.app = dependencies.app
     this.dataSourceMapping = dependencies.dataSourceMapping
-    this.lastPrice = dependencies.lastPrice
     this.bitcoinMapping = dependencies.bitcoinMapping
-    this.providerMapping = dependencies.providerMapping
-    this.addressService = new AddressService({
-      dataSourceMapping: dependencies.dataSourceMapping,
-      lastPrice: dependencies.lastPrice,
-      providerMapping: dependencies.providerMapping
-    })
+    this.addressService = dependencies.addressService
   }
 
   responseJsonOk (res: Response) {

@@ -13,6 +13,7 @@ import { MockPrice } from './service/price/mockPrice'
 import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from './repository/DataSource'
 import BitcoinCore from './service/bitcoin/BitcoinCore'
 import { ethers } from 'ethers'
+import { AddressService } from './service/address/AddressService'
 
 async function main () {
   const environment = {
@@ -46,11 +47,11 @@ async function main () {
     BLOCKBOOK_URL: process.env.BLOCKBOOK_URL
   }
 
-  const datasourceMapping: RSKDatasource = {}
+  const dataSourceMapping: RSKDatasource = {}
   const bitcoinMapping: BitcoinDatasource = {}
   const nodeProvider: RSKNodeProvider = {}
   environment.NETWORKS.forEach(network => {
-    datasourceMapping[network.ID] = new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID)
+    dataSourceMapping[network.ID] = new RSKExplorerAPI(network.API_URL, network.CHAIN_ID, axios, network.ID)
     bitcoinMapping[network.ID] = new BitcoinCore({
       BLOCKBOOK_URL: network.BLOCKBOOK_URL,
       CYPHER_ESTIMATE_FEE_URL: network.CYPHER_ESTIMATE_FEE_URL
@@ -75,6 +76,12 @@ async function main () {
 
   await priceCollector.init()
 
+  const addressService = new AddressService({
+    dataSourceMapping,
+    lastPrice,
+    providerMapping: nodeProvider
+  })
+
   const app = express()
 
   app.get('/health', (req, res) => {
@@ -83,15 +90,15 @@ async function main () {
 
   const httpsAPI : HttpsAPI = new HttpsAPI({
     app,
-    dataSourceMapping: datasourceMapping,
-    lastPrice,
+    dataSourceMapping,
     bitcoinMapping,
-    providerMapping: nodeProvider
+    addressService
   })
   httpsAPI.init()
 
   const server = http.createServer(app)
-  const webSocketAPI : WebSocketAPI = new WebSocketAPI(datasourceMapping, lastPrice, nodeProvider, bitcoinMapping)
+  const webSocketAPI : WebSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice,
+    nodeProvider, bitcoinMapping, addressService)
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'

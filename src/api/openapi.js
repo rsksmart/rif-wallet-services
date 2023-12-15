@@ -1009,9 +1009,11 @@ module.exports = {
                         height: 2536239,
                         hash: '00000000765093d95aa41e8d3d1eb9e94785b0ca6572dec35d0ee5d5d1350140',
                         time: '2023-10-31T15:55:39.532796472Z',
-                        latest_url: 'https://api.blockcypher.com/v1/btc/test3/blocks/00000000765093d95aa41e8d3d1eb9e94785b0ca6572dec35d0ee5d5d1350140',
+                        latest_url: `https://api.blockcypher.com/v1/btc/test3/blocks
+                        /00000000765093d95aa41e8d3d1eb9e94785b0ca6572dec35d0ee5d5d1350140`,
                         previous_hash: '0000000000000016a40a3c554b2f80e8237dcf3329a2d8aadf2fd0edc906aba9',
-                        previous_url: 'https://api.blockcypher.com/v1/btc/test3/blocks/0000000000000016a40a3c554b2f80e8237dcf3329a2d8aadf2fd0edc906aba9',
+                        previous_url: `https://api.blockcypher.com/v1/btc/test3/blocks
+                        /0000000000000016a40a3c554b2f80e8237dcf3329a2d8aadf2fd0edc906aba9`,
                         peer_count: 312,
                         unconfirmed_count: 23,
                         high_fee_per_kb: 41697,
