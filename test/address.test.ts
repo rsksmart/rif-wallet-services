@@ -9,6 +9,7 @@ import {
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 import { LastPrice } from '../src/service/price/lastPrice'
 import { MockProvider } from './MockProvider'
+import { AddressService } from '../src/service/address/AddressService'
 
 const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   const app = express()
@@ -19,8 +20,13 @@ const setupTestApi = (dataSourceMapping: RSKDatasource) => {
   })
   const providerMapping = {}
   providerMapping['31'] = new MockProvider(31)
-  const httpsAPI = new HttpsAPI(app, dataSourceMapping, new LastPrice(),
-    bitcoinMapping, providerMapping)
+  const lastPrice = new LastPrice()
+  const addressService = new AddressService({
+    dataSourceMapping,
+    lastPrice,
+    providerMapping
+  })
+  const httpsAPI = new HttpsAPI({ app, dataSourceMapping, bitcoinMapping, addressService })
   httpsAPI.init()
   return app
 }

@@ -13,6 +13,7 @@ import { LastPrice } from '../src/service/price/lastPrice'
 import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
 import { MockProvider } from './MockProvider'
+import { AddressService } from '../src/service/address/AddressService'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -22,10 +23,12 @@ describe('web socket', () => {
   const getEventsByAddressMock = jest.fn(() => Promise.resolve(eventResponse))
   const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
   const getInternalTransactionByAddressMock = jest.fn(() => Promise.resolve([]))
+  const getTransactionMock = jest.fn(() => Promise.resolve({ blockNumber: 100 }))
 
   beforeAll((done) => {
     const server = http.createServer()
     const rskExplorerApiMock = {
+      getTransaction: getTransactionMock,
       getTransactionsByAddress: getTransactionsByAddressMock,
       getTokensByAddress: getTokensByAddressMock,
       getEventsByAddress: getEventsByAddressMock,
@@ -52,7 +55,12 @@ describe('web socket', () => {
     const providerMapping = {}
     providerMapping['31'] = new MockProvider(31)
     const bitcoinMapping = {}
-    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping)
+    const addressService = new AddressService({
+      dataSourceMapping,
+      lastPrice,
+      providerMapping
+    })
+    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping, addressService)
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'

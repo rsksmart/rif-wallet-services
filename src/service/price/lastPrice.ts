@@ -3,7 +3,7 @@ import { Prices } from '../../api/types'
 import { isConvertSupported, isTokenSupported } from '../../coinmarketcap/validations'
 
 export class LastPrice extends EventEmitter {
-  private prices: Prices
+  public prices: Prices
 
   constructor () {
     super()
