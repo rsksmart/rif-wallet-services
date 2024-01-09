@@ -4,6 +4,7 @@ import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from '../repository
 import { LastPrice } from '../service/price/lastPrice'
 import { BtcProfiler } from '../profiler/BtcProfiler'
 import { AddressService } from '../service/address/AddressService'
+import { AddressQuery } from '../api/types'
 
 export class WebSocketAPI {
   private dataSourceMapping: RSKDatasource
@@ -26,7 +27,7 @@ export class WebSocketAPI {
     io.on('connection', (socket) => {
       console.log('new user connected')
 
-      socket.on('subscribe', async ({ address, chainId = '31' }: { address: string, chainId: string}) => {
+      socket.on('subscribe', async ({ address, chainId = '31', blockNumber = '0' }: AddressQuery) => {
         console.log('new subscription with address: ', address)
         const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) {
@@ -36,7 +37,7 @@ export class WebSocketAPI {
         const provider = this.providerMapping[chainId as string]
         const profiler = new Profiler(address, dataSource, this.lastPrice, provider)
 
-        const data = await this.addressService.getAddressDetails({ chainId, address, blockNumber: '0', limit: '' })
+        const data = await this.addressService.getAddressDetails({ chainId, address, blockNumber, limit: '' })
         socket.emit('init', data)
 
         profiler.on('balances', (data) => {
