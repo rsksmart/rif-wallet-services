@@ -16,7 +16,7 @@ import { MockProvider } from './MockProvider'
 import { AddressService } from '../src/service/address/AddressService'
 
 describe('web socket', () => {
-  let serverSocket, clientSocket, priceCollector
+  let serverSocket, clientSocket, priceCollector, webSocketAPI: WebSocketAPI
   const getTransactionsByAddressMock = jest.fn(() => Promise.resolve(transactionResponse))
   const getQuotesLatestMock = jest.fn(() => Promise.resolve(pricesResponse))
   const getTokensByAddressMock = jest.fn(() => Promise.resolve(tokenResponse))
@@ -24,8 +24,9 @@ describe('web socket', () => {
   const getRbtcBalanceByAddressMock = jest.fn(() => Promise.resolve(rbtcBalanceResponse))
   const getInternalTransactionByAddressMock = jest.fn(() => Promise.resolve([]))
   const getTransactionMock = jest.fn(() => Promise.resolve({ blockNumber: 100 }))
+  const port = 3000
 
-  beforeAll((done) => {
+  beforeEach((done) => {
     const server = http.createServer()
     const rskExplorerApiMock = {
       getTransaction: getTransactionMock,
@@ -60,14 +61,13 @@ describe('web socket', () => {
       lastPrice,
       providerMapping
     })
-    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping, addressService)
+    webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping, addressService)
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'
       // },
       path: '/ws'
     })
-    const port = 3000
     webSocketAPI.init(serverSocket)
     server.listen(port, () => {
       console.log(`RIF Wallet services running on ${port}.`)
@@ -82,7 +82,7 @@ describe('web socket', () => {
     })
   })
 
-  afterAll(() => {
+  afterEach(() => {
     serverSocket.close()
     clientSocket.close()
     priceCollector.stop()
@@ -110,5 +110,33 @@ describe('web socket', () => {
     })
     clientSocket.emit('subscribe', { address: mockAddress })
     setTimeout(done, 4000)
+  })
+
+  test('only one instance for same address', (done) => {
+    const clientSocket = io(`http://localhost:${port}`, {
+      path: '/ws'
+    })
+    const clientSocket2 = io(`http://localhost:${port}`, {
+      path: '/ws'
+    })
+    const clientSocket3 = io(`http://localhost:${port}`, {
+      path: '/ws'
+    })
+    clientSocket.emit('subscribe', { address: mockAddress })
+    clientSocket2.emit('subscribe', { address: mockAddress })
+    clientSocket3.emit('subscribe', { address: mockAddress })
+
+    setTimeout(() => {
+      clientSocket.close()
+      clientSocket2.close()
+      clientSocket3.close()
+      let counter = 0
+      for (const key of webSocketAPI.trackerKeys) {
+        console.log(key)
+        counter++
+      }
+      expect(counter).toEqual(1)
+      done()
+    }, 4000)
   })
 })

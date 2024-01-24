@@ -12,8 +12,9 @@ export class WebSocketAPI {
   private providerMapping: RSKNodeProvider
   private bitcoinMapping: BitcoinDatasource
   private addressService: AddressService
+  private tracker = new Map<string, Profiler>()
 
-  constructor (dataSourceMapping: RSKDatasource,
+  public constructor (dataSourceMapping: RSKDatasource,
     lastPrice: LastPrice, providerMapping: RSKNodeProvider,
     bitcoinMapping: BitcoinDatasource, addressService: AddressService) {
     this.dataSourceMapping = dataSourceMapping
@@ -23,21 +24,30 @@ export class WebSocketAPI {
     this.addressService = addressService
   }
 
-  init (io: Server) {
+  public get trackerKeys () {
+    return this.tracker.keys()
+  }
+
+  public get trackerValues () {
+    return this.tracker.values()
+  }
+
+  public init (io: Server) {
     io.on('connection', (socket) => {
       console.log('new user connected')
 
       socket.on('subscribe', async ({ address, chainId = '31', blockNumber = '0' }: AddressQuery) => {
         console.log('new subscription with address: ', address)
-        const dataSource = this.dataSourceMapping[chainId as string]
+        const dataSource = this.dataSourceMapping[chainId]
         if (!dataSource) {
           socket.emit('error', `Can not connect with dataSource for ${chainId}`)
           socket.disconnect()
           return
         }
         const provider = this.providerMapping[chainId as string]
-        const profiler = new Profiler(address, dataSource, this.lastPrice, provider)
-
+        const key = `${chainId}_${address.toLowerCase()}`
+        const profiler = this.tracker.get(key) || new Profiler(address, dataSource, this.lastPrice, provider)
+        this.tracker.set(key, profiler)
         const data = await this.addressService.getAddressDetails({ chainId, address, blockNumber, limit: '' })
         socket.emit('init', data)
 
