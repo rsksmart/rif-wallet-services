@@ -125,3 +125,10 @@ npm run start:prod
 - API documentation is in /api-docs endpoint - GET
 - WebSocket documentation is in docs/websocket.md
   - Markdown file is generated frowm websocket.yaml using @asyncapi/markdown-template
+
+
+## Indexers
+We provide two different indexer integrations to get balances, transactions, events:
+- RSKExplorerAPI(Default)
+- BlockscoutAPI
+You should only replace the RSKExplorerAPI class in src/index.ts and set blockscout url in .env
