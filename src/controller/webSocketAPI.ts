@@ -33,6 +33,7 @@ export class WebSocketAPI {
         if (!dataSource) {
           socket.emit('error', `Can not connect with dataSource for ${chainId}`)
           socket.disconnect()
+          return
         }
         const provider = this.providerMapping[chainId as string]
         const profiler = new Profiler(address, dataSource, this.lastPrice, provider)
@@ -74,6 +75,7 @@ export class WebSocketAPI {
         if (!dataSource) {
           socket.emit('error', `Can not connect with dataSource for ${chainId}`)
           socket.disconnect()
+          return
         }
         if (!xpub) {
           socket.emit('error', 'No xpub received. Please make sure you send a xpub.')
