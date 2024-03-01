@@ -5,26 +5,40 @@ import { LastPrice } from '../service/price/lastPrice'
 import { BtcProfiler } from '../profiler/BtcProfiler'
 import { AddressService } from '../service/address/AddressService'
 import { AddressQuery } from '../api/types'
+import { TrackingService } from '../service/tracking/TrackingService'
+
+interface ServiceDependencies {
+  addressService: AddressService,
+  trackingService: TrackingService
+}
 
 export class WebSocketAPI {
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
   private providerMapping: RSKNodeProvider
   private bitcoinMapping: BitcoinDatasource
+  private trackingService: TrackingService
   private addressService: AddressService
 
   constructor (dataSourceMapping: RSKDatasource,
     lastPrice: LastPrice, providerMapping: RSKNodeProvider,
-    bitcoinMapping: BitcoinDatasource, addressService: AddressService) {
+    bitcoinMapping: BitcoinDatasource, services: ServiceDependencies) {
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.providerMapping = providerMapping
     this.bitcoinMapping = bitcoinMapping
-    this.addressService = addressService
+    this.addressService = services.addressService
+    this.trackingService = services.trackingService
   }
 
   init (io: Server) {
     io.on('connection', (socket) => {
+      const headers = socket.handshake.headers
+      if (!headers['x-trace-id']) {
+        socket.emit('error', `x-trace-id is required`)
+        socket.disconnect()
+        return
+      }
       console.log('new user connected')
 
       socket.on('subscribe', async ({ address, chainId = '31', blockNumber = '0' }: AddressQuery) => {
@@ -62,6 +76,8 @@ export class WebSocketAPI {
         })
 
         await profiler.subscribe()
+
+        this.trackingService.trackClient(address.toLowerCase())
 
         socket.on('disconnect', () => {
           profiler.unsubscribe()

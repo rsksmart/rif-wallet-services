@@ -14,6 +14,7 @@ import { BitcoinDatasource, RSKDatasource, RSKNodeProvider } from './repository/
 import BitcoinCore from './service/bitcoin/BitcoinCore'
 import { ethers } from 'ethers'
 import { AddressService } from './service/address/AddressService'
+import { TrackingService } from './service/tracking/TrackingService'
 
 async function main () {
   const environment = {
@@ -82,6 +83,8 @@ async function main () {
     providerMapping: nodeProvider
   })
 
+  const trackingService = new TrackingService()
+
   const app = express()
 
   app.get('/health', (req, res) => {
@@ -98,7 +101,7 @@ async function main () {
 
   const server = http.createServer(app)
   const webSocketAPI : WebSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice,
-    nodeProvider, bitcoinMapping, addressService)
+    nodeProvider, bitcoinMapping, {addressService, trackingService})
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'
