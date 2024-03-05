@@ -15,6 +15,9 @@ import BitcoinCore from './service/bitcoin/BitcoinCore'
 import { ethers } from 'ethers'
 import { AddressService } from './service/address/AddressService'
 import { TrackingService } from './service/tracking/TrackingService'
+import { createLogger } from './service/logging/LoggingService'
+
+const logger = createLogger()
 
 async function main () {
   const environment = {
@@ -67,7 +70,7 @@ async function main () {
   )
   const mockPrice = new MockPrice()
   const priceCollector = new PriceCollector([coinMarketCapApi, mockPrice],
-    environment.DEFAULT_CONVERT_FIAT, environment.DEFAULT_PRICE_POLLING_TIME)
+    environment.DEFAULT_CONVERT_FIAT, environment.DEFAULT_PRICE_POLLING_TIME, logger)
   const lastPrice = new LastPrice()
 
   priceCollector.on('prices', (prices) => {
@@ -83,7 +86,7 @@ async function main () {
     providerMapping: nodeProvider
   })
 
-  const trackingService = new TrackingService()
+  const trackingService = new TrackingService(logger)
 
   const app = express()
 
@@ -101,7 +104,7 @@ async function main () {
 
   const server = http.createServer(app)
   const webSocketAPI : WebSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice,
-    nodeProvider, bitcoinMapping, {addressService, trackingService})
+    nodeProvider, bitcoinMapping, { addressService, trackingService, logger })
   const io = new Server(server, {
     // cors: {
     //   origin: 'https://amritb.github.io'
@@ -111,8 +114,8 @@ async function main () {
   webSocketAPI.init(io)
 
   server.listen(environment.PORT, () => {
-    console.log(`RIF Wallet services running on port ${environment.PORT}.`)
+    logger.info(`RIF Wallet services running on port ${environment.PORT}.`)
   })
 }
 
-main().catch(e => { console.error(e); process.exit(1) })
+main().catch(e => { logger.error(e); process.exit(1) })

@@ -65,6 +65,7 @@
     "pg": "^8.11.3",
     "socket.io": "^4.6.1",
     "swagger-ui-express": "^4.5.0",
+    "winston": "^3.12.0",
     "yup": "^1.2.0"
   }
 }
