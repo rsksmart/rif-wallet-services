@@ -2,19 +2,22 @@ import EventEmitter from 'events'
 import { addressToCoinmarketcapId } from '../../coinmarketcap/support'
 import { Prices } from '../../api/types'
 import { PriceSupplier } from './priceSupplier'
+import { Logger } from 'winston'
 
 export class PriceCollector extends EventEmitter {
   private suppliers: PriceSupplier[]
   private cmcPollingTime: number
   private convert: string
   private timer!: NodeJS.Timer
+  private logger: Logger
 
   constructor (suppliers: PriceSupplier[],
-    convert: string, cmcPollingTime: number) {
+    convert: string, cmcPollingTime: number, logger: Logger) {
     super()
     this.suppliers = suppliers
     this.convert = convert
     this.cmcPollingTime = cmcPollingTime
+    this.logger = logger
   }
 
   getPrices = (): Promise<Prices> => {
@@ -23,7 +26,7 @@ export class PriceCollector extends EventEmitter {
         addresses: Object.keys(addressToCoinmarketcapId),
         convert: this.convert
       }).catch(e => {
-        console.log('Exception collecting price', e)
+        this.logger.error('Exception collecting price', e)
         return Promise.resolve({} as Prices)
       }
       )

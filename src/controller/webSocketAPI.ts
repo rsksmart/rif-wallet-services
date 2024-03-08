@@ -5,30 +5,49 @@ import { LastPrice } from '../service/price/lastPrice'
 import { BtcProfiler } from '../profiler/BtcProfiler'
 import { AddressService } from '../service/address/AddressService'
 import { AddressQuery } from '../api/types'
+import { TrackingService } from '../service/tracking/TrackingService'
+import { Logger } from 'winston'
+
+interface ServiceDependencies {
+  addressService: AddressService,
+  trackingService: TrackingService,
+  logger: Logger
+}
 
 export class WebSocketAPI {
   private dataSourceMapping: RSKDatasource
   private lastPrice: LastPrice
   private providerMapping: RSKNodeProvider
   private bitcoinMapping: BitcoinDatasource
+  private trackingService: TrackingService
   private addressService: AddressService
+  private logger: Logger
 
   constructor (dataSourceMapping: RSKDatasource,
     lastPrice: LastPrice, providerMapping: RSKNodeProvider,
-    bitcoinMapping: BitcoinDatasource, addressService: AddressService) {
+    bitcoinMapping: BitcoinDatasource, services: ServiceDependencies) {
     this.dataSourceMapping = dataSourceMapping
     this.lastPrice = lastPrice
     this.providerMapping = providerMapping
     this.bitcoinMapping = bitcoinMapping
-    this.addressService = addressService
+    this.addressService = services.addressService
+    this.trackingService = services.trackingService
+    this.logger = services.logger
   }
 
   init (io: Server) {
     io.on('connection', (socket) => {
-      console.log('new user connected')
+      const headers = socket.handshake.headers
+      const traceId = headers['x-trace-id'] as string
+      if (!traceId) {
+        socket.emit('error', 'x-trace-id is required')
+        socket.disconnect()
+        return
+      }
+      this.logger.debug('new user connected')
 
       socket.on('subscribe', async ({ address, chainId = '31', blockNumber = '0' }: AddressQuery) => {
-        console.log('new subscription with address: ', address)
+        this.logger.info(`new subscription with address: ${address}`)
         const dataSource = this.dataSourceMapping[chainId as string]
         if (!dataSource) {
           socket.emit('error', `Can not connect with dataSource for ${chainId}`)
@@ -42,26 +61,28 @@ export class WebSocketAPI {
         socket.emit('init', data)
 
         profiler.on('balances', (data) => {
-          console.log(data)
+          this.logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('rbtcBalance', (data) => {
-          console.log(data)
+          this.logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('transactions', (data) => {
-          console.log(data)
+          this.logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('prices', (newPrices) => {
-          console.log(newPrices)
+          this.logger.info(newPrices)
           socket.emit('change', newPrices)
         })
 
         await profiler.subscribe()
+
+        await this.trackingService.trackClient(address.toLowerCase(), traceId, chainId)
 
         socket.on('disconnect', () => {
           profiler.unsubscribe()
@@ -70,7 +91,7 @@ export class WebSocketAPI {
 
       // BITCOIN
       socket.on('subscribe_bitcoin', async ({ xpub, chainId = '31' }) => {
-        console.log('new subscription with xpub: ', xpub)
+        this.logger.info('new subscription with xpub: ', xpub)
         const dataSource = this.bitcoinMapping[chainId as string]
         if (!dataSource) {
           socket.emit('error', `Can not connect with dataSource for ${chainId}`)
@@ -83,12 +104,12 @@ export class WebSocketAPI {
         }
         const profiler = new BtcProfiler(xpub, dataSource)
         profiler.on('balances', (data) => {
-          console.log(data)
+          this.logger.info(data)
           socket.emit('change', data)
         })
 
         profiler.on('transactions', (data) => {
-          console.log(data)
+          this.logger.info(data)
           socket.emit('change', data)
         })
 

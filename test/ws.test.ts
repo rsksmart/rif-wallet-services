@@ -14,6 +14,8 @@ import { PriceCollector } from '../src/service/price/priceCollector'
 import { Server } from 'socket.io'
 import { MockProvider } from './MockProvider'
 import { AddressService } from '../src/service/address/AddressService'
+import { TrackingService } from '../src/service/tracking/TrackingService'
+import winston from 'winston'
 
 describe('web socket', () => {
   let serverSocket, clientSocket, priceCollector
@@ -43,7 +45,8 @@ describe('web socket', () => {
       getQuotesLatest: jest.fn(() => Promise.resolve({}))
     }
 
-    priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice as any], 'USD', 5 * 60 * 1000)
+    const logger = winston.createLogger()
+    priceCollector = new PriceCollector([coinMarketCapApiMock as any, mockPrice as any], 'USD', 5 * 60 * 1000, logger)
 
     priceCollector.on('prices', (prices) => {
       lastPrice.save(prices)
@@ -60,7 +63,9 @@ describe('web socket', () => {
       lastPrice,
       providerMapping
     })
-    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice, providerMapping, bitcoinMapping, addressService)
+    const trackingService = new TrackingService(logger)
+    const webSocketAPI = new WebSocketAPI(dataSourceMapping, lastPrice,
+      providerMapping, bitcoinMapping, { addressService, trackingService, logger })
     serverSocket = new Server(server, {
       // cors: {
       //   origin: 'https://amritb.github.io'

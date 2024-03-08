@@ -12,12 +12,14 @@ import { MockPrice } from '../src/service/price/mockPrice'
 import BitcoinCore from '../src/service/bitcoin/BitcoinCore'
 import { MockProvider } from './MockProvider'
 import { AddressService } from '../src/service/address/AddressService'
+import winston from 'winston'
 let priceCollector
 
 const setupTestApi = (coinMarketCapApi: CoinMarketCapAPI) => {
   const app = express()
   const mockPrice = new MockPrice()
-  priceCollector = new PriceCollector([coinMarketCapApi, mockPrice], 'USD', 5 * 60 * 1000)
+  const logger = winston.createLogger()
+  priceCollector = new PriceCollector([coinMarketCapApi, mockPrice], 'USD', 5 * 60 * 1000, logger)
   const lastPrice = new LastPrice()
   priceCollector.on('prices', (prices) => {
     lastPrice.save(prices)
