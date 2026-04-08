@@ -9,8 +9,30 @@ import {
 } from './types'
 import {
   fromApiToInternalTransaction, fromApiToNft, fromApiToNftOwner, fromApiToRtbcBalance, fromApiToTEvents,
-  fromApiToTokenWithBalance, fromApiToTokens, fromApiToTransaction
+  fromApiToTokenWithBalance, fromApiToTokens, fromApiToTransaction,
+  type ITransaction
 } from './utils'
+import type { IApiTransactions } from '../rskExplorerApi/types'
+
+function blockscoutTransactionToIApi (tx: ITransaction): IApiTransactions {
+  return {
+    hash: tx.hash,
+    nonce: tx.nonce,
+    blockHash: tx.blockHash,
+    blockNumber: tx.blockNumber,
+    transactionIndex: tx.transactionIndex,
+    from: tx.from,
+    to: tx.to ?? '',
+    gas: tx.gas,
+    gasPrice: tx.gasPrice,
+    value: tx.value,
+    input: tx.input,
+    timestamp: tx.timestamp,
+    receipt: tx.receipt,
+    txType: tx.txType,
+    txId: tx.txId || tx.hash
+  }
+}
 import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
 
 export class BlockscoutAPI extends DataSource {
@@ -65,11 +87,13 @@ export class BlockscoutAPI extends DataSource {
       .catch(this.errorHandling)
   }
 
-  getTransaction (hash: string) {
-    return this.axios?.get<TransactionServerResponse>(`${this.url}/v2/transactions/${hash}`)
-      .then(response =>
-        fromApiToTransaction(response.data))
-      .catch(this.errorHandling)
+  getTransaction (hash: string): Promise<IApiTransactions | null> {
+    return this.axios!.get<TransactionServerResponse>(`${this.url}/v2/transactions/${hash}`)
+      .then(response => blockscoutTransactionToIApi(fromApiToTransaction(response.data)))
+      .catch((e) => {
+        console.error(e)
+        return null
+      })
   }
 
   getInternalTransactionByAddress (address: string) {

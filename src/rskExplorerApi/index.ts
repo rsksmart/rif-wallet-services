@@ -1,6 +1,7 @@
 import _axios from 'axios'
 import { DataSource } from '../repository/DataSource'
 import {
+  IApiTransactions,
   V3PaginatedResponse,
   V3SingleResponse
 } from './types'
@@ -19,6 +20,7 @@ import {
 } from './utils'
 
 const DEFAULT_TAKE = 50
+const MAX_V3_TOKEN_PAGES = 500
 
 type V3EventPayload = Parameters<typeof fromV3ExplorerEventToIEvent>[0]
 type V3ItxPayload = Parameters<typeof fromV3InternalTxToIInternalTransaction>[0]
@@ -40,6 +42,43 @@ export class RSKExplorerAPI extends DataSource {
     return Number.isFinite(n) && n > 0 ? n : DEFAULT_TAKE
   }
 
+  /**
+   * Fetches all pages for a v3 list endpoint, merging rows with optional dedupe by key.
+   */
+  private async fetchAllV3Rows (
+    path: string,
+    take: number,
+    dedupeKey: (row: Record<string, unknown>) => string | null
+  ): Promise<Record<string, unknown>[]> {
+    const out: Record<string, unknown>[] = []
+    const seen = new Set<string>()
+    let cursor: string | undefined
+    for (let i = 0; i < MAX_V3_TOKEN_PAGES; i++) {
+      const params: { take: number, cursor?: string } = { take }
+      if (cursor) params.cursor = cursor
+      const response = await this.axios!.get<V3PaginatedResponse<Record<string, unknown>>>(path, { params })
+      const batch = response.data.data ?? []
+      for (const row of batch) {
+        const key = dedupeKey(row)
+        if (key != null) {
+          if (seen.has(key)) continue
+          seen.add(key)
+        }
+        out.push(row)
+      }
+      const p = response.data.paginationData
+      if (!p?.hasMoreData || p.nextCursor == null || String(p.nextCursor) === '') {
+        break
+      }
+      if (i + 1 >= MAX_V3_TOKEN_PAGES) {
+        console.warn('[RSKExplorerAPI] token pagination stopped at max page cap')
+        break
+      }
+      cursor = String(p.nextCursor)
+    }
+    return out
+  }
+
   async getEventsByAddress (address:string, limit?: string) {
     const take = this.parseTake(limit)
     const path = `${this.url}/events/address/${encodeURIComponent(address.toLowerCase())}`
@@ -59,8 +98,11 @@ export class RSKExplorerAPI extends DataSource {
   async getTokens () {
     const take = DEFAULT_TAKE
     const path = `${this.url}/tokens`
-    return this.axios!.get<V3PaginatedResponse<Record<string, unknown>>>(path, { params: { take } })
-      .then(response => (response.data.data ?? [])
+    return this.fetchAllV3Rows(path, take, (row) => {
+      const a = row.address
+      return typeof a === 'string' ? a.toLowerCase() : null
+    })
+      .then(rows => rows
         .filter(t => t.name != null && t.decimals != null)
         .map(t => fromApiToTokens(v3ListedTokenToIApiTokens(t as Parameters<typeof v3ListedTokenToIApiTokens>[0]), this.chainId)))
       .catch(this.errorHandling)
@@ -69,8 +111,11 @@ export class RSKExplorerAPI extends DataSource {
   async getTokensByAddress (address:string) {
     const take = DEFAULT_TAKE
     const path = `${this.url}/tokens/address/${encodeURIComponent(address.toLowerCase())}`
-    return this.axios!.get<V3PaginatedResponse<Record<string, unknown>>>(path, { params: { take } })
-      .then(response => (response.data.data ?? []).filter(t => t.name != null)
+    return this.fetchAllV3Rows(path, take, (row) => {
+      const c = row.contract
+      return typeof c === 'string' ? c.toLowerCase() : null
+    })
+      .then(rows => rows.filter(t => t.name != null)
         .map(t => fromApiToTokenWithBalance(
           v3HeldTokenToIApiTokens(t as Parameters<typeof v3HeldTokenToIApiTokens>[0]),
           this.chainId)))
@@ -92,17 +137,17 @@ export class RSKExplorerAPI extends DataSource {
       .catch(this.errorHandling)
   }
 
-  async getTransaction (hash: string) {
+  async getTransaction (hash: string): Promise<IApiTransactions | null> {
     const path = `${this.url}/txs/${encodeURIComponent(hash)}`
     return this.axios!.get<V3SingleResponse<Record<string, unknown>>>(path)
       .then(response => {
         const row = response.data.data
-        if (row == null) return undefined
+        if (row == null) return null
         return fromV3FullTxToIApiTransactions(row as Parameters<typeof fromV3FullTxToIApiTransactions>[0])
       })
       .catch((e) => {
         console.error(e)
-        return undefined
+        return null
       })
   }
 
