@@ -140,3 +140,20 @@ export interface IInternalTransaction {
 export interface InternalTransactionServerResponse {
   data: IInternalTransaction[]
 }
+
+/** Rootstock Explorer REST API v3 shared envelope */
+export interface V3PaginationData {
+  nextCursor: string | number | null
+  prevCursor: string | number | null
+  take: number
+  hasMoreData: boolean
+}
+
+export interface V3PaginatedResponse<T> {
+  data: T[] | null
+  paginationData?: V3PaginationData
+}
+
+export interface V3SingleResponse<T> {
+  data: T | null
+}
