@@ -13,6 +13,7 @@ import {
   type ITransaction
 } from './utils'
 import type { IApiTransactions } from '../rskExplorerApi/types'
+import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
 
 function blockscoutTransactionToIApi (tx: ITransaction): IApiTransactions {
   return {
@@ -33,7 +34,6 @@ function blockscoutTransactionToIApi (tx: ITransaction): IApiTransactions {
     txId: tx.txId || tx.hash
   }
 }
-import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
 
 export class BlockscoutAPI extends DataSource {
   private chainId: number

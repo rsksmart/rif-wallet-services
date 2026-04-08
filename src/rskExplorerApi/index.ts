@@ -104,7 +104,8 @@ export class RSKExplorerAPI extends DataSource {
     })
       .then(rows => rows
         .filter(t => t.name != null && t.decimals != null)
-        .map(t => fromApiToTokens(v3ListedTokenToIApiTokens(t as Parameters<typeof v3ListedTokenToIApiTokens>[0]), this.chainId)))
+        .map(t => fromApiToTokens(
+          v3ListedTokenToIApiTokens(t as Parameters<typeof v3ListedTokenToIApiTokens>[0]), this.chainId)))
       .catch(this.errorHandling)
   }
 
