@@ -28,6 +28,10 @@ const heldTokenRow = (holder: string, contract: string, name: string, symbol: st
 })
 
 describe('balances', () => {
+  beforeEach(() => {
+    (axios.get as jest.Mock).mockReset()
+  })
+
   test('should not return rbtc balance a new wallet', async () => {
     (axios.get as jest.Mock).mockResolvedValueOnce({
       data: {
@@ -94,6 +98,53 @@ describe('balances', () => {
       contractAddress: '0x0000000000000000000000000000000000000000',
       decimals: 18,
       balance: '0x98a156b222f262'
+    }])
+  })
+
+  test('should paginate balances and pick latest block', async () => {
+    const address = '0x1234567890123456789012345678901234567890'
+    ;(axios.get as jest.Mock)
+      .mockResolvedValueOnce({
+        data: {
+          paginationData: {
+            nextCursor: 'bal-c1',
+            prevCursor: null,
+            take: 50,
+            hasMoreData: true
+          },
+          data: [
+            { id: 'a1', blockNumber: 100, timestamp: '1', balance: '0x01' },
+            { id: 'a2', blockNumber: 101, timestamp: '1', balance: '0x02' }
+          ]
+        }
+      })
+      .mockResolvedValueOnce({
+        data: {
+          paginationData: {
+            nextCursor: null,
+            prevCursor: 'bal-c1',
+            take: 50,
+            hasMoreData: false
+          },
+          data: [
+            { id: 'b1', blockNumber: 105, timestamp: '1', balance: '0x05' }
+          ]
+        }
+      })
+
+    const balance = await rskExplorerApiMock.getRbtcBalanceByAddress(address)
+    expect(axios.get).toHaveBeenNthCalledWith(1, `url/balances/address/${address}`, {
+      params: { take: 50 }
+    })
+    expect(axios.get).toHaveBeenNthCalledWith(2, `url/balances/address/${address}`, {
+      params: { take: 50, cursor: 'bal-c1' }
+    })
+    expect(balance).toEqual([{
+      name: 'RBTC',
+      symbol: 'RBTC',
+      contractAddress: '0x0000000000000000000000000000000000000000',
+      decimals: 18,
+      balance: '0x05'
     }])
   })
 })
@@ -263,6 +314,63 @@ describe('getTransactionsByAddress', () => {
     expect(axios.get).toHaveBeenCalledWith(`url/txs/address/${addr}`, {
       params: { take: 50, cursor: 'onlyPrev' }
     })
+  })
+})
+
+describe('getEventsByAddress', () => {
+  beforeEach(() => {
+    (axios.get as jest.Mock).mockReset()
+  })
+
+  test('uses txStatus from v3 payload when present', async () => {
+    const api = new RSKExplorerAPI('url', 31, axios, '31')
+    const address = '0xaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'
+    ;(axios.get as jest.Mock).mockResolvedValueOnce({
+      data: {
+        paginationData: { nextCursor: null, prevCursor: null, take: 50, hasMoreData: false },
+        data: [{
+          event: 'Transfer',
+          blockNumber: 10,
+          timestamp: '1700000100',
+          transactionHash: '0xevt1',
+          txStatus: '0x1',
+          topic0: '0xt0',
+          topic1: null,
+          topic2: null,
+          topic3: null,
+          args: [{ name: 'from', value: '0x1' }, { name: 'to', value: '0x2' }]
+        }]
+      }
+    })
+
+    const out = await api.getEventsByAddress(address, '10')
+    expect(out).toHaveLength(1)
+    expect(out[0].txStatus).toBe('0x1')
+  })
+
+  test('falls back to non-success txStatus when payload omits it', async () => {
+    const api = new RSKExplorerAPI('url', 31, axios, '31')
+    const address = '0xbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb'
+    ;(axios.get as jest.Mock).mockResolvedValueOnce({
+      data: {
+        paginationData: { nextCursor: null, prevCursor: null, take: 50, hasMoreData: false },
+        data: [{
+          event: 'Transfer',
+          blockNumber: 11,
+          timestamp: '1700000200',
+          transactionHash: '0xevt2',
+          topic0: '0xt0',
+          topic1: null,
+          topic2: null,
+          topic3: null,
+          args: []
+        }]
+      }
+    })
+
+    const out = await api.getEventsByAddress(address, '10')
+    expect(out).toHaveLength(1)
+    expect(out[0].txStatus).toBe('0x0')
   })
 })
 

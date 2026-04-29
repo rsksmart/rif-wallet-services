@@ -1,8 +1,8 @@
 import { parseEther } from 'ethers'
+import type { IApiTransactions } from '../types/transactions'
 import {
   IApiEvents,
   IApiTokens,
-  IApiTransactions,
   IEvent,
   IInternalTransaction,
   IToken,
@@ -179,6 +179,7 @@ export function fromV3ExplorerEventToIEvent (e: {
   blockNumber: number
   timestamp: string
   transactionHash: string
+  txStatus?: string | null
   topic0?: string | null
   topic1?: string | null
   topic2?: string | null
@@ -196,7 +197,8 @@ export function fromV3ExplorerEventToIEvent (e: {
     topics,
     args,
     transactionHash: e.transactionHash,
-    txStatus: '0x1'
+    // v3 may omit tx status in event payload; never default to success.
+    txStatus: e.txStatus ?? '0x0'
   }
 }
 
@@ -216,7 +218,7 @@ export function fromV3SummaryTxToIApiTransactions (t: {
   txType: string
   receipt?: IApiTransactions['receipt']
 }): IApiTransactions {
-  const receipt = t.receipt
+  const receipt = t.receipt ?? null
   const blockHash = receipt?.blockHash ?? ''
   return {
     hash: t.hash,
@@ -254,10 +256,11 @@ export function fromV3FullTxToIApiTransactions (t: {
   nonce?: number
   receipt?: IApiTransactions['receipt']
 }): IApiTransactions {
+  const receipt = t.receipt ?? null
   return {
     hash: t.hash,
     nonce: t.nonce ?? 0,
-    blockHash: t.blockHash ?? t.receipt?.blockHash ?? '',
+    blockHash: t.blockHash ?? receipt?.blockHash ?? '',
     blockNumber: t.blockNumber,
     transactionIndex: t.transactionIndex,
     from: t.from,
@@ -267,7 +270,7 @@ export function fromV3FullTxToIApiTransactions (t: {
     value: String(t.value ?? '0'),
     input: t.input ?? '0x',
     timestamp: parseInt(String(t.timestamp), 10),
-    receipt: t.receipt,
+    receipt,
     txType: t.txType,
     txId: t.txId
   }

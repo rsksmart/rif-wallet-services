@@ -1,6 +1,7 @@
 import { RSKDatasource, RSKNodeProvider } from '../../repository/DataSource'
 import { isMyTransaction } from '../transaction/utils'
-import { IApiTransactions, IEvent, IInternalTransaction } from '../../rskExplorerApi/types'
+import type { IApiTransactions } from '../../types/transactions'
+import { IEvent, IInternalTransaction } from '../../rskExplorerApi/types'
 import { LastPrice } from '../price/lastPrice'
 import { fromApiToRtbcBalance } from '../../rskExplorerApi/utils'
 

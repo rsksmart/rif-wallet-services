@@ -1,7 +1,7 @@
 import _axios from 'axios'
 import { DataSource } from '../repository/DataSource'
+import type { IApiTransactions } from '../types/transactions'
 import {
-  IApiTransactions,
   V3PaginatedResponse,
   V3SingleResponse
 } from './types'
@@ -25,6 +25,13 @@ const MAX_V3_TOKEN_PAGES = 500
 type V3EventPayload = Parameters<typeof fromV3ExplorerEventToIEvent>[0]
 type V3ItxPayload = Parameters<typeof fromV3InternalTxToIInternalTransaction>[0]
 
+/**
+ * Explorer v3 adapter.
+ * Error contracts:
+ * - list-style methods return [] on failure.
+ * - getTransaction returns null on failure.
+ * - getTransactionsByAddress returns { prev, next, data: [] } on failure.
+ */
 export class RSKExplorerAPI extends DataSource {
   private chainId: number
   private errorHandling = (e) => {
@@ -44,6 +51,8 @@ export class RSKExplorerAPI extends DataSource {
 
   /**
    * Fetches all pages for a v3 list endpoint, merging rows with optional dedupe by key.
+   * Uses `take` + optional `cursor`; pass prior `paginationData.nextCursor` as `cursor`
+   * until `hasMoreData` is false.
    */
   private async fetchAllV3Rows (
     path: string,
@@ -126,11 +135,11 @@ export class RSKExplorerAPI extends DataSource {
   async getRbtcBalanceByAddress (address:string) {
     const take = DEFAULT_TAKE
     const path = `${this.url}/balances/address/${encodeURIComponent(address.toLowerCase())}`
-    return this.axios!.get<V3PaginatedResponse<{ blockNumber: number, balance: string }>>(path, { params: { take } })
-      .then(response => {
-        const rows = response.data.data ?? []
+    return this.fetchAllV3Rows(path, take, () => null)
+      .then(rows => {
         if (rows.length === 0) return []
-        const lastBlock = rows.reduce((prev, current) =>
+        const typedRows = rows as Array<{ blockNumber: number, balance: string }>
+        const lastBlock = typedRows.reduce((prev, current) =>
           (prev.blockNumber > current.blockNumber) ? prev : current)
         const weiHex = rbtcExplorerBalanceToHexWei(lastBlock.balance)
         return [fromApiToRtbcBalance(weiHex, this.chainId)]
@@ -159,6 +168,7 @@ export class RSKExplorerAPI extends DataSource {
     next?: string | undefined,
     blockNumber: string = '0'
   ) {
+    // Wallet-facing prev/next tokens are forwarded to explorer v3 as query param `cursor`.
     const take = this.parseTake(limit)
     const path = `${this.url}/txs/address/${encodeURIComponent(address.toLowerCase())}`
     const cursor = next ?? prev

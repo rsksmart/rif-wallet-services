@@ -12,7 +12,7 @@ import {
   fromApiToTokenWithBalance, fromApiToTokens, fromApiToTransaction,
   type ITransaction
 } from './utils'
-import type { IApiTransactions } from '../rskExplorerApi/types'
+import type { IApiTransactions } from '../types/transactions'
 import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
 
 function blockscoutTransactionToIApi (tx: ITransaction): IApiTransactions {
@@ -92,6 +92,7 @@ export class BlockscoutAPI extends DataSource {
       .then(response => blockscoutTransactionToIApi(fromApiToTransaction(response.data)))
       .catch((e) => {
         console.error(e)
+        // Single-transaction contract: return null on failure.
         return null
       })
   }

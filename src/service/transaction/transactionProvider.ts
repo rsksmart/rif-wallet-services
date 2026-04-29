@@ -1,5 +1,5 @@
 import { DataSource } from '../../repository/DataSource'
-import type { IApiTransactions } from '../../rskExplorerApi/types'
+import type { IApiTransactions } from '../../types/transactions'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 import { isMyTransaction } from './utils'

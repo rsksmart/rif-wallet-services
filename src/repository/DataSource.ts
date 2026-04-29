@@ -2,7 +2,7 @@ import _axios from 'axios'
 import { ethers } from 'ethers'
 import BitcoinCore from '../service/bitcoin/BitcoinCore'
 import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
-import type { IApiTransactions } from '../rskExplorerApi/types'
+import type { IApiTransactions } from '../types/transactions'
 
 export abstract class DataSource {
   readonly url: string
