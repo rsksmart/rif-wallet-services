@@ -1,6 +1,7 @@
 import { RSKDatasource, RSKNodeProvider } from '../../repository/DataSource'
 import { isMyTransaction } from '../transaction/utils'
-import { IApiTransactions, IEvent, IInternalTransaction } from '../../rskExplorerApi/types'
+import type { IApiTransactions } from '../../types/transactions'
+import { IEvent, IInternalTransaction } from '../../rskExplorerApi/types'
 import { LastPrice } from '../price/lastPrice'
 import { fromApiToRtbcBalance } from '../../rskExplorerApi/utils'
 
@@ -91,7 +92,8 @@ export class AddressService {
       .then(hashes => Array.from(new Set(hashes)))
       .catch(() => [])
 
-    const result = await Promise.all(hashes.map(hash => dataSource.getTransaction(hash)))
+    const fetched = await Promise.all(hashes.map(hash => dataSource.getTransaction(hash)))
+    const result = fetched.filter((tx): tx is IApiTransactions => tx != null)
 
     return {
       prev: transactions.prev,

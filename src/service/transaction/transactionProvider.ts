@@ -1,4 +1,5 @@
 import { DataSource } from '../../repository/DataSource'
+import type { IApiTransactions } from '../../types/transactions'
 import type { Event } from '../../types/event'
 import { PollingProvider } from '../AbstractPollingProvider'
 import { isMyTransaction } from './utils'
@@ -24,8 +25,8 @@ export class TransactionProvider extends PollingProvider<Event> {
       .then((hashes: string[]) => Array.from(new Set(hashes)))
       .catch(() => [])
 
-    return await Promise.all(hashes
-      .map(hash => this.dataSource.getTransaction(hash)))
+    const txs = await Promise.all(hashes.map(hash => this.dataSource.getTransaction(hash)))
+    return txs.filter((tx): tx is IApiTransactions => tx != null)
   }
 
   async getTransactions (address: string, limit?: string, prev?: string, next?: string) {

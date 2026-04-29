@@ -1,3 +1,5 @@
+import type { IApiTransactions } from '../types/transactions'
+
 export interface IApiTokens {
   address: string;
   balance: string;
@@ -70,24 +72,6 @@ export interface EventsServerResponse {
   data: IApiEvents[];
 }
 
-export interface IApiTransactions {
-  hash: string;
-  nonce: number;
-  blockHash: string;
-  blockNumber: number;
-  transactionIndex: number;
-  from: string;
-  to: string;
-  gas: number;
-  gasPrice: string;
-  value: string;
-  input: string;
-  timestamp: number;
-  receipt: any;
-  txType: string;
-  txId: string;
-}
-
 export interface Page {
   next: string | null
   prev: string | null
@@ -139,4 +123,21 @@ export interface IInternalTransaction {
 
 export interface InternalTransactionServerResponse {
   data: IInternalTransaction[]
+}
+
+/** Rootstock Explorer REST API v3 shared envelope */
+export interface V3PaginationData {
+  nextCursor: string | number | null
+  prevCursor: string | number | null
+  take: number
+  hasMoreData: boolean
+}
+
+export interface V3PaginatedResponse<T> {
+  data: T[] | null
+  paginationData?: V3PaginationData
+}
+
+export interface V3SingleResponse<T> {
+  data: T | null
 }

@@ -2,6 +2,7 @@ import _axios from 'axios'
 import { ethers } from 'ethers'
 import BitcoinCore from '../service/bitcoin/BitcoinCore'
 import { GetEventLogsByAddressAndTopic0 } from '../service/address/AddressService'
+import type { IApiTransactions } from '../types/transactions'
 
 export abstract class DataSource {
   readonly url: string
@@ -18,7 +19,7 @@ export abstract class DataSource {
   abstract getTokensByAddress(address: string);
   abstract getRbtcBalanceByAddress(address: string);
   abstract getEventsByAddress(address: string, limit?: string);
-  abstract getTransaction(hash: string);
+  abstract getTransaction(hash: string): Promise<IApiTransactions | null>;
   abstract getInternalTransactionByAddress(address: string, limit?: string);
   abstract getTransactionsByAddress(address:string,
     limit?: string,

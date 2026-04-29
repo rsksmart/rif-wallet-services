@@ -1,4 +1,5 @@
-import { IApiTransactions, ITokenWithBalance, IEvent } from '../rskExplorerApi/types'
+import type { IApiTransactions } from './transactions'
+import { ITokenWithBalance, IEvent } from '../rskExplorerApi/types'
 
 export type Event = {
   type: string

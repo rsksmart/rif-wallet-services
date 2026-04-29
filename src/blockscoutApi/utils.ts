@@ -35,6 +35,7 @@ export interface Receipt {
   status: string
   logsBloom: string
   type: string
+  [key: string]: unknown
 }
 
 export interface ITransaction {
