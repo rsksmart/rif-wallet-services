@@ -55,7 +55,7 @@
   },
   "dependencies": {
     "@rsksmart/rsk-contract-metadata": "^1.0.15",
-    "@rsksmart/rsk-utils": "^1.1.0",
+    "@rsksmart/rsk-utils": "^2.0.5",
     "axios": "^1.8.4",
     "cors": "^2.8.5",
     "dotenv": "^10.0.0",
